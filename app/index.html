@@ -2,7 +2,7 @@
 <html>
   <head>
         <title>Beginning</title>
-        <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="css/bootstrap.min.css" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.2/react.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.2/react-dom.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
@@ -11,7 +11,21 @@
 
   </head>
   <body>
-        <div id="content"></div>
+    <div id="content"></div>
+        
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="nav navbar-nav navbar-left">
+        <a class="navbar-brand" href="#"> <img alt="Brand" src="oneup.png"> </a>
+        <a class="navbar-brand" href="#">Home</a>
+        <a class="navbar-brand" href="#">About Us</a>
+        <a class="navbar-brand" href="#">FAQ</a>
+      </div>
+      <div class="nav navbar-nav navbar-right">
+          <a class="navbar-brand" style="float:right" href="#">Log in</a>
+          <a class="navbar-brand" style="float:right" href="#">Sign up</a>
+        </div>
+    </nav>
+
         <script src="js/app.js" type="text/babel"></script>
   </body>
 </html>
