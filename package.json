@@ -1,0 +1,21 @@
+{
+  "name": "Driveway",
+  "version": "0.0.0",
+  "description": "Rent your driveway and make bank",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mcrowder65/Driveway.git"
+  },
+  "author": "Matt Crowder, Brennen Barney, Kyle Cornelison",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/mcrowder65/Driveway/issues"
+  },
+  "dependencies": {
+    "express": "~4.13.3"
+  }
+}
