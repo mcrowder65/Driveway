@@ -40,16 +40,32 @@ var Home = React.createClass({
     );
   }
 });
-
+var formStyle = 
+{
+  textAlign: 'center'
+};
 var signUp = React.createClass({
+
   render: function() {
     return (
-      <div>
-      <p> Hello! sign up here!</p>
+      <div style={formStyle}>
+        <form>
+
+          Username: <br/><input type="text" name="userName" /><br/><br/>
+          Password: <br/><input type="text" name="password" /><br/>
+          Confirm Password: <br/><input type="text" name="confirmPassword" /><br/><br/>
+          <input type="radio">
+          I agree to the <a href='#'>terms of service</a>
+          </input><br/><br/>
+          <button>
+            SIGN UP
+            </button>
+        </form>
       </div>
     );
   }
 });
+
 
 
 // Run the routes
