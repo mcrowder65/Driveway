@@ -1,28 +1,39 @@
 var Router = ReactRouter.Router;
 var Link = ReactRouter.Link;
 var Route = ReactRouter.Route;
-
+// <nav class="navbar navbar-default navbar-fixed-top">
+//        <div class="nav navbar-nav navbar-left">
+//          <a class="navbar-brand" href="#"> <img alt="Brand" src="oneup.png"> </a>
+//          <a class="navbar-brand" href="#">Home</a>
+//          <a class="navbar-brand" href="#">About Us</a>
+//          <a class="navbar-brand" href="#">FAQ</a>
+//        </div>
+//        <div class="nav navbar-nav navbar-right">
+//            <a class="navbar-brand" style="float:right" href="#">Log in</a>
+//            <a class="navbar-brand" style="float:right" href="#">Sign up</a>
+//          </div>
+//      </nav>
 var App = React.createClass({
   render: function() {
     return (
       <div>
-        <nav className="navbar navbar-default" role="navigation">
-          <div className="container">
-              <div className="navbar-header">
-                 <button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                   <span className="sr-only">Toggle navigation</span>
-                   <span className="icon-bar"></span>
-                   <span className="icon-bar"></span>
-                   <span className="icon-bar"></span>
-                </button>
-                <a className="navbar-brand" href="/">Beginning</a>
+        <nav className="navbar navbar-default navbar-fixed-top" role="navigation">
+          
+              <div className="nav navbar-nav navbar-left">
+                <a className="navbar-brand" href="/">Home</a>
+                <a className="navbar-brand" href="/">About Us</a>
+                <a className="navbar-brand" href="/">FAQ</a>
+
               </div>
-              <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul className="nav navbar-nav">
-                  <li><Link to="page">Page</Link></li>
-                </ul>
+              <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
+                <a className="navbar-brand" href="/">Log in</a>
+                
+                <li>
+                <Link to="page">Sign up</Link>
+                </li>
+                
               </div>
-            </div>
+            
         </nav>
 
         <div className="container">
@@ -48,12 +59,12 @@ var Page = React.createClass({
   render: function() {
     return (
       <div>
-        <h1>Page</h1>
-        <p>Demo another page here</p>
+      <p> Hello! sign up here!</p>
       </div>
     );
   }
 });
+
 
 // Run the routes
 var routes = (
@@ -66,3 +77,4 @@ var routes = (
 );
 
 ReactDOM.render(routes, document.body);
+
