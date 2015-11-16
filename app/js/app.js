@@ -44,25 +44,82 @@ var formStyle =
 {
   textAlign: 'center'
 };
-var signUp = React.createClass({
+function hello()
+{
+  console.log('hello');
+}
+var signUp = React.createClass
+({
+  getInitialState: function() 
+  {
+    return {userName: ''}, {password: ''}, {confirmPassword: ''};
+  },
+  handleChange: function(event) 
+  {
+    if(event.target.name == "userName")
+    {
+      this.setState({userName: event.target.value});
+      console.log("userName");
+      console.log(event.target.value);
+    }
+    else if(event.target.name == "password")
+    {
+      this.setState({password: event.target.value});
+      console.log("password");
+      console.log(event.target.value)
+    }
+    else if(event.target.name == "confirmPassword")
+    {
+      this.setState({confirmPassword: event.target.value});
+      console.log("confirmPassword");
+      console.log(event.target.value);
+    }
+    else
+    {
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("THIS SHOULDN'T BE APPEARING");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
+      console.log("*************************************************************************");
 
+    }
+
+    //console.log(event);
+  },
   render: function() {
+    var userName = this.state.userName;
+    var password = this.state.password;
+    var confirmPassword = this.state.confirmPassword;
     return (
-      <div style={formStyle}>
-        <form>
-
-          Username: <br/><input type="text" name="userName" /><br/><br/>
-          Password: <br/><input type="text" name="password" /><br/>
-          Confirm Password: <br/><input type="text" name="confirmPassword" /><br/><br/>
-          <input type="radio">
+       <div style={formStyle}>
+        <form method="POST">
+          Username: <br/><input type="text" name="userName" value ={userName} onChange={this.handleChange}/><br/><br/>
+          Password: <br/><input type="text" name="password" value ={password} onChange={this.handleChange}/><br/>
+          Confirm Password: <br/><input type="text" name="confirmPassword" value ={confirmPassword} onChange={this.handleChange}/><br/><br/>
+         <input type="radio">
           I agree to the <a href='#'>terms of service</a>
           </input><br/><br/>
           <button>
+            
             SIGN UP
             </button>
         </form>
       </div>
-    );
+
+
+      );
   }
 });
 
