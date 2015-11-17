@@ -69,7 +69,7 @@ var signIn = React.createClass
        <div style={formStyle}>
           Username: <br/><input type="text" name="userName" value ={userName} onChange={this.handleChange}/><br/><br/>
           Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
-          <br/>Click <a href="#"> here</a> if you forgot your password. <br/>
+          <br/><a href='#'>Forgot your password? </a> <br/>
           <br/><button onClick={this.handleClick}>
             SIGN IN
             </button>
@@ -80,40 +80,45 @@ var signIn = React.createClass
   }
 });
 
-function hello()
-{
-  console.log('hello');
-}
 
 var signUp = React.createClass
 ({
   getInitialState: function() 
   {
-    return {userName: ''}, {password: ''}, {confirmPassword: ''};
+    return {email: ''}, {address: ''}, {zip: ''}, {state:''}, {username: ''}, {password: ''}, {confirmPassword: ''};
   },
   handleChange: function(event) 
   {
-    if(event.target.name == "userName")
+  	
+  	if(event.target.name == "email")
+  	{
+  		this.setState({email: event.target.value});
+      	console.log(event.target.value);
+  	}
+  	else if(event.target.name == "username")
+  	{
+  		this.setState({Username: event.target.value});
+      	console.log(event.target.value);
+  	}
+  	else if(event.target.name == "password")
+  	{
+		this.setState({password: event.target.value});
+      	console.log(event.target.value);	
+  	}
+    if(event.target.name == "confirmPassword")
     {
-      this.setState({userName: event.target.value});
-      console.log(event.target.value);
-    }
-    else if(event.target.name == "password")
-    {
-      this.setState({password: event.target.value});
-      console.log(event.target.value)
-    }
-    else if(event.target.name == "confirmPassword")
-    {
-      this.setState({confirmPassword: event.target.value});
-      console.log(event.target.value);
+      	this.setState({confirmPassword: event.target.value});
+      	console.log(event.target.value);
     }
   },
   handleClick: function(event)
   {
-    if(this.state.password != this.state.confirmPassword)
+  	
+    if(this.state.password !== this.state.confirmPassword)
     {
-       alert("PASSWORDS ARE DIFFERENT");
+    	console.log("password: " + this.state.password);
+		console.log("confirmPassword: " + this.state.confirmPassword);
+        alert("PASSWORDS ARE DIFFERENT");
     }
     else if(this.state.password.length < 8)
     {
@@ -121,15 +126,23 @@ var signUp = React.createClass
     }
   },
   render: function() {
-    var userName = this.state.userName;
+  	var email = this.state.email;
+    var username = this.state.username;
     var password = this.state.password;
     var confirmPassword = this.state.confirmPassword;
+    var address = this.state.address;
+    var zip = this.state.zip;
+    var state = this.state.state;
     return (
        <div style={formStyle}>
-          Username: <br/><input type="text" name="userName" value ={userName} onChange={this.handleChange}/><br/><br/>
+       	  Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
+          Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
           Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
           Confirm Password: <br/><input type="password" name="confirmPassword" value ={confirmPassword} onChange={this.handleChange}/><br/><br/>
-         
+          Street Address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
+          Zip code: <br/><input type="text" name="zip" value={zip} onChange={this.handleChange}/><br/><br/>
+          State: <br/><input type="text" name="state" value={state} onChange={this.handleChange}/><br/><br/>
+          
          <input type="radio">
           I agree to the <a href='#'>terms of service</a>
           </input><br/><br/>
