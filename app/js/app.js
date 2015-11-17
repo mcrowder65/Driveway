@@ -95,6 +95,21 @@ var signUp = React.createClass
   		this.setState({email: event.target.value});
       	console.log(event.target.value);
   	}
+  	if(event.target.name == 'address')
+  	{
+		this.setState({address: event.target.value});
+      	console.log(event.target.value);
+  	}
+  	if(event.target.name == 'zip')
+  	{
+		this.setState({zip: event.target.value});
+      	console.log(event.target.value);
+  	}
+  	if(event.target.name == 'state')
+  	{
+		this.setState({state: event.target.value});
+      	console.log(event.target.value);
+  	}
   	else if(event.target.name == "username")
   	{
   		this.setState({Username: event.target.value});
