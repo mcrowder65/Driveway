@@ -59,44 +59,29 @@ var signUp = React.createClass
     if(event.target.name == "userName")
     {
       this.setState({userName: event.target.value});
-      console.log("userName");
       console.log(event.target.value);
     }
     else if(event.target.name == "password")
     {
       this.setState({password: event.target.value});
-      console.log("password");
       console.log(event.target.value)
     }
     else if(event.target.name == "confirmPassword")
     {
       this.setState({confirmPassword: event.target.value});
-      console.log("confirmPassword");
       console.log(event.target.value);
     }
-    else
+  },
+  handleClick: function(event)
+  {
+    if(this.state.password != this.state.confirmPassword)
     {
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("THIS SHOULDN'T BE APPEARING");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-      console.log("*************************************************************************");
-
+       alert("PASSWORDS ARE DIFFERENT");
     }
-
-    //console.log(event);
+    if(this.state.password.length < 8)
+    {
+      alert("Your password must be greater than 7 characters");
+    }
   },
   render: function() {
     var userName = this.state.userName;
@@ -104,18 +89,16 @@ var signUp = React.createClass
     var confirmPassword = this.state.confirmPassword;
     return (
        <div style={formStyle}>
-        <form method="POST">
           Username: <br/><input type="text" name="userName" value ={userName} onChange={this.handleChange}/><br/><br/>
-          Password: <br/><input type="text" name="password" value ={password} onChange={this.handleChange}/><br/>
-          Confirm Password: <br/><input type="text" name="confirmPassword" value ={confirmPassword} onChange={this.handleChange}/><br/><br/>
+          Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
+          Confirm Password: <br/><input type="password" name="confirmPassword" value ={confirmPassword} onChange={this.handleChange}/><br/><br/>
+         
          <input type="radio">
           I agree to the <a href='#'>terms of service</a>
           </input><br/><br/>
-          <button>
-            
+          <button onClick={this.handleClick}>
             SIGN UP
             </button>
-        </form>
       </div>
 
 
