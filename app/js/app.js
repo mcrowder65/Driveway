@@ -85,7 +85,7 @@ var signUp = React.createClass
 ({
   getInitialState: function() 
   {
-    return {email: ''}, {address: ''}, {zip: ''}, {state:''}, {username: ''}, {password: ''}, {confirmPassword: ''};
+    return {email: ''}, {username: ''}, {password: ''}, {confirmPassword: ''};
   },
   handleChange: function(event) 
   {
@@ -93,43 +93,27 @@ var signUp = React.createClass
   	if(event.target.name == "email")
   	{
   		this.setState({email: event.target.value});
-      	console.log(event.target.value);
-  	}
-  	if(event.target.name == 'address')
-  	{
-		this.setState({address: event.target.value});
-      	console.log(event.target.value);
-  	}
-  	if(event.target.name == 'zip')
-  	{
-		this.setState({zip: event.target.value});
-      	console.log(event.target.value);
-  	}
-  	if(event.target.name == 'state')
-  	{
-		this.setState({state: event.target.value});
-      	console.log(event.target.value);
+      	//console.log(event.target.value);
   	}
   	else if(event.target.name == "username")
   	{
-  		this.setState({Username: event.target.value});
-      	console.log(event.target.value);
+  		this.setState({username: event.target.value});
+      	//console.log(event.target.value);
   	}
   	else if(event.target.name == "password")
   	{
 		this.setState({password: event.target.value});
-      	console.log(event.target.value);	
+      	//console.log(event.target.value);	
   	}
-    if(event.target.name == "confirmPassword")
+    else if(event.target.name == "confirmPassword")
     {
       	this.setState({confirmPassword: event.target.value});
-      	console.log(event.target.value);
+      	////console.log(event.target.value);
     }
   },
-  handleClick: function(event)
+  register: function()
   {
-  	
-    if(this.state.password !== this.state.confirmPassword)
+  	if(this.state.password !== this.state.confirmPassword)
     {
     	console.log("password: " + this.state.password);
 		console.log("confirmPassword: " + this.state.confirmPassword);
@@ -139,39 +123,61 @@ var signUp = React.createClass
     {
       alert("Your password must be greater than 7 characters");
     }
+  	auth.register(this.state.email, this.state.username, this.state.password);
   },
   render: function() {
   	var email = this.state.email;
     var username = this.state.username;
     var password = this.state.password;
     var confirmPassword = this.state.confirmPassword;
-    var address = this.state.address;
-    var zip = this.state.zip;
-    var state = this.state.state;
     return (
-       <div style={formStyle}>
-       	  Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
-          Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
-          Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
-          Confirm Password: <br/><input type="password" name="confirmPassword" value ={confirmPassword} onChange={this.handleChange}/><br/><br/>
-          Street Address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
-          Zip code: <br/><input type="text" name="zip" value={zip} onChange={this.handleChange}/><br/><br/>
-          State: <br/><input type="text" name="state" value={state} onChange={this.handleChange}/><br/><br/>
-          
-         <input type="radio">
-          I agree to the <a href='#'>terms of service</a>
-          </input><br/><br/>
-          <button onClick={this.handleClick}>
-            SIGN UP
-            </button>
-      </div>
+
+	       <div style={formStyle}>
+	       	  Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
+	          Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
+	          Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
+	          Confirm Password: <br/><input type="password" name="confirmPassword" value ={confirmPassword} onChange={this.handleChange}/><br/><br/>
+	         <input type="radio">
+	          I agree to the <a href="terms.html">terms of service</a>
+	          </input><br/><br/>
+	          <input type="submit" value="SIGN UP" onClick={this.register}/> 
+	      </div>
 
 
       );
   }
 });
 
+var auth =
+{
+	register: function(email, username, password)
+	{
+		console.log("email: " + email);
+		console.log("username: " + username);
+		console.log("password: " + password);
+		var url = "/api/users/register";
+        $.ajax
+        ({
+            url: url,
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                email: email,
+                username: username,
+                password: password
+            },
+            success: function(res) 
+            {
+            	console.log("success");
+            }.bind(this),
+            error: function()
+            {
+            	console.log("failure");
+            }.bind(this)
 
+		});
+    },
+};
 
 // Run the routes
 var routes = (
@@ -185,4 +191,3 @@ var routes = (
 );
 
 ReactDOM.render(routes, document.body);
-
