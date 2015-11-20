@@ -16,6 +16,10 @@
     "url": "https://github.com/mcrowder65/Driveway/issues"
   },
   "dependencies": {
-    "express": "~4.13.3"
+    "bcrypt": "^0.8.5",
+    "body-parser": "^1.14.1",
+    "express": "~4.13.3",
+    "jsonwebtoken": "^5.4.1",
+    "mongoose-findorcreate": "^0.1.2"
   }
 }
