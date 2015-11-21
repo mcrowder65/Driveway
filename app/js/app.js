@@ -1,16 +1,22 @@
-var Router = ReactRouter.Router;
-var Link = ReactRouter.Link;
-var Route = ReactRouter.Route;
+var React   = require('react');
+var ReactDOM = require('react-dom');
+var Router = require('react-router').Router;
+var Route = require('react-router').Route;
+var Link = require('react-router').Link;
+var IndexRoute = require('react-router').IndexRoute;
+var ParkingMap = require('./components/parkingMap.js');
+
 var App = React.createClass({
   render: function() {
     return (
       <div>
         <nav className="navbar navbar-default" role="navigation">
           
-              <div className="nav navbar-nav navbar-left">
-                <a className="navbar-brand" href="/">Home</a>
-                <a className="navbar-brand" href="/">About Us</a>
-                <a className="navbar-brand" href="/">FAQ</a>
+              <div className="nav navbar-nav navbar-left">                
+                <Link className="navbar-brand" to="">Home</Link>                  
+                <Link className="navbar-brand" to="/aboutUs">About Us</Link>              
+                <Link className="navbar-brand" to="/faq">FAQ</Link>   
+                <Link className="navbar-brand" to="/map">Map</Link>  
 
               </div>
               <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
@@ -28,6 +34,43 @@ var App = React.createClass({
     );
   }
 });
+
+var Home = React.createClass
+({
+  render: function() {
+    return (
+      <h1>Home</h1>
+    );
+  }
+});
+
+var AboutUs = React.createClass
+({
+  render: function() {
+    return (
+      <h1>About Us</h1>
+    );
+  }
+});
+
+var FAQ = React.createClass
+({
+  render: function() {
+    return (
+      <h1>FAQ</h1>
+    );
+  }
+});
+
+var data = {event: {lat: 40.4122994, lon: -111.75418}, parking: []}
+var MapHolder = React.createClass({
+  render: function() {
+    return (
+      <ParkingMap data={data}/>
+    );
+  }
+});
+
 var formStyle = 
 {
   textAlign: 'center'
@@ -183,11 +226,16 @@ var auth =
 var routes = (
       <Router>
         <Route name="app" path="/" component={App}>
+          <IndexRoute component={Home} />
+          <Route name="aboutUs" path="aboutUs" component={AboutUs} /> 
+          <Route name="faq" path="faq" component={FAQ} /> 
+          
+          <Route name="map" path="map" component={MapHolder} /> 
+          
           <Route name="signUp" path="/signUp" component={signUp} />
-
           <Route name="signIn" path="/signIn" component={signIn}/>
         </Route>
       </Router>
 );
 
-ReactDOM.render(routes, document.body);
+ReactDOM.render(routes, document.getElementById('content'));

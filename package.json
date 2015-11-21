@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run serve | npm run dev",
+    "serve": "node index.js",
+    "dev": "webpack-dev-server --progress --colors --port 8090"
   },
   "repository": {
     "type": "git",
@@ -16,10 +19,25 @@
     "url": "https://github.com/mcrowder65/Driveway/issues"
   },
   "dependencies": {
-    "bcrypt": "^0.8.5",
+    "bcrypt": "~0.8.5",
     "body-parser": "^1.14.1",
     "express": "~4.13.3",
     "jsonwebtoken": "^5.4.1",
-    "mongoose-findorcreate": "^0.1.2"
+    "mongoose-findorcreate": "^0.1.2",
+    "react-dom": "~0.14.3",
+    "warning": "~2.1.0",
+    "fbjs": "~0.4.0",
+    "invariant": "~2.2.0",
+    "qs": "~6.0.0",
+    "deep-equal": "~1.0.1",
+    "mongoose": "~4.2.7",
+    "react-router": "~1.0.0"
+  },
+  "devDependencies": {
+    "jsx-loader": "~0.13.2",
+    "webpack": "~1.12.8",
+    "webpack-dev-server": "~1.12.1",
+    "babel-core": "~6.2.1",
+    "babel-loader": "~6.2.0"
   }
 }
