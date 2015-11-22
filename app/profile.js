@@ -1,0 +1,1 @@
+alert("You have successfully signed up");

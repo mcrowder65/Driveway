@@ -1,35 +1,31 @@
-//var webpack = require('webpack');
+var webpack = require('webpack');
 
 module.exports = {
-	context: __dirname + '/js',
+	context: __dirname + '',
 
 	entry: [
-	  './app.js'
+	  './js/app.js'
 	],
 
 	output: {
 		filename: 'bundle.js',
-		path: __dirname,
-		publicPath: 'http://localhost:8090/assets'
+		path: __dirname
 	},
 
 	module: {
 		loaders: [
 			{
-				test: /\.js$/, 
-				//exclude: /node_modules/, 
-				loader: "babel", 
-				query:
-				  {
-				    presets:['react']
-				  }
+				test:/\.js.?/,
+				loaders: [
+					'jsx-loader?insertPragma=React.DOM&harmony'
+				]
 			}
 		]
 	},
 
 	resolve: {
-		modulesDirectories: ['components','../../node_modules']
-	}//,
+		modulesDirectories: ['components','utility','../node_modules']
+	},
 
-	//devtool: 'cheap-source-map'
+	devtool: 'cheap-source-map'
 }

@@ -12,7 +12,6 @@ app.post
 	{
 		console.log("email: " + req.body.email);
 		console.log("username: " + req.body.username);
-		console.log("password: " + req.body.password);
 		User.findOrCreate({username: req.body.username}, 
 		function(err, user, created) 
 		{
@@ -45,3 +44,42 @@ app.post
 	    });
 	}
 );
+
+app.post('/api/users/login', function (req, res) 
+{
+	console.log("entered api!");
+    // find the user with the given username
+    User.findOne({username: req.body.username}, function(err,user) 
+    {
+		if (err) 
+		{
+		    res.sendStatus(403);
+		    return;
+		}
+        // validate the user exists and the password is correct
+        if (user && user.checkPassword(req.body.password)) 
+        {
+            // create a token
+            var token = User.generateToken(user.username);
+            // return value is JSON containing user's name and token
+            //localStorage.token = token;
+            //console.log(req.body.username);
+            res.json({username: req.body.username, token: token});
+            //console.log(token);
+        } 
+        else 
+        {
+            res.sendStatus(403);
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
