@@ -8,9 +8,8 @@ var IndexRoute = require('react-router').IndexRoute;
 var ParkingMap = require('./components/parkingMap.js');
 var RouteHandler = Router.RouteHandler;
 var Redirect = Router.Redirect;
+var signedIn = true;
 
-
-var signedIn = false;
 var App = React.createClass({
    contextTypes: 
     {
@@ -18,7 +17,8 @@ var App = React.createClass({
     },
   render: function() 
   {
-    if(!localStorage)
+    console.log(localStorage);
+    if(!localStorage.username)
     {
       console.log("not signed in");
       return(
@@ -57,7 +57,7 @@ var App = React.createClass({
               </div>
               <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
                 <li><Link to="profile">Profile</Link></li>
-                <li><Link to="logOut" onClick={logOut}>Log out</Link></li>
+                <li><Link to="logOut">Log out</Link></li>
               </div>
             </nav>
             <div className="container">
@@ -69,11 +69,6 @@ var App = React.createClass({
     
   }
 });
-function logOut()
-{
-  console.log("hello!");
-  delete localStorage;
-}
 var Home = React.createClass
 ({
    contextTypes: {
@@ -137,10 +132,16 @@ var profile = React.createClass
   {
 
   },
+  showValues: function()
+  {
+    return localStorage.username + " " + localStorage.email;
+  },
   render: function() {
-    return (
+      return (
        <div style={formStyle}>
-          <p> profile! </p>
+        <p>username: {localStorage.username}</p>
+        <p>email: {localStorage.email}</p>
+        
       </div>
       );
   }
@@ -159,14 +160,15 @@ var logOut = React.createClass
   },
   handleClick: function(event)
   {
-
+    delete localStorage.username;
+    delete localStorage.email;
+    console.log(localStorage);
+    location.reload();
   },
   render: function() {
-    var username = this.state.username;
-    var password = this.state.password;
     return (
        <div style={formStyle}>
-          <p> hello! </p>
+          <p> Click <button onClick={this.handleClick}> here</button> to log out </p>
       </div>
 
 
@@ -197,14 +199,12 @@ var signIn = React.createClass
   handleClick: function(event)
   {
     signInAuthorization.login(this.state.username, this.state.password);
-    console.log("before if");
     if(signedIn == true)
     {
-      console.log("before transition");
-      
-      console.log("after transition");
+      localStorage.username = this.state.username;
+      location.reload();
     }
-    console.log("after if");
+          
   },
   render: function() {
     var username = this.state.username;
@@ -239,9 +239,10 @@ var signInAuthorization =
             username: username,
             password: password
         },
+        headers: {'Authorization': localStorage},
         success: function(res) 
         {
-          console.log("success");
+          localStorage.email = res.email;
           signedIn = true;
         }.bind(this),
         error: function()
@@ -351,7 +352,10 @@ var auth =
             },
             success: function(res) 
             {
+              console.log("before success statement");
             	console.log("success");
+              console.log("res email: " + res.email);
+
             }.bind(this),
             error: function()
             {

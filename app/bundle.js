@@ -61,9 +61,8 @@
 	var ParkingMap = __webpack_require__(211);
 	var RouteHandler = Router.RouteHandler;
 	var Redirect = Router.Redirect;
+	var signedIn = true;
 
-
-	var signedIn = false;
 	var App = React.createClass({displayName: "App",
 	   contextTypes: 
 	    {
@@ -71,7 +70,8 @@
 	    },
 	  render: function() 
 	  {
-	    if(!localStorage)
+	    console.log(localStorage);
+	    if(!localStorage.username)
 	    {
 	      console.log("not signed in");
 	      return(
@@ -110,7 +110,7 @@
 	              ), 
 	              React.createElement("div", {className: "nav navbar-nav navbar-right", id: "bs-example-navbar-collapse-1"}, 
 	                React.createElement("li", null, React.createElement(Link, {to: "profile"}, "Profile")), 
-	                React.createElement("li", null, React.createElement(Link, {to: "logOut", onClick: logOut}, "Log out"))
+	                React.createElement("li", null, React.createElement(Link, {to: "logOut"}, "Log out"))
 	              )
 	            ), 
 	            React.createElement("div", {className: "container"}, 
@@ -122,11 +122,6 @@
 	    
 	  }
 	});
-	function logOut()
-	{
-	  console.log("hello!");
-	  delete localStorage;
-	}
 	var Home = React.createClass
 	({displayName: "Home",
 	   contextTypes: {
@@ -190,10 +185,16 @@
 	  {
 
 	  },
+	  showValues: function()
+	  {
+	    return localStorage.username + " " + localStorage.email;
+	  },
 	  render: function() {
-	    return (
+	      return (
 	       React.createElement("div", {style: formStyle}, 
-	          React.createElement("p", null, " profile! ")
+	        React.createElement("p", null, "username: ", localStorage.username), 
+	        React.createElement("p", null, "email: ", localStorage.email)
+	        
 	      )
 	      );
 	  }
@@ -212,14 +213,15 @@
 	  },
 	  handleClick: function(event)
 	  {
-
+	    delete localStorage.username;
+	    delete localStorage.email;
+	    console.log(localStorage);
+	    location.reload();
 	  },
 	  render: function() {
-	    var username = this.state.username;
-	    var password = this.state.password;
 	    return (
 	       React.createElement("div", {style: formStyle}, 
-	          React.createElement("p", null, " hello! ")
+	          React.createElement("p", null, " Click ", React.createElement("button", {onClick: this.handleClick}, " here"), " to log out ")
 	      )
 
 
@@ -250,14 +252,12 @@
 	  handleClick: function(event)
 	  {
 	    signInAuthorization.login(this.state.username, this.state.password);
-	    console.log("before if");
 	    if(signedIn == true)
 	    {
-	      console.log("before transition");
-	      
-	      console.log("after transition");
+	      localStorage.username = this.state.username;
+	      location.reload();
 	    }
-	    console.log("after if");
+	          
 	  },
 	  render: function() {
 	    var username = this.state.username;
@@ -292,9 +292,10 @@
 	            username: username,
 	            password: password
 	        },
+	        headers: {'Authorization': localStorage},
 	        success: function(res) 
 	        {
-	          console.log("success");
+	          localStorage.email = res.email;
 	          signedIn = true;
 	        }.bind(this),
 	        error: function()
@@ -404,7 +405,10 @@
 	            },
 	            success: function(res) 
 	            {
+	              console.log("before success statement");
 	            	console.log("success");
+	              console.log("res email: " + res.email);
+
 	            }.bind(this),
 	            error: function()
 	            {
