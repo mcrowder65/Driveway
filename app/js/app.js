@@ -9,6 +9,7 @@ var ParkingMap = require('./components/parkingMap.js');
 var RouteHandler = Router.RouteHandler;
 var Redirect = Router.Redirect;
 var signedIn = true;
+var transitionTo = Router.transitionTo;
 
 var App = React.createClass({
    contextTypes: 
@@ -25,7 +26,7 @@ var App = React.createClass({
         <div>
           <nav className="navbar navbar-default" role="navigation">
             <div className="nav navbar-nav navbar-left">                
-              <Link className="navbar-brand" to="">Home</Link>                  
+              <Link className="navbar-brand" to="/home">Home</Link>                  
               <Link className="navbar-brand" to="/aboutUs">About us</Link>              
               <Link className="navbar-brand" to="/faq">FAQ</Link>   
               <Link className="navbar-brand" to="/map">Map</Link>  
@@ -163,7 +164,7 @@ var logOut = React.createClass
     delete localStorage.username;
     delete localStorage.email;
     console.log(localStorage);
-    location.reload();
+    location.href = '/#/home';
   },
   render: function() {
     return (
@@ -202,7 +203,9 @@ var signIn = React.createClass
     if(signedIn == true)
     {
       localStorage.username = this.state.username;
-      location.reload();
+      console.log("logged in");
+      location.href='/#/profile';
+
     }
           
   },
@@ -243,6 +246,7 @@ var signInAuthorization =
         success: function(res) 
         {
           localStorage.email = res.email;
+          console.log("localStorage.email: " + localStorage.email);
           signedIn = true;
         }.bind(this),
         error: function()
@@ -269,7 +273,8 @@ var PaymentPage = React.createClass
 
 var signUp = React.createClass
 ({
-   contextTypes: {
+   contextTypes: 
+    {
         router: React.PropTypes.func
     },
   getInitialState: function() 
@@ -278,18 +283,18 @@ var signUp = React.createClass
   },
   handleChange: function(event) 
   {
-  	if(event.target.name == "email")
-  		this.setState({email: event.target.value});
-  	else if(event.target.name == "username")
-  		this.setState({username: event.target.value});
-  	else if(event.target.name == "password")
-		  this.setState({password: event.target.value});
+    if(event.target.name == "email")
+      this.setState({email: event.target.value});
+    else if(event.target.name == "username")
+      this.setState({username: event.target.value});
+    else if(event.target.name == "password")
+      this.setState({password: event.target.value});
     else if(event.target.name == "confirmPassword")
       this.setState({confirmPassword: event.target.value});
   },
   register: function()
   {
-  	if(this.state.password !== this.state.confirmPassword)
+    if(this.state.password !== this.state.confirmPassword)
     {
         alert("PASSWORDS ARE DIFFERENT");
     }
@@ -311,22 +316,22 @@ var signUp = React.createClass
       document.getElementById('terms').checked = false;
   },
   render: function() {
-  	var email = this.state.email;
+    var email = this.state.email;
     var username = this.state.username;
     var password = this.state.password;
     var confirmPassword = this.state.confirmPassword;
     return (
 
-	       <div style={formStyle}>
-	       	  Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
-	          Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
-	          Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
-	          Confirm Password: <br/><input type="password" name="confirmPassword" value ={confirmPassword} onChange={this.handleChange}/><br/><br/>
-	         <input type="radio" onClick={this.handleTerms} id="terms"> 
-	            I agree to the <a href="randomHTMLFiles/terms.html">terms and conditions</a>
-	          </input><br/><br/>
-	          <input type="submit" value="SIGN UP" onClick={this.register}/> 
-	      </div>
+         <div style={formStyle}>
+            Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
+            Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
+            Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
+            Confirm Password: <br/><input type="password" name="confirmPassword" value ={confirmPassword} onChange={this.handleChange}/><br/><br/>
+           <input type="radio" onClick={this.handleTerms} id="terms"> 
+              I agree to the <a href="randomHTMLFiles/terms.html">terms and conditions</a>
+            </input><br/><br/>
+            <input type="submit" value="SIGN UP" onClick={this.register}/> 
+        </div>
 
 
       );
@@ -335,11 +340,11 @@ var signUp = React.createClass
 
 var auth =
 {
-	register: function(email, username, password)
-	{
-		console.log("email: " + email);
-		console.log("username: " + username);
-		var url = "/api/users/register";
+  register: function(email, username, password)
+  {
+    console.log("email: " + email);
+    console.log("username: " + username);
+    var url = "/api/users/register";
         $.ajax
         ({
             url: url,
@@ -353,28 +358,29 @@ var auth =
             success: function(res) 
             {
               console.log("before success statement");
-            	console.log("success");
+              console.log("success");
               console.log("res email: " + res.email);
 
             }.bind(this),
             error: function()
             {
-            	console.log("failure");
+              console.log("failure");
             }.bind(this)
 
-		});
+    });
     },
 };
 
 // Run the routes
 var routes = (
       <Router>
-        <Route name="app" path="/" component={App}>
+        <Route name="app" path="/" component={App} handler={App}>
           <IndexRoute component={Home} />
-          <Route name="aboutUs" path="aboutUs" component={AboutUs} /> 
-          <Route name="faq" path="faq" component={FAQ} /> 
-          <Route name="pay" path="pay" component={PaymentPage} />
-          <Route name="map" path="map" component={MapHolder} /> 
+          <Route name="home" path="/home" component={Home}/>
+          <Route name="aboutUs" path="/aboutUs" component={AboutUs} /> 
+          <Route name="faq" path="/faq" component={FAQ} /> 
+          <Route name="pay" path="/pay" component={PaymentPage} />
+          <Route name="map" path="/map" component={MapHolder} /> 
           
           <Route name="signUp" path="/signUp" component={signUp} />
           <Route name="signIn" path="/signIn" component={signIn}/>
@@ -385,3 +391,4 @@ var routes = (
 );
 
 ReactDOM.render(routes, document.getElementById('content'));
+

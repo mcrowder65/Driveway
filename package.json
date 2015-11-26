@@ -30,8 +30,10 @@
     "mongoose-findorcreate": "^0.1.2",
     "navigation": "^1.1.0",
     "qs": "~6.0.0",
+    "react": "*",
     "react-dom": "~0.14.3",
-    "react-router": "~1.0.0",
+    "react-redirect": "^1.0.0",
+    "react-router": "~1.0.0-rc3",
     "warning": "~2.1.0"
   },
   "devDependencies": {

@@ -62,6 +62,7 @@
 	var RouteHandler = Router.RouteHandler;
 	var Redirect = Router.Redirect;
 	var signedIn = true;
+	var transitionTo = Router.transitionTo;
 
 	var App = React.createClass({displayName: "App",
 	   contextTypes: 
@@ -78,7 +79,7 @@
 	        React.createElement("div", null, 
 	          React.createElement("nav", {className: "navbar navbar-default", role: "navigation"}, 
 	            React.createElement("div", {className: "nav navbar-nav navbar-left"}, 
-	              React.createElement(Link, {className: "navbar-brand", to: ""}, "Home"), 
+	              React.createElement(Link, {className: "navbar-brand", to: "/home"}, "Home"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/aboutUs"}, "About us"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/faq"}, "FAQ"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/map"}, "Map"), 
@@ -216,7 +217,7 @@
 	    delete localStorage.username;
 	    delete localStorage.email;
 	    console.log(localStorage);
-	    location.reload();
+	    location.href = '/#/home';
 	  },
 	  render: function() {
 	    return (
@@ -255,7 +256,9 @@
 	    if(signedIn == true)
 	    {
 	      localStorage.username = this.state.username;
-	      location.reload();
+	      console.log("logged in");
+	      location.href='/#/profile';
+
 	    }
 	          
 	  },
@@ -296,6 +299,7 @@
 	        success: function(res) 
 	        {
 	          localStorage.email = res.email;
+	          console.log("localStorage.email: " + localStorage.email);
 	          signedIn = true;
 	        }.bind(this),
 	        error: function()
@@ -322,7 +326,8 @@
 
 	var signUp = React.createClass
 	({displayName: "signUp",
-	   contextTypes: {
+	   contextTypes: 
+	    {
 	        router: React.PropTypes.func
 	    },
 	  getInitialState: function() 
@@ -331,18 +336,18 @@
 	  },
 	  handleChange: function(event) 
 	  {
-	  	if(event.target.name == "email")
-	  		this.setState({email: event.target.value});
-	  	else if(event.target.name == "username")
-	  		this.setState({username: event.target.value});
-	  	else if(event.target.name == "password")
-			  this.setState({password: event.target.value});
+	    if(event.target.name == "email")
+	      this.setState({email: event.target.value});
+	    else if(event.target.name == "username")
+	      this.setState({username: event.target.value});
+	    else if(event.target.name == "password")
+	      this.setState({password: event.target.value});
 	    else if(event.target.name == "confirmPassword")
 	      this.setState({confirmPassword: event.target.value});
 	  },
 	  register: function()
 	  {
-	  	if(this.state.password !== this.state.confirmPassword)
+	    if(this.state.password !== this.state.confirmPassword)
 	    {
 	        alert("PASSWORDS ARE DIFFERENT");
 	    }
@@ -364,22 +369,22 @@
 	      document.getElementById('terms').checked = false;
 	  },
 	  render: function() {
-	  	var email = this.state.email;
+	    var email = this.state.email;
 	    var username = this.state.username;
 	    var password = this.state.password;
 	    var confirmPassword = this.state.confirmPassword;
 	    return (
 
-		       React.createElement("div", {style: formStyle}, 
-		       	  "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-		          "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-		          "Password: ", React.createElement("br", null), React.createElement("input", {type: "password", name: "password", value: password, onChange: this.handleChange}), React.createElement("br", null), 
-		          "Confirm Password: ", React.createElement("br", null), React.createElement("input", {type: "password", name: "confirmPassword", value: confirmPassword, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-		         React.createElement("input", {type: "radio", onClick: this.handleTerms, id: "terms"}, 
-		            "I agree to the ", React.createElement("a", {href: "randomHTMLFiles/terms.html"}, "terms and conditions")
-		          ), React.createElement("br", null), React.createElement("br", null), 
-		          React.createElement("input", {type: "submit", value: "SIGN UP", onClick: this.register})
-		      )
+	         React.createElement("div", {style: formStyle}, 
+	            "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	            "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	            "Password: ", React.createElement("br", null), React.createElement("input", {type: "password", name: "password", value: password, onChange: this.handleChange}), React.createElement("br", null), 
+	            "Confirm Password: ", React.createElement("br", null), React.createElement("input", {type: "password", name: "confirmPassword", value: confirmPassword, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	           React.createElement("input", {type: "radio", onClick: this.handleTerms, id: "terms"}, 
+	              "I agree to the ", React.createElement("a", {href: "randomHTMLFiles/terms.html"}, "terms and conditions")
+	            ), React.createElement("br", null), React.createElement("br", null), 
+	            React.createElement("input", {type: "submit", value: "SIGN UP", onClick: this.register})
+	        )
 
 
 	      );
@@ -388,11 +393,11 @@
 
 	var auth =
 	{
-		register: function(email, username, password)
-		{
-			console.log("email: " + email);
-			console.log("username: " + username);
-			var url = "/api/users/register";
+	  register: function(email, username, password)
+	  {
+	    console.log("email: " + email);
+	    console.log("username: " + username);
+	    var url = "/api/users/register";
 	        $.ajax
 	        ({
 	            url: url,
@@ -406,28 +411,29 @@
 	            success: function(res) 
 	            {
 	              console.log("before success statement");
-	            	console.log("success");
+	              console.log("success");
 	              console.log("res email: " + res.email);
 
 	            }.bind(this),
 	            error: function()
 	            {
-	            	console.log("failure");
+	              console.log("failure");
 	            }.bind(this)
 
-			});
+	    });
 	    },
 	};
 
 	// Run the routes
 	var routes = (
 	      React.createElement(Router, null, 
-	        React.createElement(Route, {name: "app", path: "/", component: App}, 
+	        React.createElement(Route, {name: "app", path: "/", component: App, handler: App}, 
 	          React.createElement(IndexRoute, {component: Home}), 
-	          React.createElement(Route, {name: "aboutUs", path: "aboutUs", component: AboutUs}), 
-	          React.createElement(Route, {name: "faq", path: "faq", component: FAQ}), 
-	          React.createElement(Route, {name: "pay", path: "pay", component: PaymentPage}), 
-	          React.createElement(Route, {name: "map", path: "map", component: MapHolder}), 
+	          React.createElement(Route, {name: "home", path: "/home", component: Home}), 
+	          React.createElement(Route, {name: "aboutUs", path: "/aboutUs", component: AboutUs}), 
+	          React.createElement(Route, {name: "faq", path: "/faq", component: FAQ}), 
+	          React.createElement(Route, {name: "pay", path: "/pay", component: PaymentPage}), 
+	          React.createElement(Route, {name: "map", path: "/map", component: MapHolder}), 
 	          
 	          React.createElement(Route, {name: "signUp", path: "/signUp", component: signUp}), 
 	          React.createElement(Route, {name: "signIn", path: "/signIn", component: signIn}), 
@@ -438,6 +444,7 @@
 	);
 
 	ReactDOM.render(routes, document.getElementById('content'));
+
 
 
 /***/ },
