@@ -12,17 +12,19 @@ var driveway = require('./driveway.js');
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
 
-app.get
+app.post
 ('/api/users/getDriveways',
 	function (req, res)
 	{
 		console.log("looking for: " + req.body.username);
-		driveway.find({username: req.body.username},
-		function(err, driveway, found)
+		driveway.findOne({username: req.body.username},
+		function(err, driveway)
 		{
-			if (found)
+			if (driveway)
 			{
 				console.log('found something');
+
+				res.json({driveway: driveway});
 			}
 			else
 			{
@@ -43,9 +45,9 @@ app.post
 		console.log("state: " + req.body.state);
 		console.log("numCars: " + req.body.numCars);
 		driveway.create({username: req.body.username, address: req.body.address, zip: req.body.zip, state: req.body.state, numCars: req.body.numCars},
-		function(err, driveway, created)
+		function(err, driveway)
 		{
-			if (created)
+			if (driveway)
 			{
 				console.log('created!');
 				driveway.address = req.body.address;

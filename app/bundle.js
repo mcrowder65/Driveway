@@ -177,7 +177,7 @@
 	({displayName: "profile",
 	  getInitialState: function() 
 	  {
-	    return {username: ''}, {password: ''};
+	    return {username: ''}, {password: ''}, {driveways: ''};
 	  },
 	  handleChange: function(event) 
 	  {
@@ -193,13 +193,21 @@
 	        ({
 	            url: url,
 	            dataType: 'json',
-	            type: 'GET',
+	            type: 'POST',
 	            data: {
 	                username: localStorage.username,
 	            },
 	            success: function(res) 
-	            {
-	              console.log('found something...?');
+	            { 
+	              this.setState({driveways: res.driveway});
+	              // console.log(res.driveway.length);
+	              // for(var i = 0; i < res.driveway.length; i++)
+	              // {
+	              //   var temp = res.driveway[i];
+	              //   var tempDriveway = this.state.driveways + temp.address + ' ' + temp.state + ', ' + temp.zip + '\n';
+	              //   this.setState({driveways: tempDriveway});
+	              // }
+	              //console.log(this.state.driveways);
 	            }.bind(this),
 	            error: function()
 	            {
@@ -213,12 +221,12 @@
 	    return localStorage.username + " " + localStorage.email;
 	  },
 	  render: function() {
-	    this.getDriveways();
+	      this.getDriveways();
 	      return (
 	       React.createElement("div", null, 
 	        React.createElement("p", null, "username: ", React.createElement("br", null), localStorage.username), 
 	        React.createElement("p", null, "email: ", React.createElement("br", null), localStorage.email), 
-	        React.createElement("p", null, " Addresses: "), 
+	        React.createElement("p", null, " Addresses: ", this.state.driveways), 
 	        React.createElement(Link, {to: "/driveway"}, "Would you like to add a driveway?")
 	      )
 	      );

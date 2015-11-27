@@ -124,7 +124,7 @@ var profile = React.createClass
 ({
   getInitialState: function() 
   {
-    return {username: ''}, {password: ''};
+    return {username: ''}, {password: ''}, {driveways: ''};
   },
   handleChange: function(event) 
   {
@@ -140,13 +140,21 @@ var profile = React.createClass
         ({
             url: url,
             dataType: 'json',
-            type: 'GET',
+            type: 'POST',
             data: {
                 username: localStorage.username,
             },
             success: function(res) 
-            {
-              console.log('found something...?');
+            { 
+              this.setState({driveways: res.driveway});
+              // console.log(res.driveway.length);
+              // for(var i = 0; i < res.driveway.length; i++)
+              // {
+              //   var temp = res.driveway[i];
+              //   var tempDriveway = this.state.driveways + temp.address + ' ' + temp.state + ', ' + temp.zip + '\n';
+              //   this.setState({driveways: tempDriveway});
+              // }
+              //console.log(this.state.driveways);
             }.bind(this),
             error: function()
             {
@@ -160,12 +168,12 @@ var profile = React.createClass
     return localStorage.username + " " + localStorage.email;
   },
   render: function() {
-    this.getDriveways();
+      this.getDriveways();
       return (
        <div>
         <p>username: <br/>{localStorage.username}</p>
         <p>email: <br/>{localStorage.email}</p>
-        <p> Addresses: </p>
+        <p> Addresses: {this.state.driveways}</p>
         <Link to="/driveway">Would you like to add a driveway?</Link>
       </div>
       );
