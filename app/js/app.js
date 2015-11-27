@@ -139,14 +139,148 @@ var profile = React.createClass
   },
   render: function() {
       return (
-       <div style={formStyle}>
-        <p>username: {localStorage.username}</p>
-        <p>email: {localStorage.email}</p>
-        
+       <div>
+        <p>username: <br/>{localStorage.username}</p>
+        <p>email: <br/>{localStorage.email}</p>
+        <Link to="/driveway">Would you like to add a driveway?</Link>
       </div>
       );
   }
 });
+var driveway = React.createClass
+({
+  getInitialState: function() 
+  {
+    return {address: '', numCars: '1', zip:'', state:''};
+  },
+  handleChange: function(event) 
+  {
+    if(event.target.name == 'address')
+      this.setState({address: event.target.value});
+    else if(event.target.name == 'numCars')
+      this.setState({numCars: event.target.value});
+    else if(event.target.name == 'zip')
+      this.setState({zip: event.target.value});
+    else if(event.target.name == 'state')
+      this.setState({state: event.target.value});
+
+
+  },
+  handleClick: function(event)
+  {
+    console.log('Street address: ' + this.state.address);
+    console.log('Number of cars: ' + this.state.numCars); 
+    console.log('zip: ' + this.state.zip);
+    console.log('state: ' + this.state.state);
+    addDriveway.add(localStorage.username, this.state.address, this.state.numCars, this.state.zip, this.state.state);
+  },
+  render: function() {
+    var address = this.state.address;
+    var numCars = this.state.numCars;
+    var zip = this.state.zip;
+    var state = this.state.state;
+    return (
+      <div>
+          Street address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
+          Zip code: <br/><input type="text" name="zip" value={zip} onChange={this.handleChange}/><br/><br/>
+          State: <br/><select name="state" value={state} onChange={this.handleChange}>
+                        <option value="AL">Alabama</option>
+                        <option value="AK">Alaska</option>
+                        <option value="AZ">Arizona</option>
+                        <option value="AR">Arkansas</option>
+                        <option value="CA">California</option>
+                        <option value="CO">Colorado</option>
+                        <option value="CT">Connecticut</option>
+                        <option value="DE">Delaware</option>
+                        <option value="DC">District Of Columbia</option>
+                        <option value="FL">Florida</option>
+                        <option value="GA">Georgia</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="ID">Idaho</option>
+                        <option value="IL">Illinois</option>
+                        <option value="IN">Indiana</option>
+                        <option value="IA">Iowa</option>
+                        <option value="KS">Kansas</option>
+                        <option value="KY">Kentucky</option>
+                        <option value="LA">Louisiana</option>
+                        <option value="ME">Maine</option>
+                        <option value="MD">Maryland</option>
+                        <option value="MA">Massachusetts</option>
+                        <option value="MI">Michigan</option>
+                        <option value="MN">Minnesota</option>
+                        <option value="MS">Mississippi</option>
+                        <option value="MO">Missouri</option>
+                        <option value="MT">Montana</option>
+                        <option value="NE">Nebraska</option>
+                        <option value="NV">Nevada</option>
+                        <option value="NH">New Hampshire</option>
+                        <option value="NJ">New Jersey</option>
+                        <option value="NM">New Mexico</option>
+                        <option value="NY">New York</option>
+                        <option value="NC">North Carolina</option>
+                        <option value="ND">North Dakota</option>
+                        <option value="OH">Ohio</option>
+                        <option value="OK">Oklahoma</option>
+                        <option value="OR">Oregon</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="RI">Rhode Island</option>
+                        <option value="SC">South Carolina</option>
+                        <option value="SD">South Dakota</option>
+                        <option value="TN">Tennessee</option>
+                        <option value="TX">Texas</option>
+                        <option value="UT">Utah</option>
+                        <option value="VT">Vermont</option>
+                        <option value="VA">Virginia</option>
+                        <option value="WA">Washington</option>
+                        <option value="WV">West Virginia</option>
+                        <option value="WI">Wisconsin</option>
+                        <option value="WY">Wyoming</option>
+                      </select> <br/> <br/>
+          Number of Cars: <br/><select name="numCars" value={numCars} onChange={this.handleChange}>
+                        <option value='1'>1</option>
+                        <option value='2'>2</option>
+                        <option value='3'>3</option>
+                      </select>
+        <br/><br/><button onClick={this.handleClick}>
+        Submit
+        </button>
+      </div>
+
+      );
+  }
+
+});
+var addDriveway = 
+{
+  add: function(username, address, numCars, zip, state)
+  {
+
+    var url = "/api/users/addDriveway";
+        $.ajax
+        ({
+            url: url,
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                username: username,
+                address: address,
+                numCars: numCars,
+                zip: zip,
+                state: state
+            },
+            success: function(res) 
+            {
+              console.log('success');
+            }.bind(this),
+            error: function()
+            {
+              console.log("failure");
+            }.bind(this)
+
+    });
+    },
+
+};
 var logOut = React.createClass
 ({
    contextTypes: {
@@ -167,6 +301,7 @@ var logOut = React.createClass
     location.href = '/#/home';
   },
   render: function() {
+
     return (
        <div style={formStyle}>
           <p> Click <button onClick={this.handleClick}> here</button> to log out </p>
@@ -381,7 +516,7 @@ var routes = (
           <Route name="faq" path="/faq" component={FAQ} /> 
           <Route name="pay" path="/pay" component={PaymentPage} />
           <Route name="map" path="/map" component={MapHolder} /> 
-          
+          <Route name="driveway" path="/driveway" component={driveway} />
           <Route name="signUp" path="/signUp" component={signUp} />
           <Route name="signIn" path="/signIn" component={signIn}/>
           <Route name="logOut" path="/logOut" component={logOut}/>

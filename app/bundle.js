@@ -192,14 +192,148 @@
 	  },
 	  render: function() {
 	      return (
-	       React.createElement("div", {style: formStyle}, 
-	        React.createElement("p", null, "username: ", localStorage.username), 
-	        React.createElement("p", null, "email: ", localStorage.email)
-	        
+	       React.createElement("div", null, 
+	        React.createElement("p", null, "username: ", React.createElement("br", null), localStorage.username), 
+	        React.createElement("p", null, "email: ", React.createElement("br", null), localStorage.email), 
+	        React.createElement(Link, {to: "/driveway"}, "Would you like to add a driveway?")
 	      )
 	      );
 	  }
 	});
+	var driveway = React.createClass
+	({displayName: "driveway",
+	  getInitialState: function() 
+	  {
+	    return {address: '', numCars: '1', zip:'', state:''};
+	  },
+	  handleChange: function(event) 
+	  {
+	    if(event.target.name == 'address')
+	      this.setState({address: event.target.value});
+	    else if(event.target.name == 'numCars')
+	      this.setState({numCars: event.target.value});
+	    else if(event.target.name == 'zip')
+	      this.setState({zip: event.target.value});
+	    else if(event.target.name == 'state')
+	      this.setState({state: event.target.value});
+
+
+	  },
+	  handleClick: function(event)
+	  {
+	    console.log('Street address: ' + this.state.address);
+	    console.log('Number of cars: ' + this.state.numCars); 
+	    console.log('zip: ' + this.state.zip);
+	    console.log('state: ' + this.state.state);
+	    addDriveway.add(localStorage.username, this.state.address, this.state.numCars, this.state.zip, this.state.state);
+	  },
+	  render: function() {
+	    var address = this.state.address;
+	    var numCars = this.state.numCars;
+	    var zip = this.state.zip;
+	    var state = this.state.state;
+	    return (
+	      React.createElement("div", null, 
+	          "Street address: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "address", value: address, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	          "Zip code: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "zip", value: zip, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	          "State: ", React.createElement("br", null), React.createElement("select", {name: "state", value: state, onChange: this.handleChange}, 
+	                        React.createElement("option", {value: "AL"}, "Alabama"), 
+	                        React.createElement("option", {value: "AK"}, "Alaska"), 
+	                        React.createElement("option", {value: "AZ"}, "Arizona"), 
+	                        React.createElement("option", {value: "AR"}, "Arkansas"), 
+	                        React.createElement("option", {value: "CA"}, "California"), 
+	                        React.createElement("option", {value: "CO"}, "Colorado"), 
+	                        React.createElement("option", {value: "CT"}, "Connecticut"), 
+	                        React.createElement("option", {value: "DE"}, "Delaware"), 
+	                        React.createElement("option", {value: "DC"}, "District Of Columbia"), 
+	                        React.createElement("option", {value: "FL"}, "Florida"), 
+	                        React.createElement("option", {value: "GA"}, "Georgia"), 
+	                        React.createElement("option", {value: "HI"}, "Hawaii"), 
+	                        React.createElement("option", {value: "ID"}, "Idaho"), 
+	                        React.createElement("option", {value: "IL"}, "Illinois"), 
+	                        React.createElement("option", {value: "IN"}, "Indiana"), 
+	                        React.createElement("option", {value: "IA"}, "Iowa"), 
+	                        React.createElement("option", {value: "KS"}, "Kansas"), 
+	                        React.createElement("option", {value: "KY"}, "Kentucky"), 
+	                        React.createElement("option", {value: "LA"}, "Louisiana"), 
+	                        React.createElement("option", {value: "ME"}, "Maine"), 
+	                        React.createElement("option", {value: "MD"}, "Maryland"), 
+	                        React.createElement("option", {value: "MA"}, "Massachusetts"), 
+	                        React.createElement("option", {value: "MI"}, "Michigan"), 
+	                        React.createElement("option", {value: "MN"}, "Minnesota"), 
+	                        React.createElement("option", {value: "MS"}, "Mississippi"), 
+	                        React.createElement("option", {value: "MO"}, "Missouri"), 
+	                        React.createElement("option", {value: "MT"}, "Montana"), 
+	                        React.createElement("option", {value: "NE"}, "Nebraska"), 
+	                        React.createElement("option", {value: "NV"}, "Nevada"), 
+	                        React.createElement("option", {value: "NH"}, "New Hampshire"), 
+	                        React.createElement("option", {value: "NJ"}, "New Jersey"), 
+	                        React.createElement("option", {value: "NM"}, "New Mexico"), 
+	                        React.createElement("option", {value: "NY"}, "New York"), 
+	                        React.createElement("option", {value: "NC"}, "North Carolina"), 
+	                        React.createElement("option", {value: "ND"}, "North Dakota"), 
+	                        React.createElement("option", {value: "OH"}, "Ohio"), 
+	                        React.createElement("option", {value: "OK"}, "Oklahoma"), 
+	                        React.createElement("option", {value: "OR"}, "Oregon"), 
+	                        React.createElement("option", {value: "PA"}, "Pennsylvania"), 
+	                        React.createElement("option", {value: "RI"}, "Rhode Island"), 
+	                        React.createElement("option", {value: "SC"}, "South Carolina"), 
+	                        React.createElement("option", {value: "SD"}, "South Dakota"), 
+	                        React.createElement("option", {value: "TN"}, "Tennessee"), 
+	                        React.createElement("option", {value: "TX"}, "Texas"), 
+	                        React.createElement("option", {value: "UT"}, "Utah"), 
+	                        React.createElement("option", {value: "VT"}, "Vermont"), 
+	                        React.createElement("option", {value: "VA"}, "Virginia"), 
+	                        React.createElement("option", {value: "WA"}, "Washington"), 
+	                        React.createElement("option", {value: "WV"}, "West Virginia"), 
+	                        React.createElement("option", {value: "WI"}, "Wisconsin"), 
+	                        React.createElement("option", {value: "WY"}, "Wyoming")
+	                      ), " ", React.createElement("br", null), " ", React.createElement("br", null), 
+	          "Number of Cars: ", React.createElement("br", null), React.createElement("select", {name: "numCars", value: numCars, onChange: this.handleChange}, 
+	                        React.createElement("option", {value: "1"}, "1"), 
+	                        React.createElement("option", {value: "2"}, "2"), 
+	                        React.createElement("option", {value: "3"}, "3")
+	                      ), 
+	        React.createElement("br", null), React.createElement("br", null), React.createElement("button", {onClick: this.handleClick}, 
+	        "Submit"
+	        )
+	      )
+
+	      );
+	  }
+
+	});
+	var addDriveway = 
+	{
+	  add: function(username, address, numCars, zip, state)
+	  {
+
+	    var url = "/api/users/addDriveway";
+	        $.ajax
+	        ({
+	            url: url,
+	            dataType: 'json',
+	            type: 'POST',
+	            data: {
+	                username: username,
+	                address: address,
+	                numCars: numCars,
+	                zip: zip,
+	                state: state
+	            },
+	            success: function(res) 
+	            {
+	              console.log('success');
+	            }.bind(this),
+	            error: function()
+	            {
+	              console.log("failure");
+	            }.bind(this)
+
+	    });
+	    },
+
+	};
 	var logOut = React.createClass
 	({displayName: "logOut",
 	   contextTypes: {
@@ -220,6 +354,7 @@
 	    location.href = '/#/home';
 	  },
 	  render: function() {
+
 	    return (
 	       React.createElement("div", {style: formStyle}, 
 	          React.createElement("p", null, " Click ", React.createElement("button", {onClick: this.handleClick}, " here"), " to log out ")
@@ -434,7 +569,7 @@
 	          React.createElement(Route, {name: "faq", path: "/faq", component: FAQ}), 
 	          React.createElement(Route, {name: "pay", path: "/pay", component: PaymentPage}), 
 	          React.createElement(Route, {name: "map", path: "/map", component: MapHolder}), 
-	          
+	          React.createElement(Route, {name: "driveway", path: "/driveway", component: driveway}), 
 	          React.createElement(Route, {name: "signUp", path: "/signUp", component: signUp}), 
 	          React.createElement(Route, {name: "signIn", path: "/signIn", component: signIn}), 
 	          React.createElement(Route, {name: "logOut", path: "/logOut", component: logOut}), 

@@ -4,13 +4,60 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
         extended: true
 }));
+
+
 var User = require('./user.js');
+var url = 'mongodb://localhost:27017/list';
+var driveway = require('./driveway.js');
+var mongodb = require('mongodb');
+var MongoClient = mongodb.MongoClient;
+
+app.post
+('/api/users/addDriveway',
+	function (req, res)
+	{
+		console.log('trying to add a driveway');
+		console.log("username: " + req.body.username);
+		console.log("address: " + req.body.address);
+		console.log("zip: " + req.body.zip);
+		console.log("state: " + req.body.state);
+		console.log("numCars: " + req.body.numCars);
+		driveway.create({username: req.body.username, address: req.body.address, zip: req.body.zip, state: req.body.state, numCars: req.body.numCars},
+		function(err, driveway, created)
+		{
+			if (created)
+			{
+				console.log('created!');
+				driveway.address = req.body.address;
+				driveway.username = req.body.username;
+				driveway.zip = req.body.zip;
+				driveway.save
+				(
+					function(err)
+					{
+						if(err)
+						{
+							res.sendStatus("403");
+							console.log('first failure spot');
+							return;
+						}
+						res.json({username: driveway.username, address: driveway.address, zip: driveway.zip});
+					}
+				);
+			}
+			else
+			{
+				console.log('second failure spot');
+				res.sendStatus("403");
+			}
+		});
+	}
+);
 
 app.post
 ('/api/users/register', 
 	function (req, res) 
 	{
-		
 		console.log("username: " + req.body.username);
 		User.findOrCreate({username: req.body.username, email: req.body.email}, 
 		function(err, user, created) 
