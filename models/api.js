@@ -12,6 +12,26 @@ var driveway = require('./driveway.js');
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
 
+app.get
+('/api/users/getDriveways',
+	function (req, res)
+	{
+		console.log("looking for: " + req.body.username);
+		driveway.find({username: req.body.username},
+		function(err, driveway, found)
+		{
+			if (found)
+			{
+				console.log('found something');
+			}
+			else
+			{
+				console.log('fail');
+				res.sendStatus("403");
+			}
+		});
+	}
+);
 app.post
 ('/api/users/addDriveway',
 	function (req, res)

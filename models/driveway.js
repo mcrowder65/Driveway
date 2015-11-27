@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 var findOrCreate = require('mongoose-findorcreate')
 
 var drivewaySchema = new Schema({
-	username: String,
+	username: {type: String, index: true},
 	address: String,
 	zip: String,
 	state: String,

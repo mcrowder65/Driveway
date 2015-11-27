@@ -169,12 +169,12 @@
 	    );
 	  }
 	});
+	var getDriveways = 
+	{
+
+	};
 	var profile = React.createClass
 	({displayName: "profile",
-	   contextTypes: 
-	   {
-	      router: React.PropTypes.func
-	   },
 	  getInitialState: function() 
 	  {
 	    return {username: ''}, {password: ''};
@@ -186,15 +186,39 @@
 	  {
 
 	  },
+	  getDriveways: function()
+	  {
+	    var url = "/api/users/getDriveways";
+	        $.ajax
+	        ({
+	            url: url,
+	            dataType: 'json',
+	            type: 'GET',
+	            data: {
+	                username: localStorage.username,
+	            },
+	            success: function(res) 
+	            {
+	              console.log('found something...?');
+	            }.bind(this),
+	            error: function()
+	            {
+	              console.log("failure");
+	            }.bind(this)
+
+	    });
+	  },
 	  showValues: function()
 	  {
 	    return localStorage.username + " " + localStorage.email;
 	  },
 	  render: function() {
+	    this.getDriveways();
 	      return (
 	       React.createElement("div", null, 
 	        React.createElement("p", null, "username: ", React.createElement("br", null), localStorage.username), 
 	        React.createElement("p", null, "email: ", React.createElement("br", null), localStorage.email), 
+	        React.createElement("p", null, " Addresses: "), 
 	        React.createElement(Link, {to: "/driveway"}, "Would you like to add a driveway?")
 	      )
 	      );
@@ -216,7 +240,6 @@
 	      this.setState({zip: event.target.value});
 	    else if(event.target.name == 'state')
 	      this.setState({state: event.target.value});
-
 
 	  },
 	  handleClick: function(event)
@@ -336,9 +359,6 @@
 	};
 	var logOut = React.createClass
 	({displayName: "logOut",
-	   contextTypes: {
-	        router: React.PropTypes.func
-	    },
 	  getInitialState: function() 
 	  {
 	    return {username: ''}, {password: ''};

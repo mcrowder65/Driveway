@@ -116,12 +116,12 @@ var MapHolder = React.createClass({
     );
   }
 });
+var getDriveways = 
+{
+
+};
 var profile = React.createClass
 ({
-   contextTypes: 
-   {
-      router: React.PropTypes.func
-   },
   getInitialState: function() 
   {
     return {username: ''}, {password: ''};
@@ -133,15 +133,39 @@ var profile = React.createClass
   {
 
   },
+  getDriveways: function()
+  {
+    var url = "/api/users/getDriveways";
+        $.ajax
+        ({
+            url: url,
+            dataType: 'json',
+            type: 'GET',
+            data: {
+                username: localStorage.username,
+            },
+            success: function(res) 
+            {
+              console.log('found something...?');
+            }.bind(this),
+            error: function()
+            {
+              console.log("failure");
+            }.bind(this)
+
+    });
+  },
   showValues: function()
   {
     return localStorage.username + " " + localStorage.email;
   },
   render: function() {
+    this.getDriveways();
       return (
        <div>
         <p>username: <br/>{localStorage.username}</p>
         <p>email: <br/>{localStorage.email}</p>
+        <p> Addresses: </p>
         <Link to="/driveway">Would you like to add a driveway?</Link>
       </div>
       );
@@ -163,7 +187,6 @@ var driveway = React.createClass
       this.setState({zip: event.target.value});
     else if(event.target.name == 'state')
       this.setState({state: event.target.value});
-
 
   },
   handleClick: function(event)
@@ -283,9 +306,6 @@ var addDriveway =
 };
 var logOut = React.createClass
 ({
-   contextTypes: {
-        router: React.PropTypes.func
-    },
   getInitialState: function() 
   {
     return {username: ''}, {password: ''};
