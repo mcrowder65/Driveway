@@ -17,13 +17,34 @@ app.post
 	function (req, res)
 	{
 		console.log("looking for: " + req.body.username);
-		driveway.findOne({username: req.body.username},
+		driveway.find({username: req.body.username},
 		function(err, driveway)
 		{
 			if (driveway)
 			{
 				console.log('found something');
 
+				res.json({driveway: driveway});
+			}
+			else
+			{
+				console.log('fail');
+				res.sendStatus("403");
+			}
+		});
+	}
+);
+app.post
+('/api/users/getAllDriveways',
+	function (req, res)
+	{
+		console.log('finding all driveways..');
+		driveway.find({},
+		function(err, driveway)
+		{
+			if (driveway)
+			{
+				console.log('found something');
 				res.json({driveway: driveway});
 			}
 			else

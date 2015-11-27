@@ -10,15 +10,14 @@ var RouteHandler = Router.RouteHandler;
 var Redirect = Router.Redirect;
 var signedIn = true;
 var transitionTo = Router.transitionTo;
-
+var profileDriveways = '';
+var allDriveways = [];
+var userDriveways = [];
 var App = React.createClass({
-   contextTypes: 
-    {
-        router: React.PropTypes.func
-    },
   render: function() 
   {
     console.log(localStorage);
+    drivewayDAO.getAll();
     if(!localStorage.username)
     {
       console.log("not signed in");
@@ -28,7 +27,7 @@ var App = React.createClass({
             <div className="nav navbar-nav navbar-left">                
               <Link className="navbar-brand" to="/home">Home</Link>                  
               <Link className="navbar-brand" to="/aboutUs">About us</Link>              
-              <Link className="navbar-brand" to="/faq">FAQ</Link>   
+              <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
               <Link className="navbar-brand" to="/map">Map</Link>  
               <Link className="navbar-brand" to="/pay">Pay</Link> 
             </div>
@@ -46,13 +45,14 @@ var App = React.createClass({
     else
     {
       console.log("signed in");
+      drivewayDAO.get(localStorage.username);
       return(
         <div>
             <nav className="navbar navbar-default" role="navigation">
               <div className="nav navbar-nav navbar-left">                
                 <Link className="navbar-brand" to="">Home</Link>                  
                 <Link className="navbar-brand" to="/aboutUs">About us</Link>              
-                <Link className="navbar-brand" to="/faq">FAQ</Link>   
+                <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
                 <Link className="navbar-brand" to="/map">Map</Link>  
                 <Link className="navbar-brand" to="/pay">Pay</Link> 
               </div>
@@ -72,9 +72,6 @@ var App = React.createClass({
 });
 var Home = React.createClass
 ({
-   contextTypes: {
-        router: React.PropTypes.func
-    },
   render: function() {
     return (
       <h1>Home</h1>
@@ -83,9 +80,6 @@ var Home = React.createClass
 });
 var AboutUs = React.createClass
 ({
-   contextTypes: {
-        router: React.PropTypes.func
-    },
   render: function() {
     return (
       <h1>About Us</h1>
@@ -93,87 +87,40 @@ var AboutUs = React.createClass
   }
 });
 
-var FAQ = React.createClass
+var allDriveways = React.createClass
 ({
-   contextTypes: {
-        router: React.PropTypes.func
-    },
-  render: function() {
+  render: function() 
+  {
     return (
-      <h1>FAQ</h1>
+     <div>
+      <p>{allDriveways} </p>
+      </div>
     );
   }
 });
 
 var data = {event: {lat: 40.4122994, lon: -111.75418}, parking: []}
 var MapHolder = React.createClass({
-   contextTypes: {
-        router: React.PropTypes.func
-    },
   render: function() {
     return (
       <ParkingMap data={data}/>
     );
   }
 });
-var getDriveways = 
-{
 
-};
 var profile = React.createClass
 ({
   getInitialState: function() 
   {
     return {username: ''}, {password: ''}, {driveways: ''};
   },
-  handleChange: function(event) 
+  render: function() 
   {
-  },
-  handleClick: function(event)
-  {
-
-  },
-  getDriveways: function()
-  {
-    var url = "/api/users/getDriveways";
-        $.ajax
-        ({
-            url: url,
-            dataType: 'json',
-            type: 'POST',
-            data: {
-                username: localStorage.username,
-            },
-            success: function(res) 
-            { 
-              this.setState({driveways: res.driveway});
-              // console.log(res.driveway.length);
-              // for(var i = 0; i < res.driveway.length; i++)
-              // {
-              //   var temp = res.driveway[i];
-              //   var tempDriveway = this.state.driveways + temp.address + ' ' + temp.state + ', ' + temp.zip + '\n';
-              //   this.setState({driveways: tempDriveway});
-              // }
-              //console.log(this.state.driveways);
-            }.bind(this),
-            error: function()
-            {
-              console.log("failure");
-            }.bind(this)
-
-    });
-  },
-  showValues: function()
-  {
-    return localStorage.username + " " + localStorage.email;
-  },
-  render: function() {
-      this.getDriveways();
       return (
        <div>
         <p>username: <br/>{localStorage.username}</p>
         <p>email: <br/>{localStorage.email}</p>
-        <p> Addresses: {this.state.driveways}</p>
+        <p>Addresses: <br/>{userDriveways}</p>
         <Link to="/driveway">Would you like to add a driveway?</Link>
       </div>
       );
@@ -195,7 +142,6 @@ var driveway = React.createClass
       this.setState({zip: event.target.value});
     else if(event.target.name == 'state')
       this.setState({state: event.target.value});
-
   },
   handleClick: function(event)
   {
@@ -203,7 +149,7 @@ var driveway = React.createClass
     console.log('Number of cars: ' + this.state.numCars); 
     console.log('zip: ' + this.state.zip);
     console.log('state: ' + this.state.state);
-    addDriveway.add(localStorage.username, this.state.address, this.state.numCars, this.state.zip, this.state.state);
+    drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.zip, this.state.state);
   },
   render: function() {
     var address = this.state.address;
@@ -281,36 +227,95 @@ var driveway = React.createClass
   }
 
 });
-var addDriveway = 
+
+
+var drivewayDAO = 
 {
   add: function(username, address, numCars, zip, state)
   {
 
     var url = "/api/users/addDriveway";
-        $.ajax
-        ({
-            url: url,
-            dataType: 'json',
-            type: 'POST',
-            data: {
-                username: username,
-                address: address,
-                numCars: numCars,
-                zip: zip,
-                state: state
-            },
-            success: function(res) 
-            {
-              console.log('success');
-            }.bind(this),
-            error: function()
-            {
-              console.log("failure");
-            }.bind(this)
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+            username: username,
+            address: address,
+            numCars: numCars,
+            zip: zip,
+            state: state
+        },
+        success: function(res) 
+        {
+          console.log('success');
+        }.bind(this),
+        error: function()
+        {
+          console.log("failure");
+        }.bind(this)
 
     });
-    },
+  },
 
+  get: function(username)
+  {
+    var url = "/api/users/getDriveways";
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+            username: localStorage.username,
+        },
+        success: function(res) 
+        { 
+          userDriveways = [];
+          for(var i = 0; i < res.driveway.length; i++)
+          {
+            var temp = res.driveway[i];
+            var tempDriveway = temp.address + ' ' + temp.state + ', ' + temp.zip;
+            userDriveways.push(tempDriveway);
+            userDriveways.push(React.createElement("br", null));
+          }
+        }.bind(this),
+        error: function()
+        {
+          console.log("failure");
+        }.bind(this)
+    });
+
+  },
+  getAll: function()
+  {
+    var url = "/api/users/getAllDriveways";
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+        },
+        success: function(res) 
+        { 
+          allDriveways = [];
+          for(var i = 0; i < res.driveway.length; i++)
+          {
+            var temp = res.driveway[i];
+            var tempString = temp.address + ' ' + temp.state + ' ' + temp.zip + ' - ' + temp.username;
+            allDriveways.push(tempString);
+            allDriveways.push(React.createElement("br", null));
+          }
+          console.log(allDriveways);
+        }.bind(this),
+        error: function()
+        {
+          console.log("failure");
+        }.bind(this)
+    });
+  }
 };
 var logOut = React.createClass
 ({
@@ -346,9 +351,6 @@ var formStyle =
 };
 var signIn = React.createClass
 ({
-   contextTypes: {
-        router: React.PropTypes.func
-    },
   getInitialState: function() 
   {
     return {username: ''}, {password: ''};
@@ -436,10 +438,6 @@ var PaymentPage = React.createClass
 
 var signUp = React.createClass
 ({
-   contextTypes: 
-    {
-        router: React.PropTypes.func
-    },
   getInitialState: function() 
   {
     return {email: ''}, {username: ''}, {password: ''}, {confirmPassword: ''};
@@ -523,7 +521,7 @@ var auth =
               console.log("before success statement");
               console.log("success");
               console.log("res email: " + res.email);
-
+              location.href='/#/signIn';
             }.bind(this),
             error: function()
             {
@@ -541,7 +539,7 @@ var routes = (
           <IndexRoute component={Home} />
           <Route name="home" path="/home" component={Home}/>
           <Route name="aboutUs" path="/aboutUs" component={AboutUs} /> 
-          <Route name="faq" path="/faq" component={FAQ} /> 
+          <Route name="allDriveways" path="/allDriveways" component={allDriveways} /> 
           <Route name="pay" path="/pay" component={PaymentPage} />
           <Route name="map" path="/map" component={MapHolder} /> 
           <Route name="driveway" path="/driveway" component={driveway} />

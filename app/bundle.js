@@ -63,15 +63,14 @@
 	var Redirect = Router.Redirect;
 	var signedIn = true;
 	var transitionTo = Router.transitionTo;
-
+	var profileDriveways = '';
+	var allDriveways = [];
+	var userDriveways = [];
 	var App = React.createClass({displayName: "App",
-	   contextTypes: 
-	    {
-	        router: React.PropTypes.func
-	    },
 	  render: function() 
 	  {
 	    console.log(localStorage);
+	    drivewayDAO.getAll();
 	    if(!localStorage.username)
 	    {
 	      console.log("not signed in");
@@ -81,7 +80,7 @@
 	            React.createElement("div", {className: "nav navbar-nav navbar-left"}, 
 	              React.createElement(Link, {className: "navbar-brand", to: "/home"}, "Home"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/aboutUs"}, "About us"), 
-	              React.createElement(Link, {className: "navbar-brand", to: "/faq"}, "FAQ"), 
+	              React.createElement(Link, {className: "navbar-brand", to: "/allDriveways"}, "All driveways"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/map"}, "Map"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay")
 	            ), 
@@ -99,13 +98,14 @@
 	    else
 	    {
 	      console.log("signed in");
+	      drivewayDAO.get(localStorage.username);
 	      return(
 	        React.createElement("div", null, 
 	            React.createElement("nav", {className: "navbar navbar-default", role: "navigation"}, 
 	              React.createElement("div", {className: "nav navbar-nav navbar-left"}, 
 	                React.createElement(Link, {className: "navbar-brand", to: ""}, "Home"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/aboutUs"}, "About us"), 
-	                React.createElement(Link, {className: "navbar-brand", to: "/faq"}, "FAQ"), 
+	                React.createElement(Link, {className: "navbar-brand", to: "/allDriveways"}, "All driveways"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/map"}, "Map"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay")
 	              ), 
@@ -125,9 +125,6 @@
 	});
 	var Home = React.createClass
 	({displayName: "Home",
-	   contextTypes: {
-	        router: React.PropTypes.func
-	    },
 	  render: function() {
 	    return (
 	      React.createElement("h1", null, "Home")
@@ -136,9 +133,6 @@
 	});
 	var AboutUs = React.createClass
 	({displayName: "AboutUs",
-	   contextTypes: {
-	        router: React.PropTypes.func
-	    },
 	  render: function() {
 	    return (
 	      React.createElement("h1", null, "About Us")
@@ -146,87 +140,40 @@
 	  }
 	});
 
-	var FAQ = React.createClass
-	({displayName: "FAQ",
-	   contextTypes: {
-	        router: React.PropTypes.func
-	    },
-	  render: function() {
+	var allDriveways = React.createClass
+	({displayName: "allDriveways",
+	  render: function() 
+	  {
 	    return (
-	      React.createElement("h1", null, "FAQ")
+	     React.createElement("div", null, 
+	      React.createElement("p", null, allDriveways, " ")
+	      )
 	    );
 	  }
 	});
 
 	var data = {event: {lat: 40.4122994, lon: -111.75418}, parking: []}
 	var MapHolder = React.createClass({displayName: "MapHolder",
-	   contextTypes: {
-	        router: React.PropTypes.func
-	    },
 	  render: function() {
 	    return (
 	      React.createElement(ParkingMap, {data: data})
 	    );
 	  }
 	});
-	var getDriveways = 
-	{
 
-	};
 	var profile = React.createClass
 	({displayName: "profile",
 	  getInitialState: function() 
 	  {
 	    return {username: ''}, {password: ''}, {driveways: ''};
 	  },
-	  handleChange: function(event) 
+	  render: function() 
 	  {
-	  },
-	  handleClick: function(event)
-	  {
-
-	  },
-	  getDriveways: function()
-	  {
-	    var url = "/api/users/getDriveways";
-	        $.ajax
-	        ({
-	            url: url,
-	            dataType: 'json',
-	            type: 'POST',
-	            data: {
-	                username: localStorage.username,
-	            },
-	            success: function(res) 
-	            { 
-	              this.setState({driveways: res.driveway});
-	              // console.log(res.driveway.length);
-	              // for(var i = 0; i < res.driveway.length; i++)
-	              // {
-	              //   var temp = res.driveway[i];
-	              //   var tempDriveway = this.state.driveways + temp.address + ' ' + temp.state + ', ' + temp.zip + '\n';
-	              //   this.setState({driveways: tempDriveway});
-	              // }
-	              //console.log(this.state.driveways);
-	            }.bind(this),
-	            error: function()
-	            {
-	              console.log("failure");
-	            }.bind(this)
-
-	    });
-	  },
-	  showValues: function()
-	  {
-	    return localStorage.username + " " + localStorage.email;
-	  },
-	  render: function() {
-	      this.getDriveways();
 	      return (
 	       React.createElement("div", null, 
 	        React.createElement("p", null, "username: ", React.createElement("br", null), localStorage.username), 
 	        React.createElement("p", null, "email: ", React.createElement("br", null), localStorage.email), 
-	        React.createElement("p", null, " Addresses: ", this.state.driveways), 
+	        React.createElement("p", null, "Addresses: ", React.createElement("br", null), userDriveways), 
 	        React.createElement(Link, {to: "/driveway"}, "Would you like to add a driveway?")
 	      )
 	      );
@@ -248,7 +195,6 @@
 	      this.setState({zip: event.target.value});
 	    else if(event.target.name == 'state')
 	      this.setState({state: event.target.value});
-
 	  },
 	  handleClick: function(event)
 	  {
@@ -256,7 +202,7 @@
 	    console.log('Number of cars: ' + this.state.numCars); 
 	    console.log('zip: ' + this.state.zip);
 	    console.log('state: ' + this.state.state);
-	    addDriveway.add(localStorage.username, this.state.address, this.state.numCars, this.state.zip, this.state.state);
+	    drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.zip, this.state.state);
 	  },
 	  render: function() {
 	    var address = this.state.address;
@@ -334,36 +280,95 @@
 	  }
 
 	});
-	var addDriveway = 
+
+
+	var drivewayDAO = 
 	{
 	  add: function(username, address, numCars, zip, state)
 	  {
 
 	    var url = "/api/users/addDriveway";
-	        $.ajax
-	        ({
-	            url: url,
-	            dataType: 'json',
-	            type: 'POST',
-	            data: {
-	                username: username,
-	                address: address,
-	                numCars: numCars,
-	                zip: zip,
-	                state: state
-	            },
-	            success: function(res) 
-	            {
-	              console.log('success');
-	            }.bind(this),
-	            error: function()
-	            {
-	              console.log("failure");
-	            }.bind(this)
+	    $.ajax
+	    ({
+	        url: url,
+	        dataType: 'json',
+	        type: 'POST',
+	        data: {
+	            username: username,
+	            address: address,
+	            numCars: numCars,
+	            zip: zip,
+	            state: state
+	        },
+	        success: function(res) 
+	        {
+	          console.log('success');
+	        }.bind(this),
+	        error: function()
+	        {
+	          console.log("failure");
+	        }.bind(this)
 
 	    });
-	    },
+	  },
 
+	  get: function(username)
+	  {
+	    var url = "/api/users/getDriveways";
+	    $.ajax
+	    ({
+	        url: url,
+	        dataType: 'json',
+	        type: 'POST',
+	        data: {
+	            username: localStorage.username,
+	        },
+	        success: function(res) 
+	        { 
+	          userDriveways = [];
+	          for(var i = 0; i < res.driveway.length; i++)
+	          {
+	            var temp = res.driveway[i];
+	            var tempDriveway = temp.address + ' ' + temp.state + ', ' + temp.zip;
+	            userDriveways.push(tempDriveway);
+	            userDriveways.push(React.createElement("br", null));
+	          }
+	        }.bind(this),
+	        error: function()
+	        {
+	          console.log("failure");
+	        }.bind(this)
+	    });
+
+	  },
+	  getAll: function()
+	  {
+	    var url = "/api/users/getAllDriveways";
+	    $.ajax
+	    ({
+	        url: url,
+	        dataType: 'json',
+	        type: 'POST',
+	        data: {
+	        },
+	        success: function(res) 
+	        { 
+	          allDriveways = [];
+	          for(var i = 0; i < res.driveway.length; i++)
+	          {
+	            var temp = res.driveway[i];
+	            var tempString = temp.address + ' ' + temp.state + ' ' + temp.zip + ' - ' + temp.username;
+	            allDriveways.push(tempString);
+	            allDriveways.push(React.createElement("br", null));
+	          }
+	          console.log(allDriveways);
+	        }.bind(this),
+	        error: function()
+	        {
+	          console.log("failure");
+	        }.bind(this)
+	    });
+	  }
 	};
 	var logOut = React.createClass
 	({displayName: "logOut",
@@ -399,9 +404,6 @@
 	};
 	var signIn = React.createClass
 	({displayName: "signIn",
-	   contextTypes: {
-	        router: React.PropTypes.func
-	    },
 	  getInitialState: function() 
 	  {
 	    return {username: ''}, {password: ''};
@@ -489,10 +491,6 @@
 
 	var signUp = React.createClass
 	({displayName: "signUp",
-	   contextTypes: 
-	    {
-	        router: React.PropTypes.func
-	    },
 	  getInitialState: function() 
 	  {
 	    return {email: ''}, {username: ''}, {password: ''}, {confirmPassword: ''};
@@ -576,7 +574,7 @@
 	              console.log("before success statement");
 	              console.log("success");
 	              console.log("res email: " + res.email);
-
+	              location.href='/#/signIn';
 	            }.bind(this),
 	            error: function()
 	            {
@@ -594,7 +592,7 @@
 	          React.createElement(IndexRoute, {component: Home}), 
 	          React.createElement(Route, {name: "home", path: "/home", component: Home}), 
 	          React.createElement(Route, {name: "aboutUs", path: "/aboutUs", component: AboutUs}), 
-	          React.createElement(Route, {name: "faq", path: "/faq", component: FAQ}), 
+	          React.createElement(Route, {name: "allDriveways", path: "/allDriveways", component: allDriveways}), 
 	          React.createElement(Route, {name: "pay", path: "/pay", component: PaymentPage}), 
 	          React.createElement(Route, {name: "map", path: "/map", component: MapHolder}), 
 	          React.createElement(Route, {name: "driveway", path: "/driveway", component: driveway}), 
