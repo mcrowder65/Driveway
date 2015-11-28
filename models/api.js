@@ -16,21 +16,27 @@ app.post
 ('/api/users/getDriveways',
 	function (req, res)
 	{
-		console.log("looking for: " + req.body.username);
 		driveway.find({username: req.body.username},
 		function(err, driveway)
 		{
 			if (driveway)
-			{
-				console.log('found something');
-
 				res.json({driveway: driveway});
-			}
 			else
-			{
-				console.log('fail');
 				res.sendStatus("403");
-			}
+		});
+	}
+);
+app.post
+('/api/users/deleteDriveway',
+	function (req, res)
+	{
+		driveway.remove({username: req.body.username, address: req.body.address, zip: req.body.zip, city: req.body.city, state: req.body.state, numCars: req.body.numCars},
+		function(err, driveway)
+		{
+			if (driveway)
+				res.json({driveway: driveway});
+			else
+				res.sendStatus("403");
 		});
 	}
 );
@@ -38,20 +44,13 @@ app.post
 ('/api/users/getAllDriveways',
 	function (req, res)
 	{
-		console.log('finding all driveways..');
 		driveway.find({},
 		function(err, driveway)
 		{
 			if (driveway)
-			{
-				console.log('found something');
 				res.json({driveway: driveway});
-			}
 			else
-			{
-				console.log('fail');
 				res.sendStatus("403");
-			}
 		});
 	}
 );
@@ -59,21 +58,15 @@ app.post
 ('/api/users/addDriveway',
 	function (req, res)
 	{
-		console.log('trying to add a driveway');
-		console.log("username: " + req.body.username);
-		console.log("address: " + req.body.address);
-		console.log("zip: " + req.body.zip);
-		console.log("state: " + req.body.state);
-		console.log("numCars: " + req.body.numCars);
-		driveway.create({username: req.body.username, address: req.body.address, zip: req.body.zip, state: req.body.state, numCars: req.body.numCars},
-		function(err, driveway)
+		driveway.findOrCreate({username: req.body.username, address: req.body.address, zip: req.body.zip, city: req.body.city, state: req.body.state, numCars: req.body.numCars},
+		function(err, driveway, created)
 		{
-			if (driveway)
+			if (created)
 			{
-				console.log('created!');
 				driveway.address = req.body.address;
 				driveway.username = req.body.username;
 				driveway.zip = req.body.zip;
+				driveway.city = req.body.city;
 				driveway.save
 				(
 					function(err)
@@ -81,18 +74,16 @@ app.post
 						if(err)
 						{
 							res.sendStatus("403");
-							console.log('first failure spot');
 							return;
 						}
 						res.json({username: driveway.username, address: driveway.address, zip: driveway.zip});
 					}
 				);
 			}
+			else if(driveway)
+				res.json({username: 'already exists'});
 			else
-			{
-				console.log('second failure spot');
 				res.sendStatus("403");
-			}
 		});
 	}
 );
@@ -101,7 +92,6 @@ app.post
 ('/api/users/register', 
 	function (req, res) 
 	{
-		console.log("username: " + req.body.username);
 		User.findOrCreate({username: req.body.username, email: req.body.email}, 
 		function(err, user, created) 
 		{

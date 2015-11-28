@@ -66,6 +66,25 @@
 	var profileDriveways = '';
 	var allDriveways = [];
 	var userDriveways = [];
+
+	function get(parameter)
+	{ 
+	  var url = window.location.href;
+	  var index = url.indexOf(parameter);
+	  if(index == -1)
+	    return null;
+	  index += parameter.length + 1; //if the word we're looking for is address, get a index
+	                                 //then add address.length +1 to get start of value 
+	   
+	  var i = index;
+	  while(url[i] != '?' && url[i] != '&')
+	  {
+	    if(i > url.length)
+	      break;
+	    i++;
+	  }
+	  return url.substring(index, i);
+	} 
 	var App = React.createClass({displayName: "App",
 	  render: function() 
 	  {
@@ -73,7 +92,6 @@
 	    drivewayDAO.getAll();
 	    if(!localStorage.username)
 	    {
-	      console.log("not signed in");
 	      return(
 	        React.createElement("div", null, 
 	          React.createElement("nav", {className: "navbar navbar-default", role: "navigation"}, 
@@ -97,7 +115,6 @@
 	    }
 	    else
 	    {
-	      console.log("signed in");
 	      drivewayDAO.get(localStorage.username);
 	      return(
 	        React.createElement("div", null, 
@@ -163,10 +180,6 @@
 
 	var profile = React.createClass
 	({displayName: "profile",
-	  getInitialState: function() 
-	  {
-	    return {username: ''}, {password: ''}, {driveways: ''};
-	  },
 	  render: function() 
 	  {
 	      return (
@@ -183,7 +196,19 @@
 	({displayName: "driveway",
 	  getInitialState: function() 
 	  {
-	    return {address: '', numCars: '1', zip:'', state:''};
+	    var tempAddress = get('address');
+	    if(tempAddress)
+	    {
+	      var address = tempAddress;
+	      var numCars = get('numCars');
+	      var zip = get('zip');
+	      var state = get('state');
+	      var city = get('city');
+	      drivewayDAO.erase(localStorage.username, address, numCars, zip, state, city);
+	      return {address: address, numCars: numCars, zip: zip, city: city, state: state, editing: true};
+	    }
+	    else
+	        return {address: '', numCars: '1', zip:'', city: '', state:'AL', editing: false};
 	  },
 	  handleChange: function(event) 
 	  {
@@ -195,24 +220,36 @@
 	      this.setState({zip: event.target.value});
 	    else if(event.target.name == 'state')
 	      this.setState({state: event.target.value});
+	    else if(event.target.name =='city')
+	      this.setState({city: event.target.value});
 	  },
 	  handleClick: function(event)
 	  {
-	    console.log('Street address: ' + this.state.address);
-	    console.log('Number of cars: ' + this.state.numCars); 
-	    console.log('zip: ' + this.state.zip);
-	    console.log('state: ' + this.state.state);
-	    drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.zip, this.state.state);
+	    drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, this.state.zip, this.state.state);
 	  },
-	  render: function() {
+	  remove: function()
+	  {
+	    location.href="/#/profile";
+	  },
+	  render: function() 
+	  {
 	    var address = this.state.address;
 	    var numCars = this.state.numCars;
 	    var zip = this.state.zip;
 	    var state = this.state.state;
-	    return (
+	    var city = this.state.city;
+	    
+	    console.log('Address: ' + address);
+	    console.log('numCars: ' + numCars);
+	    console.log('zip: ' + zip);
+	    console.log('state: ' + state);
+	    console.log('city: ' + city);
+	    if(!this.state.editing)
+	    {
+	      return (
 	      React.createElement("div", null, 
 	          "Street address: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "address", value: address, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-	          "Zip code: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "zip", value: zip, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	          "City: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "city", value: city, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
 	          "State: ", React.createElement("br", null), React.createElement("select", {name: "state", value: state, onChange: this.handleChange}, 
 	                        React.createElement("option", {value: "AL"}, "Alabama"), 
 	                        React.createElement("option", {value: "AK"}, "Alaska"), 
@@ -266,6 +303,7 @@
 	                        React.createElement("option", {value: "WI"}, "Wisconsin"), 
 	                        React.createElement("option", {value: "WY"}, "Wyoming")
 	                      ), " ", React.createElement("br", null), " ", React.createElement("br", null), 
+	          "Zip code: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "zip", value: zip, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
 	          "Number of Cars: ", React.createElement("br", null), React.createElement("select", {name: "numCars", value: numCars, onChange: this.handleChange}, 
 	                        React.createElement("option", {value: "1"}, "1"), 
 	                        React.createElement("option", {value: "2"}, "2"), 
@@ -277,6 +315,85 @@
 	      )
 
 	      );
+	    }
+	    else
+	    {
+	      return (
+	      React.createElement("div", null, 
+	          React.createElement("p", null, "You must follow through with this edit, if you do not want to edit anything," + " " +
+	        "just click submit again; otherwise, your address will be deleted."), 
+	          "Street address: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "address", value: address, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	          "City: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "city", value: city, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	          "State: ", React.createElement("br", null), React.createElement("select", {name: "state", value: state, onChange: this.handleChange}, 
+	                        React.createElement("option", {value: "AL"}, "Alabama"), 
+	                        React.createElement("option", {value: "AK"}, "Alaska"), 
+	                        React.createElement("option", {value: "AZ"}, "Arizona"), 
+	                        React.createElement("option", {value: "AR"}, "Arkansas"), 
+	                        React.createElement("option", {value: "CA"}, "California"), 
+	                        React.createElement("option", {value: "CO"}, "Colorado"), 
+	                        React.createElement("option", {value: "CT"}, "Connecticut"), 
+	                        React.createElement("option", {value: "DE"}, "Delaware"), 
+	                        React.createElement("option", {value: "DC"}, "District Of Columbia"), 
+	                        React.createElement("option", {value: "FL"}, "Florida"), 
+	                        React.createElement("option", {value: "GA"}, "Georgia"), 
+	                        React.createElement("option", {value: "HI"}, "Hawaii"), 
+	                        React.createElement("option", {value: "ID"}, "Idaho"), 
+	                        React.createElement("option", {value: "IL"}, "Illinois"), 
+	                        React.createElement("option", {value: "IN"}, "Indiana"), 
+	                        React.createElement("option", {value: "IA"}, "Iowa"), 
+	                        React.createElement("option", {value: "KS"}, "Kansas"), 
+	                        React.createElement("option", {value: "KY"}, "Kentucky"), 
+	                        React.createElement("option", {value: "LA"}, "Louisiana"), 
+	                        React.createElement("option", {value: "ME"}, "Maine"), 
+	                        React.createElement("option", {value: "MD"}, "Maryland"), 
+	                        React.createElement("option", {value: "MA"}, "Massachusetts"), 
+	                        React.createElement("option", {value: "MI"}, "Michigan"), 
+	                        React.createElement("option", {value: "MN"}, "Minnesota"), 
+	                        React.createElement("option", {value: "MS"}, "Mississippi"), 
+	                        React.createElement("option", {value: "MO"}, "Missouri"), 
+	                        React.createElement("option", {value: "MT"}, "Montana"), 
+	                        React.createElement("option", {value: "NE"}, "Nebraska"), 
+	                        React.createElement("option", {value: "NV"}, "Nevada"), 
+	                        React.createElement("option", {value: "NH"}, "New Hampshire"), 
+	                        React.createElement("option", {value: "NJ"}, "New Jersey"), 
+	                        React.createElement("option", {value: "NM"}, "New Mexico"), 
+	                        React.createElement("option", {value: "NY"}, "New York"), 
+	                        React.createElement("option", {value: "NC"}, "North Carolina"), 
+	                        React.createElement("option", {value: "ND"}, "North Dakota"), 
+	                        React.createElement("option", {value: "OH"}, "Ohio"), 
+	                        React.createElement("option", {value: "OK"}, "Oklahoma"), 
+	                        React.createElement("option", {value: "OR"}, "Oregon"), 
+	                        React.createElement("option", {value: "PA"}, "Pennsylvania"), 
+	                        React.createElement("option", {value: "RI"}, "Rhode Island"), 
+	                        React.createElement("option", {value: "SC"}, "South Carolina"), 
+	                        React.createElement("option", {value: "SD"}, "South Dakota"), 
+	                        React.createElement("option", {value: "TN"}, "Tennessee"), 
+	                        React.createElement("option", {value: "TX"}, "Texas"), 
+	                        React.createElement("option", {value: "UT"}, "Utah"), 
+	                        React.createElement("option", {value: "VT"}, "Vermont"), 
+	                        React.createElement("option", {value: "VA"}, "Virginia"), 
+	                        React.createElement("option", {value: "WA"}, "Washington"), 
+	                        React.createElement("option", {value: "WV"}, "West Virginia"), 
+	                        React.createElement("option", {value: "WI"}, "Wisconsin"), 
+	                        React.createElement("option", {value: "WY"}, "Wyoming")
+	                      ), " ", React.createElement("br", null), " ", React.createElement("br", null), 
+	          "Zip code: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "zip", value: zip, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	          "Number of Cars: ", React.createElement("br", null), React.createElement("select", {name: "numCars", value: numCars, onChange: this.handleChange}, 
+	                        React.createElement("option", {value: "1"}, "1"), 
+	                        React.createElement("option", {value: "2"}, "2"), 
+	                        React.createElement("option", {value: "3"}, "3")
+	                      ), 
+	        React.createElement("br", null), React.createElement("br", null), React.createElement("button", {onClick: this.handleClick}, 
+	        "Submit"
+	        ), 
+	        React.createElement("text", null, "     "), 
+	        React.createElement("button", {onClick: this.remove}, 
+	        "Delete")
+	      )
+
+	      );
+	    }
+	    
 	  }
 
 	});
@@ -284,7 +401,33 @@
 
 	var drivewayDAO = 
 	{
-	  add: function(username, address, numCars, zip, state)
+	  erase: function(username, address, numCars, zip, state, city)
+	  {
+	    var url = "/api/users/deleteDriveway";
+	    $.ajax
+	    ({
+	        url: url,
+	        dataType: 'json',
+	        type: 'POST',
+	        data: 
+	        {
+	            username: username,
+	            address: address,
+	            numCars: numCars,
+	            zip: zip,
+	            city: city,
+	            state: state
+	        },
+	        success: function(res) 
+	        { 
+	        }.bind(this),
+	        error: function()
+	        {
+	        }.bind(this)
+
+	      });
+	  },
+	  add: function(username, address, numCars, city, zip, state)
 	  {
 
 	    var url = "/api/users/addDriveway";
@@ -298,15 +441,19 @@
 	            address: address,
 	            numCars: numCars,
 	            zip: zip,
+	            city: city,
 	            state: state
 	        },
 	        success: function(res) 
 	        {
-	          console.log('success');
+	          if(res.username == localStorage.username)
+	            location.href = '/#/profile';
+	          else
+	            alert('This address already exists.');
+	          
 	        }.bind(this),
 	        error: function()
 	        {
-	          console.log("failure");
 	        }.bind(this)
 
 	    });
@@ -329,7 +476,9 @@
 	          for(var i = 0; i < res.driveway.length; i++)
 	          {
 	            var temp = res.driveway[i];
-	            var tempDriveway = temp.address + ' ' + temp.state + ', ' + temp.zip;
+	            var tempDriveway = temp.address + ' ' + temp.city + ', ' + temp.state + ' ' + temp.zip + ' - ' + temp.numCars + ' car(s)';
+	            var link = '/driveway?address=' + temp.address + '?city=' + temp.city + '?state=' + temp.state + '?zip=' + temp.zip + '?numCars=' + temp.numCars;
+	            userDriveways.push(React.createElement(Link, {to: link}, "Edit/Delete ") );
 	            userDriveways.push(tempDriveway);
 	            userDriveways.push(React.createElement("br", null));
 	          }
@@ -357,9 +506,12 @@
 	          for(var i = 0; i < res.driveway.length; i++)
 	          {
 	            var temp = res.driveway[i];
-	            var tempString = temp.address + ' ' + temp.state + ' ' + temp.zip + ' - ' + temp.username;
-	            allDriveways.push(tempString);
-	            allDriveways.push(React.createElement("br", null));
+	            var tempString = ' ' + temp.address + ' ' + temp.city + ', ' + temp.state + ' ' + temp.zip + ' - ' + temp.username;
+	            if(temp.username != localStorage.username)
+	            {
+	              allDriveways.push(tempString);
+	              allDriveways.push(React.createElement("br", null));
+	            }
 	          }
 	          console.log(allDriveways);
 	        }.bind(this),
@@ -421,9 +573,7 @@
 	    if(signedIn == true)
 	    {
 	      localStorage.username = this.state.username;
-	      console.log("logged in");
 	      location.href='/#/profile';
-
 	    }
 	          
 	  },

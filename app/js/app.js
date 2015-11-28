@@ -13,6 +13,25 @@ var transitionTo = Router.transitionTo;
 var profileDriveways = '';
 var allDriveways = [];
 var userDriveways = [];
+
+function get(parameter)
+{ 
+  var url = window.location.href;
+  var index = url.indexOf(parameter);
+  if(index == -1)
+    return null;
+  index += parameter.length + 1; //if the word we're looking for is address, get a index
+                                 //then add address.length +1 to get start of value 
+   
+  var i = index;
+  while(url[i] != '?' && url[i] != '&')
+  {
+    if(i > url.length)
+      break;
+    i++;
+  }
+  return url.substring(index, i);
+} 
 var App = React.createClass({
   render: function() 
   {
@@ -20,7 +39,6 @@ var App = React.createClass({
     drivewayDAO.getAll();
     if(!localStorage.username)
     {
-      console.log("not signed in");
       return(
         <div>
           <nav className="navbar navbar-default" role="navigation">
@@ -44,7 +62,6 @@ var App = React.createClass({
     }
     else
     {
-      console.log("signed in");
       drivewayDAO.get(localStorage.username);
       return(
         <div>
@@ -110,10 +127,6 @@ var MapHolder = React.createClass({
 
 var profile = React.createClass
 ({
-  getInitialState: function() 
-  {
-    return {username: ''}, {password: ''}, {driveways: ''};
-  },
   render: function() 
   {
       return (
@@ -130,7 +143,19 @@ var driveway = React.createClass
 ({
   getInitialState: function() 
   {
-    return {address: '', numCars: '1', zip:'', state:''};
+    var tempAddress = get('address');
+    if(tempAddress)
+    {
+      var address = tempAddress;
+      var numCars = get('numCars');
+      var zip = get('zip');
+      var state = get('state');
+      var city = get('city');
+      drivewayDAO.erase(localStorage.username, address, numCars, zip, state, city);
+      return {address: address, numCars: numCars, zip: zip, city: city, state: state, editing: true};
+    }
+    else
+        return {address: '', numCars: '1', zip:'', city: '', state:'AL', editing: false};
   },
   handleChange: function(event) 
   {
@@ -142,24 +167,36 @@ var driveway = React.createClass
       this.setState({zip: event.target.value});
     else if(event.target.name == 'state')
       this.setState({state: event.target.value});
+    else if(event.target.name =='city')
+      this.setState({city: event.target.value});
   },
   handleClick: function(event)
   {
-    console.log('Street address: ' + this.state.address);
-    console.log('Number of cars: ' + this.state.numCars); 
-    console.log('zip: ' + this.state.zip);
-    console.log('state: ' + this.state.state);
-    drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.zip, this.state.state);
+    drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, this.state.zip, this.state.state);
   },
-  render: function() {
+  remove: function()
+  {
+    location.href="/#/profile";
+  },
+  render: function() 
+  {
     var address = this.state.address;
     var numCars = this.state.numCars;
     var zip = this.state.zip;
     var state = this.state.state;
-    return (
+    var city = this.state.city;
+    
+    console.log('Address: ' + address);
+    console.log('numCars: ' + numCars);
+    console.log('zip: ' + zip);
+    console.log('state: ' + state);
+    console.log('city: ' + city);
+    if(!this.state.editing)
+    {
+      return (
       <div>
           Street address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
-          Zip code: <br/><input type="text" name="zip" value={zip} onChange={this.handleChange}/><br/><br/>
+          City: <br/><input type="text" name="city" value={city} onChange={this.handleChange}/><br/><br/>
           State: <br/><select name="state" value={state} onChange={this.handleChange}>
                         <option value="AL">Alabama</option>
                         <option value="AK">Alaska</option>
@@ -213,6 +250,7 @@ var driveway = React.createClass
                         <option value="WI">Wisconsin</option>
                         <option value="WY">Wyoming</option>
                       </select> <br/> <br/>
+          Zip code: <br/><input type="text" name="zip" value={zip} onChange={this.handleChange}/><br/><br/>
           Number of Cars: <br/><select name="numCars" value={numCars} onChange={this.handleChange}>
                         <option value='1'>1</option>
                         <option value='2'>2</option>
@@ -224,6 +262,85 @@ var driveway = React.createClass
       </div>
 
       );
+    }
+    else
+    {
+      return (
+      <div>
+          <p>You must follow through with this edit, if you do not want to edit anything,
+        just click submit again; otherwise, your address will be deleted.</p>
+          Street address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
+          City: <br/><input type="text" name="city" value={city} onChange={this.handleChange}/><br/><br/>
+          State: <br/><select name="state" value={state} onChange={this.handleChange}>
+                        <option value="AL">Alabama</option>
+                        <option value="AK">Alaska</option>
+                        <option value="AZ">Arizona</option>
+                        <option value="AR">Arkansas</option>
+                        <option value="CA">California</option>
+                        <option value="CO">Colorado</option>
+                        <option value="CT">Connecticut</option>
+                        <option value="DE">Delaware</option>
+                        <option value="DC">District Of Columbia</option>
+                        <option value="FL">Florida</option>
+                        <option value="GA">Georgia</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="ID">Idaho</option>
+                        <option value="IL">Illinois</option>
+                        <option value="IN">Indiana</option>
+                        <option value="IA">Iowa</option>
+                        <option value="KS">Kansas</option>
+                        <option value="KY">Kentucky</option>
+                        <option value="LA">Louisiana</option>
+                        <option value="ME">Maine</option>
+                        <option value="MD">Maryland</option>
+                        <option value="MA">Massachusetts</option>
+                        <option value="MI">Michigan</option>
+                        <option value="MN">Minnesota</option>
+                        <option value="MS">Mississippi</option>
+                        <option value="MO">Missouri</option>
+                        <option value="MT">Montana</option>
+                        <option value="NE">Nebraska</option>
+                        <option value="NV">Nevada</option>
+                        <option value="NH">New Hampshire</option>
+                        <option value="NJ">New Jersey</option>
+                        <option value="NM">New Mexico</option>
+                        <option value="NY">New York</option>
+                        <option value="NC">North Carolina</option>
+                        <option value="ND">North Dakota</option>
+                        <option value="OH">Ohio</option>
+                        <option value="OK">Oklahoma</option>
+                        <option value="OR">Oregon</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="RI">Rhode Island</option>
+                        <option value="SC">South Carolina</option>
+                        <option value="SD">South Dakota</option>
+                        <option value="TN">Tennessee</option>
+                        <option value="TX">Texas</option>
+                        <option value="UT">Utah</option>
+                        <option value="VT">Vermont</option>
+                        <option value="VA">Virginia</option>
+                        <option value="WA">Washington</option>
+                        <option value="WV">West Virginia</option>
+                        <option value="WI">Wisconsin</option>
+                        <option value="WY">Wyoming</option>
+                      </select> <br/> <br/>
+          Zip code: <br/><input type="text" name="zip" value={zip} onChange={this.handleChange}/><br/><br/>
+          Number of Cars: <br/><select name="numCars" value={numCars} onChange={this.handleChange}>
+                        <option value='1'>1</option>
+                        <option value='2'>2</option>
+                        <option value='3'>3</option>
+                      </select>
+        <br/><br/><button onClick={this.handleClick}>
+        Submit
+        </button>
+        <text>     </text>
+        <button onClick={this.remove}>
+        Delete</button>
+      </div>
+
+      );
+    }
+    
   }
 
 });
@@ -231,7 +348,33 @@ var driveway = React.createClass
 
 var drivewayDAO = 
 {
-  add: function(username, address, numCars, zip, state)
+  erase: function(username, address, numCars, zip, state, city)
+  {
+    var url = "/api/users/deleteDriveway";
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: 
+        {
+            username: username,
+            address: address,
+            numCars: numCars,
+            zip: zip,
+            city: city,
+            state: state
+        },
+        success: function(res) 
+        { 
+        }.bind(this),
+        error: function()
+        {
+        }.bind(this)
+
+      });
+  },
+  add: function(username, address, numCars, city, zip, state)
   {
 
     var url = "/api/users/addDriveway";
@@ -245,15 +388,19 @@ var drivewayDAO =
             address: address,
             numCars: numCars,
             zip: zip,
+            city: city,
             state: state
         },
         success: function(res) 
         {
-          console.log('success');
+          if(res.username == localStorage.username)
+            location.href = '/#/profile';
+          else
+            alert('This address already exists.');
+          
         }.bind(this),
         error: function()
         {
-          console.log("failure");
         }.bind(this)
 
     });
@@ -276,7 +423,9 @@ var drivewayDAO =
           for(var i = 0; i < res.driveway.length; i++)
           {
             var temp = res.driveway[i];
-            var tempDriveway = temp.address + ' ' + temp.state + ', ' + temp.zip;
+            var tempDriveway = temp.address + ' ' + temp.city + ', ' + temp.state + ' ' + temp.zip + ' - ' + temp.numCars + ' car(s)';
+            var link = '/driveway?address=' + temp.address + '?city=' + temp.city + '?state=' + temp.state + '?zip=' + temp.zip + '?numCars=' + temp.numCars;
+            userDriveways.push(React.createElement(Link, {to: link}, "Edit/Delete ") );
             userDriveways.push(tempDriveway);
             userDriveways.push(React.createElement("br", null));
           }
@@ -304,9 +453,12 @@ var drivewayDAO =
           for(var i = 0; i < res.driveway.length; i++)
           {
             var temp = res.driveway[i];
-            var tempString = temp.address + ' ' + temp.state + ' ' + temp.zip + ' - ' + temp.username;
-            allDriveways.push(tempString);
-            allDriveways.push(React.createElement("br", null));
+            var tempString = ' ' + temp.address + ' ' + temp.city + ', ' + temp.state + ' ' + temp.zip + ' - ' + temp.username;
+            if(temp.username != localStorage.username)
+            {
+              allDriveways.push(tempString);
+              allDriveways.push(React.createElement("br", null));
+            }
           }
           console.log(allDriveways);
         }.bind(this),
@@ -368,9 +520,7 @@ var signIn = React.createClass
     if(signedIn == true)
     {
       localStorage.username = this.state.username;
-      console.log("logged in");
       location.href='/#/profile';
-
     }
           
   },
