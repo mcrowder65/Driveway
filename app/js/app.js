@@ -13,7 +13,7 @@ var transitionTo = Router.transitionTo;
 var profileDriveways = '';
 var allDriveways = [];
 var userDriveways = [];
-console.log('hello');
+
 function get(parameter)
 { 
   var url = window.location.href;
