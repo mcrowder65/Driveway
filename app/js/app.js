@@ -15,8 +15,7 @@ var allDriveways = [];
 var userDriveways = [];
 
 function get(parameter)
-{ 
-  //i'm awesome
+{  
   var url = window.location.href;
   var index = url.indexOf(parameter);
   if(index == -1)
@@ -177,10 +176,54 @@ var driveway = React.createClass
   },
   addNewTime: function()
   {
-     var node = document.getElementById("time");
-var textnode = document.createTextNode("Water");         // Create a text node
-node.appendChild(textnode);                              // Append the text to <li>
-document.getElementById("time").appendChild(node); 
+      var br = document.createElement("br");
+      document.getElementById('submit').style.display='none';
+      var day = document.createTextNode("Day:   ");         
+      document.getElementById("time").appendChild(day);
+      var daySelect = document.createElement("select");
+      var days = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      for(var i = 0; i < days.length; i++)
+      {
+        var option = document.createElement('option');
+        option.innerHTML = days[i];
+        option.value = days[i].toLowerCase();
+        daySelect.appendChild(option);
+      }
+      document.getElementById("time").appendChild(daySelect);
+
+
+      var time = document.createTextNode(" Times available: ");
+      document.getElementById("time").appendChild(time);
+      var timeSelect = document.createElement("select");
+      var times =['', '5:00 AM', '5:15 AM', '5:30 AM', '5:45 AM',
+                      '6:00 AM', '6:15 AM', '6:30 AM', '6:45 AM',
+                      '7:00 AM', '7:15 AM', '7:30 AM', '7:45 AM',
+                      '8:00 AM', '8:15 AM', '8:30 AM', '8:45 AM',                       
+                      '9:00 AM', '9:15 AM', '9:30 AM', '9:45 AM',                       
+                      '10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM',                       
+                      '11:00 AM', '11:15 AM', '11:30 AM', '11:45 AM',                       
+                      '12:00 PM', '12:15 PM', '12:30 PM', '12:45 PM',
+                      '1:00 PM', '1:15 PM', '1:30 PM', '1:45 PM',                       
+                      '2:00 PM', '2:15 PM', '2:30 PM', '2:45 PM',
+                      '3:00 PM', '3:15 PM', '3:30 PM', '3:45 PM',                       
+                      '4:00 PM', '4:15 PM', '4:30 PM', '4:45 PM',
+                      '5:00 PM', '5:15 PM', '5:30 PM', '5:45 PM',
+                      '6:00 PM', '6:15 PM', '6:30 PM', '6:45 PM',
+                      '7:00 PM', '7:15 PM', '7:30 PM', '7:45 PM',
+                      '8:00 PM', '8:15 PM', '8:30 PM', '8:45 PM',
+                      '9:00 PM', '9:15 PM', '9:30 PM', '9:45 PM',
+                      '10:00 PM', '10:15 PM', '10:30 PM', '10:45 PM',
+                      '11:00 PM', '11:15 PM', '11:30 PM', '11:45 PM'];
+      for(var i = 0; i < times.length; i++)
+      {
+        var option = document.createElement("option");
+        option.innerHTML = times[i];
+        option.value = times[i];
+        timeSelect.appendChild(option);
+      }
+      document.getElementById("time").appendChild(timeSelect);
+      document.getElementById("time").appendChild(br);
+      document.getElementById('submit').style.display='visible';
   },
   remove: function()
   {
@@ -202,7 +245,7 @@ document.getElementById("time").appendChild(node);
     if(!this.state.editing)
     {
       return (
-      <div>
+      <div id='time'>
           Street address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
           City: <br/><input type="text" name="city" value={city} onChange={this.handleChange}/><br/><br/>
           State: <br/><select name="state" value={state} onChange={this.handleChange}>
@@ -263,9 +306,7 @@ document.getElementById("time").appendChild(node);
                         <option value='1'>1</option>
                         <option value='2'>2</option>
                         <option value='3'>3</option>
-                      </select>
-
-          <br/><br/>
+                      </select><br/><br/>
           Day: <space> </space> <select name="day" id="day">
                                   <option value=""> </option>
                                   <option value="monday"> Monday</option>
@@ -374,14 +415,9 @@ document.getElementById("time").appendChild(node);
                         <option value="11:30 PM">11:30 PM</option>
                         <option value="11:45 PM">11:45 PM</option>
                       </select><space> </space>
-          <button onClick={this.addNewTime}> Add another time</button>
-          <div id="time">
-
-          </div>
-            <br/><br/><button onClick={this.handleClick}>
-            Submit
-            </button>
-          </div>
+          <button onClick={this.addNewTime}> Add another time</button><br/><br/>
+          <button id='submit' onClick={this.handleClick}> Submit </button>
+      </div>
       
 
       );
