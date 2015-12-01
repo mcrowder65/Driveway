@@ -7,6 +7,15 @@ function hello(){
   console.log(variable);
 }
 
+var priceT;
+var streetAddress;
+var state;
+var zip;
+var reservationDate
+var reservationDuration;
+var reservationTime;
+var city;
+
 var StripeButton = React.createClass({
     mixins: [ReactScriptLoaderMixin],
     getScriptURL: function() {
@@ -22,13 +31,55 @@ var StripeButton = React.createClass({
 
     onScriptLoaded: function() {
 
+      console.log("here");
+
         if (!StripeButton.stripeHandler) {
             StripeButton.stripeHandler = StripeCheckout.configure({
                 key: 'pk_test_HSPvK9dod2Uhf8JRQJIBP4rW',
                 image: './app/gg.png',
-                email: 'brennen.barney@gmail.com',
                 token: function(token) {
-                  console.log(token);
+                  var url = "/api/payment/chargeToken";
+                  var price = priceT;
+                  var streetAddress2 = streetAddress;
+                  var state2 = state;
+                  var zip2 = zip;
+                  var reservationDate2 = reservationDate;
+                  var reservationDuration2 = reservationDuration;
+                  var reservationTime2 = reservationTime;
+                  var city2 = city;
+                    $.ajax
+                    ({
+                        url: url,
+                        dataType: 'json',
+                        type: 'POST',
+                        data: {
+
+                            
+                            stripeToken: token,
+                            price: price,
+                            streetAddress: streetAddress2,
+                            state: state2,
+                            city: city2,
+                            zip: zip2,
+                            reservationDate: reservationDate2,
+                            reservationDuration: reservationDuration2,   
+                            reservationTime: reservationTime2
+                            
+                        },
+                        success: function(res) 
+                        {
+                          
+                            console.log("success");
+                          
+
+                        }.bind(this),
+                        error: function()
+                        {
+                            console.log("failure");
+                        }.bind(this)
+
+                    });
+
                 }
             });
             if (this.hasPendingClick) {
@@ -43,12 +94,21 @@ var StripeButton = React.createClass({
 
     },
     showStripeDialog: function() {
+        priceT = this.props.data.event.Price;
+        streetAddress = this.props.data.event.street;
+        state = this.props.data.event.state;
+        zip = this.props.data.event.zip1;
+        reservationDate = this.props.data.event.resDate;
+        reservationDuration = this.props.data.event.duration;
+        reservationTime = this.props.data.event.resTime;
+        city = this.props.data.event.city;
+
         this.hideLoadingDialog();
         StripeButton.stripeHandler.open({
-                name: 'Demo Site',
-                description: '2 widgets ($20.00)',
+                name: 'ParkingLot',
+                description: this.props.data.event.Address,
                 billingAddress: true,
-                amount: 3000
+                amount: this.props.data.event.Price,
             });
     },
     onScriptError: function() {
@@ -71,5 +131,7 @@ var StripeButton = React.createClass({
         );
     }
 });
+
+
 
 module.exports = StripeButton;
