@@ -144,7 +144,13 @@
 	({displayName: "Home",
 	  render: function() {
 	    return (
-	      React.createElement("h1", null, "Home")
+	      React.createElement("div", {style: formStyle}, 
+	      React.createElement("p", null, " Imagine parking at this mofo"), 
+
+	      React.createElement("p", null, React.createElement(Link, {to: "/map"}, React.createElement("button", {type: "button", className: "btn btn-info btn-sm"}, "rent a driveway"), " ")), 
+	     React.createElement("img", {src: "pic.jpg", height: "100%", width: "100%"}), React.createElement("br", null)
+	     
+	     )
 	    );
 	  }
 	});

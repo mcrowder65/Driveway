@@ -91,7 +91,13 @@ var Home = React.createClass
 ({
   render: function() {
     return (
-      <h1>Home</h1>
+      <div style={formStyle}>
+      <p> Imagine parking at this mofo</p>
+
+      <p><Link to="/map"><button type="button" className="btn btn-info btn-sm">rent a driveway</button> </Link></p>
+     <img src="pic.jpg" height="100%" width="100%"/><br/>
+     
+     </div>
     );
   }
 });
