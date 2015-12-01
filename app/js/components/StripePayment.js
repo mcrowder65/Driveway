@@ -6,7 +6,7 @@ var ReactScriptLoaderMixin = require('react-script-loader').ReactScriptLoaderMix
 function hello(){
   console.log(variable);
 }
-
+var test;
 var priceT;
 var streetAddress;
 var state;
