@@ -128,7 +128,6 @@ app.post
 
 app.post('/api/users/login', function (req, res) 
 {
-	console.log("entered api!");
     // find the user with the given username
     User.findOne({username: req.body.username}, function(err,user) 
     {
@@ -137,7 +136,7 @@ app.post('/api/users/login', function (req, res)
 		    res.sendStatus(403);
 		    return;
 		}
-        // validate the user exists and the password is correct
+        // validate the user exists and the password is correct 
         if (user && user.checkPassword(req.body.password)) 
         {
             // create a token

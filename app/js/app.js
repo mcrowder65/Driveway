@@ -453,14 +453,13 @@ var drivewayDAO =
           for(var i = 0; i < res.driveway.length; i++)
           {
             var temp = res.driveway[i];
-            var tempString = ' ' + temp.address + ' ' + temp.city + ', ' + temp.state + ' ' + temp.zip + ' - ' + temp.username;
+            var tempString = ' ' + temp.address + ' ' + temp.city + ', ' + temp.state + ' ' + temp.zip + ' - ' + temp.numCars + ' car(s)';
             if(temp.username != localStorage.username)
             {
               allDriveways.push(tempString);
               allDriveways.push(React.createElement("br", null));
             }
           }
-          console.log(allDriveways);
         }.bind(this),
         error: function()
         {
