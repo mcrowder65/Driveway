@@ -60,6 +60,7 @@
 	var ParkingMap = __webpack_require__(211);
 	var RouteHandler = Router.RouteHandler;
 	var Redirect = Router.Redirect;
+	var CheckoutStrip = __webpack_require__(218);
 	var signedIn = true;
 	var transitionTo = Router.transitionTo;
 	var History = __webpack_require__(160).History;
@@ -881,16 +882,64 @@
 	    },
 	};
 
-	var PaymentPage = React.createClass
-	({displayName: "PaymentPage",
-	  contextTypes: 
-	  {
-	    router: React.PropTypes.func
+	var pay = React.createClass
+	({displayName: "pay",
+	  contextTypes: {
+	        router: React.PropTypes.func
 	  },
+
+	  getInitialState: function()
+	  {
+	    return {email: ''}, {address: ''}, {price: ''};
+	  },
+	  handleChange: function(event)
+	  {
+
+	    if(event.target.name == "email")
+	    {
+	      this.setState({email: event.target.value});
+	        //console.log(event.target.value);
+	    }
+	    else if(event.target.name == "address")
+	    {
+	      this.setState({address: event.target.value});
+	        //console.log(event.target.value);
+	    }
+	    else if(event.target.name == "price")
+	    {
+	    this.setState({price: event.target.value});
+	        //console.log(event.target.value);
+	    }
+
+	  },
+
 	  render: function() {
+	    var email = this.state.email;
+	    var address = this.state.address;
+	    var price = this.state.price;
+	    var streetA = "297 S 760 W";
+	    var zip = "84058";
+	    var state1 = "UT";
+	    var rDate = "12/12/16";
+	    var duration1 = "4";
+	    var rTime = "6:00 PM";
+	    var city = "orem"
+
+	    var data = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city}, parking: []};
 	    return (
-	      React.createElement("h1", null, "Payment")
-	    );
+
+	         React.createElement("div", {style: formStyle}, 
+	            "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	            "Address: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "address", value: address, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	            "Price: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "price", value: price, onChange: this.handleChange}), React.createElement("br", null), 
+	           React.createElement("input", {type: "radio"}, 
+	            "I agree to the ", React.createElement("a", {href: "terms.html"}, "terms of service")
+	            ), React.createElement("br", null), React.createElement("br", null), 
+	            React.createElement(CheckoutStrip, {data: data})
+	        )
+
+
+	      );
 	  }
 	});
 
@@ -996,7 +1045,7 @@
 	          React.createElement(Route, {name: "home", path: "/home", component: Home}), 
 	          React.createElement(Route, {name: "learn", path: "/learn", component: learn}), 
 	          React.createElement(Route, {name: "allDriveways", path: "/allDriveways", component: allDriveways}), 
-	          React.createElement(Route, {name: "pay", path: "/pay", component: PaymentPage}), 
+	          React.createElement(Route, {name: "pay", path: "/pay", component: pay}), 
 	          React.createElement(Route, {name: "map", path: "/map", component: MapHolder}), 
 	          React.createElement(Route, {name: "driveway", path: "/driveway", component: driveway}), 
 	          React.createElement(Route, {name: "signUp", path: "/signUp", component: signUp}), 
@@ -26028,6 +26077,168 @@
 
 	exports.ReactScriptLoaderMixin = ReactScriptLoaderMixin;
 	exports.ReactScriptLoader = ReactScriptLoader;
+
+
+/***/ },
+/* 218 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM *//** @jsx React.DOM */
+
+	var React = __webpack_require__(2);
+	var History = __webpack_require__(160).History;
+	var $__0=     __webpack_require__(212),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
+	var ReactScriptLoaderMixin = __webpack_require__(217).ReactScriptLoaderMixin;
+	var $__1=  __webpack_require__(160),Lifecycle=$__1.Lifecycle;
+
+	var history = useBasename(createHistory)({
+	    basename: '/transitions'
+	})
+
+	function hello(){
+	  console.log(variable);
+	}
+	var test;
+	var priceT;
+	var streetAddress;
+	var state;
+	var zip;
+	var reservationDate
+	var reservationDuration;
+	var reservationTime;
+	var city;
+	var tokenId ="null";
+
+	var StripeButton = React.createClass({displayName: "StripeButton",
+	    mixins: [ReactScriptLoaderMixin, History, Lifecycle],
+	    getScriptURL: function() {
+	        return 'https://checkout.stripe.com/checkout.js';
+	    },
+
+	    statics: {
+	        stripeHandler: null,
+	        scriptDidError: false,
+	    },
+
+	    hasPendingClick: false,
+
+	    onScriptLoaded: function() {
+	        var self = this;
+
+	      console.log("here");
+
+	        if (!StripeButton.stripeHandler) {
+	            StripeButton.stripeHandler = StripeCheckout.configure({
+	                key: 'pk_test_HSPvK9dod2Uhf8JRQJIBP4rW',
+	                image: './app/gg.png',
+	                token: function(token) {
+	                    tokenId = token.Id;
+	                  var url = "/api/payment/chargeToken";
+	                  var price = priceT;
+	                  var streetAddress2 = streetAddress;
+	                  var state2 = state;
+	                  var zip2 = zip;
+	                  var reservationDate2 = reservationDate;
+	                  var reservationDuration2 = reservationDuration;
+	                  var reservationTime2 = reservationTime;
+	                  var city2 = city;
+	                    $.ajax
+	                    ({
+	                        url: url,
+	                        dataType: 'json',
+	                        type: 'POST',
+	                        data: {
+
+	                            
+	                            stripeToken: token,
+	                            price: price,
+	                            streetAddress: streetAddress2,
+	                            state: state2,
+	                            city: city2,
+	                            zip: zip2,
+	                            reservationDate: reservationDate2,
+	                            reservationDuration: reservationDuration2,   
+	                            reservationTime: reservationTime2
+	                            
+	                        },
+	                        success: function(res) 
+	                        {
+	                          
+	                            console.log("success");
+	                          
+
+	                        }.bind(this),
+	                        error: function()
+	                        {
+	                            
+	                        }.bind(this)
+
+	                    });
+
+	                },
+	                closed: function(){
+	                    if(tokenId != "null"){
+	                        var data1 = {Price: priceT};
+	                        tokenId = "null";
+	                        localStorage.price = priceT;
+
+	                        self.history.pushState(null,'/confirm');
+	                    }
+	                }
+	            });
+	            if (this.hasPendingClick) {
+	                this.showStripeDialog();
+	            }
+	        }
+	    },
+	    showLoadingDialog: function() {
+
+	    },
+	    hideLoadingDialog: function() {
+
+	    },
+	    showStripeDialog: function() {
+	        priceT = this.props.data.event.Price;
+	        streetAddress = this.props.data.event.street;
+	        state = this.props.data.event.state;
+	        zip = this.props.data.event.zip1;
+	        reservationDate = this.props.data.event.resDate;
+	        reservationDuration = this.props.data.event.duration;
+	        reservationTime = this.props.data.event.resTime;
+	        city = this.props.data.event.city;
+
+	        this.hideLoadingDialog();
+	        StripeButton.stripeHandler.open({
+	                name: 'ParkingLot',
+	                description: this.props.data.event.Address,
+	                billingAddress: true,
+	                amount: this.props.data.event.Price,
+	            });
+	    },
+	    onScriptError: function() {
+	        this.hideLoadingDialog();
+	        StripeButton.scriptDidError = true;
+	    },
+	    onClick: function() {
+	        if (StripeButton.scriptDidError) {
+	            console.log('failed to load script');
+	        } else if (StripeButton.stripeHandler) {
+	            this.showStripeDialog();
+	        } else {
+	            this.showLoadingDialog();
+	            this.hasPendingClick = true;
+	        }
+	    },
+	    render: function() {
+	        return (
+	            React.createElement("button", {onClick: this.onClick}, "Place order")
+	        );
+	    }
+	});
+
+
+
+	module.exports = StripeButton;
 
 
 /***/ }
