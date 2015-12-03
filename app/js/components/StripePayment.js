@@ -1,7 +1,14 @@
 /** @jsx React.DOM */
 
 var React = require('react');
+var History = require('react-router').History;
+var { createHistory, useBasename } = require('history');
 var ReactScriptLoaderMixin = require('react-script-loader').ReactScriptLoaderMixin;
+var {Lifecycle} = require('react-router');
+
+var history = useBasename(createHistory)({
+    basename: '/transitions'
+})
 
 function hello(){
   console.log(variable);
@@ -15,9 +22,10 @@ var reservationDate
 var reservationDuration;
 var reservationTime;
 var city;
+var tokenId ="null";
 
 var StripeButton = React.createClass({
-    mixins: [ReactScriptLoaderMixin],
+    mixins: [ReactScriptLoaderMixin, History, Lifecycle],
     getScriptURL: function() {
         return 'https://checkout.stripe.com/checkout.js';
     },
@@ -30,6 +38,7 @@ var StripeButton = React.createClass({
     hasPendingClick: false,
 
     onScriptLoaded: function() {
+        var self = this;
 
       console.log("here");
 
@@ -38,6 +47,7 @@ var StripeButton = React.createClass({
                 key: 'pk_test_HSPvK9dod2Uhf8JRQJIBP4rW',
                 image: './app/gg.png',
                 token: function(token) {
+                    tokenId = token.Id;
                   var url = "/api/payment/chargeToken";
                   var price = priceT;
                   var streetAddress2 = streetAddress;
@@ -75,11 +85,20 @@ var StripeButton = React.createClass({
                         }.bind(this),
                         error: function()
                         {
-                            console.log("failure");
+                            
                         }.bind(this)
 
                     });
 
+                },
+                closed: function(){
+                    if(tokenId != "null"){
+                        var data1 = {Price: priceT};
+                        tokenId = "null";
+                        localStorage.price = priceT;
+
+                        self.history.pushState(null,'/confirm');
+                    }
                 }
             });
             if (this.hasPendingClick) {
