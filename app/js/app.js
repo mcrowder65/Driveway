@@ -1,4 +1,3 @@
-
 var React   = require('react');
 var ReactDOM = require('react-dom');
 var Router = require('react-router').Router;
@@ -10,6 +9,13 @@ var RouteHandler = Router.RouteHandler;
 var Redirect = Router.Redirect;
 var signedIn = true;
 var transitionTo = Router.transitionTo;
+var History = require('react-router').History;
+var { createHistory, useBasename } = require('history');
+var ReactScriptLoaderMixin = require('react-script-loader').ReactScriptLoaderMixin;
+var {Lifecycle} = require('react-router');
+var history = useBasename(createHistory)({
+    basename: '/transitions'
+})
 var profileDriveways = '';
 var allDriveways = [];
 var userDriveways = [];
@@ -35,7 +41,6 @@ function get(parameter)
 var App = React.createClass({
   render: function() 
   {
-    console.log(localStorage);
     drivewayDAO.getAll();
     if(!localStorage.username)
     {
@@ -44,7 +49,7 @@ var App = React.createClass({
           <nav className="navbar navbar-default" role="navigation">
             <div className="nav navbar-nav navbar-left">                
               <Link className="navbar-brand" to="/home">Home</Link>                  
-              <Link className="navbar-brand" to="/aboutUs">About us</Link>              
+              <Link className="navbar-brand" to="/learn">Learn</Link>              
               <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
               <Link className="navbar-brand" to="/map">Map</Link>  
               <Link className="navbar-brand" to="/pay">Pay</Link> 
@@ -68,7 +73,7 @@ var App = React.createClass({
             <nav className="navbar navbar-default" role="navigation">
               <div className="nav navbar-nav navbar-left">                
                 <Link className="navbar-brand" to="">Home</Link>                  
-                <Link className="navbar-brand" to="/aboutUs">About us</Link>              
+                <Link className="navbar-brand" to="/learn">Learn</Link>              
                 <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
                 <Link className="navbar-brand" to="/map">Map</Link>  
                 <Link className="navbar-brand" to="/pay">Pay</Link> 
@@ -87,25 +92,92 @@ var App = React.createClass({
     
   }
 });
+
+var homeStyle =
+{
+  textAlign: 'center',
+  width: '100%',
+  fontFamily: 'Calibri',
+  fontSize: '30',
+  align: 'center'
+};
+var left = 
+{
+  textAlign: 'left'
+};
+var right = 
+{
+  textAlign: 'right'
+};
+var center = 
+{
+  textAlign: 'center'
+};
 var Home = React.createClass
 ({
+  mixins: [History, Lifecycle],
+  goToLearn: function()
+  {
+    this.history.pushState(null, '/learn');
+  },
   render: function() {
     return (
-      <div style={formStyle}>
-      <p> Imagine parking at this mofo</p>
+    <div>
 
-      <p><Link to="/map"><button type="button" className="btn btn-info btn-sm">rent a driveway</button> </Link></p>
-     <img src="pic.jpg" height="100%" width="100%"/><br/>
-     
-     </div>
+      <div className="center jumbotron" style={homeStyle}>
+        <p> Better parking is just a few clicks away </p>
+        <div className="row">
+          <div className="input-group">
+            <input type="text" className="form-control" placeholder="Search the address of an event"/>
+            <span className="input-group-btn">
+              <button className="btn btn-default" type="button">Go!</button>
+            </span>
+          </div>
+        </div>
+      </div>
+
+
+      <div className="panel panel-primary">
+        <span className="glyphicon glyphicon-apple" aria-hidden="true"></span>
+        <div className="panel-body" style={center}> 
+          <h3>Rent out your driveway</h3>
+          <p>Easy as 1...2...3...</p>
+          <button className="btn btn-default btn-lg dropdown-toggle" type="button" onClick={this.goToLearn}>
+          Learn more
+          </button>
+        </div>
+      </div>
+    
+
+    </div>
+
     );
   }
 });
-var AboutUs = React.createClass
+var picStyle=
+{
+  width:'100%',
+  height:'100%'
+};
+var learn = React.createClass
 ({
   render: function() {
     return (
-      <h1>About Us</h1>
+      <div style={center}>
+        <img src="pic.jpg" style={picStyle}/>
+
+        <div className="jumbotron">
+          <p> Imagine trying to find parking at this event?<br/>
+              I am sure we can agree it would be a nightmare.<br/>
+                                                             <br/>
+              Now imagine living near this place and renting out<br/>
+              your driveway and you making easy cash.<br/>
+              <br/>
+              Just throw up your driveway on your profile, your asking<br/>
+              price, and times available, and we will do the rest. <br/>
+          </p>
+        </div>
+      </div>
     );
   }
 });
@@ -135,6 +207,7 @@ var profile = React.createClass
 ({
   render: function() 
   {
+    console.log("email: " + localStorage.email);
       return (
        <div>
         <p>username: <br/>{localStorage.username}</p>
@@ -147,6 +220,7 @@ var profile = React.createClass
 });
 var driveway = React.createClass
 ({
+  mixins: [History, Lifecycle],
   getInitialState: function() 
   {
     var tempAddress = get('address');
@@ -161,7 +235,7 @@ var driveway = React.createClass
       return {address: address, numCars: numCars, zip: zip, city: city, state: state, editing: true};
     }
     else
-        return {address: '', numCars: '1', zip:'', city: '', state:'AL', editing: false, time: []};
+        return {address: '', numCars: '1', zip:'', city: '', state:'AL', editing: false, time: '', day: ''};
   },
   handleChange: function(event) 
   {
@@ -175,6 +249,11 @@ var driveway = React.createClass
       this.setState({state: event.target.value});
     else if(event.target.name =='city')
       this.setState({city: event.target.value});
+    else if(event.target.name == 'time')
+      this.setState({time: event.target.value});
+    else if(event.target.name == 'day')
+      this.setState({day: event.target.value});
+
   },
   handleClick: function(event)
   {
@@ -183,7 +262,7 @@ var driveway = React.createClass
   addNewTime: function()
   {
       var br = document.createElement("br");
-      document.getElementById('submit').style.display='none';
+
       var day = document.createTextNode("Day:   ");         
       document.getElementById("time").appendChild(day);
       var daySelect = document.createElement("select");
@@ -233,7 +312,7 @@ var driveway = React.createClass
   },
   remove: function()
   {
-    location.href="/#/profile";
+    this.history.pushState(null, '/profile');
   },
   render: function() 
   {
@@ -242,16 +321,11 @@ var driveway = React.createClass
     var zip = this.state.zip;
     var state = this.state.state;
     var city = this.state.city;
-    
-    console.log('Address: ' + address);
-    console.log('numCars: ' + numCars);
-    console.log('zip: ' + zip);
-    console.log('state: ' + state);
-    console.log('city: ' + city);
     if(!this.state.editing)
     {
       return (
-      <div id='time'>
+      <div>
+        <div id="time">
           Street address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
           City: <br/><input type="text" name="city" value={city} onChange={this.handleChange}/><br/><br/>
           State: <br/><select name="state" value={state} onChange={this.handleChange}>
@@ -313,7 +387,7 @@ var driveway = React.createClass
                         <option value='2'>2</option>
                         <option value='3'>3</option>
                       </select><br/><br/>
-          Day: <space> </space> <select name="day" id="day">
+          Day: <space> </space> <select name="day" id="day" onChange={this.handleChange}>
                                   <option value=""> </option>
                                   <option value="monday"> Monday</option>
                                   <option value="tuesday"> Tuesday</option>
@@ -324,7 +398,7 @@ var driveway = React.createClass
                                   <option value="sunday"> Sunday</option>
                                   </select> <space></space>
           Times available: <space> </space>
-                      <select name="time" id="time">
+                      <select name="time" id="time" onChange={this.handleChange}>
                         <option value="-"></option>
                         <option value="5:00 AM">5:00 AM</option>
                         <option value="5:15 AM">5:15 AM</option>
@@ -422,7 +496,10 @@ var driveway = React.createClass
                         <option value="11:45 PM">11:45 PM</option>
                       </select><space> </space>
           <button onClick={this.addNewTime}> Add another time</button><br/><br/>
-          <button id='submit' onClick={this.handleClick}> Submit </button>
+          </div>
+          <div>
+            <button id='submit' onClick={this.handleClick}> Submit </button>  
+          </div>
       </div>
       
 
@@ -510,9 +587,9 @@ var driveway = React.createClass
 
 });
 
-
 var drivewayDAO = 
 {
+  mixins: [History, Lifecycle],
   erase: function(username, address, numCars, zip, state, city)
   {
     var url = "/api/users/deleteDriveway";
@@ -559,7 +636,7 @@ var drivewayDAO =
         success: function(res) 
         {
           if(res.username == localStorage.username)
-            location.href = '/#/profile';
+            location.href='/#/profile';
           else
             alert('This address already exists.');
           
@@ -635,6 +712,7 @@ var drivewayDAO =
 };
 var logOut = React.createClass
 ({
+  mixins: [History, Lifecycle],
   getInitialState: function() 
   {
     return {username: ''}, {password: ''};
@@ -646,8 +724,7 @@ var logOut = React.createClass
   {
     delete localStorage.username;
     delete localStorage.email;
-    console.log(localStorage);
-    location.href = '/#/home';
+    this.history.pushState(null,'/Home');
   },
   render: function() {
 
@@ -667,6 +744,7 @@ var formStyle =
 };
 var signIn = React.createClass
 ({
+  mixins: [History, Lifecycle],
   getInitialState: function() 
   {
     return {username: ''}, {password: ''};
@@ -684,7 +762,8 @@ var signIn = React.createClass
     if(signedIn == true)
     {
       localStorage.username = this.state.username;
-      location.href='/#/profile';
+      this.history.pushState(null, '/profile');
+      this.history.pushState(null, '/profile');
     }
           
   },
@@ -815,6 +894,7 @@ var signUp = React.createClass
 
 var auth =
 {
+  mixins: [History, Lifecycle],
   register: function(email, username, password)
   {
     console.log("email: " + email);
@@ -832,9 +912,6 @@ var auth =
             },
             success: function(res) 
             {
-              console.log("before success statement");
-              console.log("success");
-              console.log("res email: " + res.email);
               location.href='/#/signIn';
             }.bind(this),
             error: function()
@@ -852,7 +929,7 @@ var routes = (
         <Route name="app" path="/" component={App} handler={App}>
           <IndexRoute component={Home} />
           <Route name="home" path="/home" component={Home}/>
-          <Route name="aboutUs" path="/aboutUs" component={AboutUs} /> 
+          <Route name="learn" path="/learn" component={learn} /> 
           <Route name="allDriveways" path="/allDriveways" component={allDriveways} /> 
           <Route name="pay" path="/pay" component={PaymentPage} />
           <Route name="map" path="/map" component={MapHolder} /> 

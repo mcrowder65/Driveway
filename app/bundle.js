@@ -51,8 +51,7 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @jsx React.DOM */
-	var React   = __webpack_require__(2);
+	/** @jsx React.DOM */var React   = __webpack_require__(2);
 	var ReactDOM = __webpack_require__(159);
 	var Router = __webpack_require__(160).Router;
 	var Route = __webpack_require__(160).Route;
@@ -63,6 +62,13 @@
 	var Redirect = Router.Redirect;
 	var signedIn = true;
 	var transitionTo = Router.transitionTo;
+	var History = __webpack_require__(160).History;
+	var $__0=     __webpack_require__(212),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
+	var ReactScriptLoaderMixin = __webpack_require__(217).ReactScriptLoaderMixin;
+	var $__1=  __webpack_require__(160),Lifecycle=$__1.Lifecycle;
+	var history = useBasename(createHistory)({
+	    basename: '/transitions'
+	})
 	var profileDriveways = '';
 	var allDriveways = [];
 	var userDriveways = [];
@@ -88,7 +94,6 @@
 	var App = React.createClass({displayName: "App",
 	  render: function() 
 	  {
-	    console.log(localStorage);
 	    drivewayDAO.getAll();
 	    if(!localStorage.username)
 	    {
@@ -97,7 +102,7 @@
 	          React.createElement("nav", {className: "navbar navbar-default", role: "navigation"}, 
 	            React.createElement("div", {className: "nav navbar-nav navbar-left"}, 
 	              React.createElement(Link, {className: "navbar-brand", to: "/home"}, "Home"), 
-	              React.createElement(Link, {className: "navbar-brand", to: "/aboutUs"}, "About us"), 
+	              React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/allDriveways"}, "All driveways"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/map"}, "Map"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay")
@@ -121,7 +126,7 @@
 	            React.createElement("nav", {className: "navbar navbar-default", role: "navigation"}, 
 	              React.createElement("div", {className: "nav navbar-nav navbar-left"}, 
 	                React.createElement(Link, {className: "navbar-brand", to: ""}, "Home"), 
-	                React.createElement(Link, {className: "navbar-brand", to: "/aboutUs"}, "About us"), 
+	                React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/allDriveways"}, "All driveways"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/map"}, "Map"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay")
@@ -140,25 +145,92 @@
 	    
 	  }
 	});
+
+	var homeStyle =
+	{
+	  textAlign: 'center',
+	  width: '100%',
+	  fontFamily: 'Calibri',
+	  fontSize: '30',
+	  align: 'center'
+	};
+	var left = 
+	{
+	  textAlign: 'left'
+	};
+	var right = 
+	{
+	  textAlign: 'right'
+	};
+	var center = 
+	{
+	  textAlign: 'center'
+	};
 	var Home = React.createClass
 	({displayName: "Home",
+	  mixins: [History, Lifecycle],
+	  goToLearn: function()
+	  {
+	    this.history.pushState(null, '/learn');
+	  },
 	  render: function() {
 	    return (
-	      React.createElement("div", {style: formStyle}, 
-	      React.createElement("p", null, " Imagine parking at this mofo"), 
+	    React.createElement("div", null, 
 
-	      React.createElement("p", null, React.createElement(Link, {to: "/map"}, React.createElement("button", {type: "button", className: "btn btn-info btn-sm"}, "rent a driveway"), " ")), 
-	     React.createElement("img", {src: "pic.jpg", height: "100%", width: "100%"}), React.createElement("br", null)
-	     
-	     )
+	      React.createElement("div", {className: "center jumbotron", style: homeStyle}, 
+	        React.createElement("p", null, " Better parking is just a few clicks away "), 
+	        React.createElement("div", {className: "row"}, 
+	          React.createElement("div", {className: "input-group"}, 
+	            React.createElement("input", {type: "text", className: "form-control", placeholder: "Search the address of an event"}), 
+	            React.createElement("span", {className: "input-group-btn"}, 
+	              React.createElement("button", {className: "btn btn-default", type: "button"}, "Go!")
+	            )
+	          )
+	        )
+	      ), 
+
+
+	      React.createElement("div", {className: "panel panel-primary"}, 
+	        React.createElement("span", {className: "glyphicon glyphicon-apple", "aria-hidden": "true"}), 
+	        React.createElement("div", {className: "panel-body", style: center}, 
+	          React.createElement("h3", null, "Rent out your driveway"), 
+	          React.createElement("p", null, "Easy as 1...2...3..."), 
+	          React.createElement("button", {className: "btn btn-default btn-lg dropdown-toggle", type: "button", onClick: this.goToLearn}, 
+	          "Learn more"
+	          )
+	        )
+	      )
+	    
+
+	    )
+
 	    );
 	  }
 	});
-	var AboutUs = React.createClass
-	({displayName: "AboutUs",
+	var picStyle=
+	{
+	  width:'100%',
+	  height:'100%'
+	};
+	var learn = React.createClass
+	({displayName: "learn",
 	  render: function() {
 	    return (
-	      React.createElement("h1", null, "About Us")
+	      React.createElement("div", {style: center}, 
+	        React.createElement("img", {src: "pic.jpg", style: picStyle}), 
+
+	        React.createElement("div", {className: "jumbotron"}, 
+	          React.createElement("p", null, " Imagine trying to find parking at this event?", React.createElement("br", null), 
+	              "I am sure we can agree it would be a nightmare.", React.createElement("br", null), 
+	                                                             React.createElement("br", null), 
+	              "Now imagine living near this place and renting out", React.createElement("br", null), 
+	              "your driveway and you making easy cash.", React.createElement("br", null), 
+	              React.createElement("br", null), 
+	              "Just throw up your driveway on your profile, your asking", React.createElement("br", null), 
+	              "price, and times available, and we will do the rest. ", React.createElement("br", null)
+	          )
+	        )
+	      )
 	    );
 	  }
 	});
@@ -188,6 +260,7 @@
 	({displayName: "profile",
 	  render: function() 
 	  {
+	    console.log("email: " + localStorage.email);
 	      return (
 	       React.createElement("div", null, 
 	        React.createElement("p", null, "username: ", React.createElement("br", null), localStorage.username), 
@@ -200,6 +273,7 @@
 	});
 	var driveway = React.createClass
 	({displayName: "driveway",
+	  mixins: [History, Lifecycle],
 	  getInitialState: function() 
 	  {
 	    var tempAddress = get('address');
@@ -214,7 +288,7 @@
 	      return {address: address, numCars: numCars, zip: zip, city: city, state: state, editing: true};
 	    }
 	    else
-	        return {address: '', numCars: '1', zip:'', city: '', state:'AL', editing: false, time: []};
+	        return {address: '', numCars: '1', zip:'', city: '', state:'AL', editing: false, time: '', day: ''};
 	  },
 	  handleChange: function(event) 
 	  {
@@ -228,6 +302,11 @@
 	      this.setState({state: event.target.value});
 	    else if(event.target.name =='city')
 	      this.setState({city: event.target.value});
+	    else if(event.target.name == 'time')
+	      this.setState({time: event.target.value});
+	    else if(event.target.name == 'day')
+	      this.setState({day: event.target.value});
+
 	  },
 	  handleClick: function(event)
 	  {
@@ -236,7 +315,7 @@
 	  addNewTime: function()
 	  {
 	      var br = document.createElement("br");
-	      document.getElementById('submit').style.display='none';
+
 	      var day = document.createTextNode("Day:   ");         
 	      document.getElementById("time").appendChild(day);
 	      var daySelect = document.createElement("select");
@@ -286,7 +365,7 @@
 	  },
 	  remove: function()
 	  {
-	    location.href="/#/profile";
+	    this.history.pushState(null, '/profile');
 	  },
 	  render: function() 
 	  {
@@ -295,16 +374,11 @@
 	    var zip = this.state.zip;
 	    var state = this.state.state;
 	    var city = this.state.city;
-	    
-	    console.log('Address: ' + address);
-	    console.log('numCars: ' + numCars);
-	    console.log('zip: ' + zip);
-	    console.log('state: ' + state);
-	    console.log('city: ' + city);
 	    if(!this.state.editing)
 	    {
 	      return (
-	      React.createElement("div", {id: "time"}, 
+	      React.createElement("div", null, 
+	        React.createElement("div", {id: "time"}, 
 	          "Street address: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "address", value: address, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
 	          "City: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "city", value: city, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
 	          "State: ", React.createElement("br", null), React.createElement("select", {name: "state", value: state, onChange: this.handleChange}, 
@@ -366,7 +440,7 @@
 	                        React.createElement("option", {value: "2"}, "2"), 
 	                        React.createElement("option", {value: "3"}, "3")
 	                      ), React.createElement("br", null), React.createElement("br", null), 
-	          "Day: ", React.createElement("space", null, " "), " ", React.createElement("select", {name: "day", id: "day"}, 
+	          "Day: ", React.createElement("space", null, " "), " ", React.createElement("select", {name: "day", id: "day", onChange: this.handleChange}, 
 	                                  React.createElement("option", {value: ""}, " "), 
 	                                  React.createElement("option", {value: "monday"}, " Monday"), 
 	                                  React.createElement("option", {value: "tuesday"}, " Tuesday"), 
@@ -377,7 +451,7 @@
 	                                  React.createElement("option", {value: "sunday"}, " Sunday")
 	                                  ), " ", React.createElement("space", null), 
 	          "Times available: ", React.createElement("space", null, " "), 
-	                      React.createElement("select", {name: "time", id: "time"}, 
+	                      React.createElement("select", {name: "time", id: "time", onChange: this.handleChange}, 
 	                        React.createElement("option", {value: "-"}), 
 	                        React.createElement("option", {value: "5:00 AM"}, "5:00 AM"), 
 	                        React.createElement("option", {value: "5:15 AM"}, "5:15 AM"), 
@@ -474,8 +548,11 @@
 	                        React.createElement("option", {value: "11:30 PM"}, "11:30 PM"), 
 	                        React.createElement("option", {value: "11:45 PM"}, "11:45 PM")
 	                      ), React.createElement("space", null, " "), 
-	          React.createElement("button", {onClick: this.addNewTime}, " Add another time"), React.createElement("br", null), React.createElement("br", null), 
-	          React.createElement("button", {id: "submit", onClick: this.handleClick}, " Submit ")
+	          React.createElement("button", {onClick: this.addNewTime}, " Add another time"), React.createElement("br", null), React.createElement("br", null)
+	          ), 
+	          React.createElement("div", null, 
+	            React.createElement("button", {id: "submit", onClick: this.handleClick}, " Submit ")
+	          )
 	      )
 	      
 
@@ -563,9 +640,9 @@
 
 	});
 
-
 	var drivewayDAO = 
 	{
+	  mixins: [History, Lifecycle],
 	  erase: function(username, address, numCars, zip, state, city)
 	  {
 	    var url = "/api/users/deleteDriveway";
@@ -612,7 +689,7 @@
 	        success: function(res) 
 	        {
 	          if(res.username == localStorage.username)
-	            location.href = '/#/profile';
+	            location.href='/#/profile';
 	          else
 	            alert('This address already exists.');
 	          
@@ -688,6 +765,7 @@
 	};
 	var logOut = React.createClass
 	({displayName: "logOut",
+	  mixins: [History, Lifecycle],
 	  getInitialState: function() 
 	  {
 	    return {username: ''}, {password: ''};
@@ -699,8 +777,7 @@
 	  {
 	    delete localStorage.username;
 	    delete localStorage.email;
-	    console.log(localStorage);
-	    location.href = '/#/home';
+	    this.history.pushState(null,'/Home');
 	  },
 	  render: function() {
 
@@ -720,6 +797,7 @@
 	};
 	var signIn = React.createClass
 	({displayName: "signIn",
+	  mixins: [History, Lifecycle],
 	  getInitialState: function() 
 	  {
 	    return {username: ''}, {password: ''};
@@ -737,7 +815,8 @@
 	    if(signedIn == true)
 	    {
 	      localStorage.username = this.state.username;
-	      location.href='/#/profile';
+	      this.history.pushState(null, '/profile');
+	      this.history.pushState(null, '/profile');
 	    }
 	          
 	  },
@@ -868,6 +947,7 @@
 
 	var auth =
 	{
+	  mixins: [History, Lifecycle],
 	  register: function(email, username, password)
 	  {
 	    console.log("email: " + email);
@@ -885,9 +965,6 @@
 	            },
 	            success: function(res) 
 	            {
-	              console.log("before success statement");
-	              console.log("success");
-	              console.log("res email: " + res.email);
 	              location.href='/#/signIn';
 	            }.bind(this),
 	            error: function()
@@ -905,7 +982,7 @@
 	        React.createElement(Route, {name: "app", path: "/", component: App, handler: App}, 
 	          React.createElement(IndexRoute, {component: Home}), 
 	          React.createElement(Route, {name: "home", path: "/home", component: Home}), 
-	          React.createElement(Route, {name: "aboutUs", path: "/aboutUs", component: AboutUs}), 
+	          React.createElement(Route, {name: "learn", path: "/learn", component: learn}), 
 	          React.createElement(Route, {name: "allDriveways", path: "/allDriveways", component: allDriveways}), 
 	          React.createElement(Route, {name: "pay", path: "/pay", component: PaymentPage}), 
 	          React.createElement(Route, {name: "map", path: "/map", component: MapHolder}), 
@@ -25407,6 +25484,539 @@
 	});
 
 	module.exports = ParkingMap;
+
+/***/ },
+/* 212 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict';
+
+	exports.__esModule = true;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _createBrowserHistory = __webpack_require__(213);
+
+	var _createBrowserHistory2 = _interopRequireDefault(_createBrowserHistory);
+
+	exports.createHistory = _createBrowserHistory2['default'];
+
+	var _createHashHistory2 = __webpack_require__(163);
+
+	var _createHashHistory3 = _interopRequireDefault(_createHashHistory2);
+
+	exports.createHashHistory = _createHashHistory3['default'];
+
+	var _createMemoryHistory2 = __webpack_require__(209);
+
+	var _createMemoryHistory3 = _interopRequireDefault(_createMemoryHistory2);
+
+	exports.createMemoryHistory = _createMemoryHistory3['default'];
+
+	var _createLocation2 = __webpack_require__(176);
+
+	var _createLocation3 = _interopRequireDefault(_createLocation2);
+
+	exports.createLocation = _createLocation3['default'];
+
+	var _useBasename2 = __webpack_require__(210);
+
+	var _useBasename3 = _interopRequireDefault(_useBasename2);
+
+	exports.useBasename = _useBasename3['default'];
+
+	var _useBeforeUnload2 = __webpack_require__(214);
+
+	var _useBeforeUnload3 = _interopRequireDefault(_useBeforeUnload2);
+
+	exports.useBeforeUnload = _useBeforeUnload3['default'];
+
+	var _useQueries2 = __webpack_require__(187);
+
+	var _useQueries3 = _interopRequireDefault(_useQueries2);
+
+	exports.useQueries = _useQueries3['default'];
+
+	var _Actions2 = __webpack_require__(166);
+
+	var _Actions3 = _interopRequireDefault(_Actions2);
+
+	exports.Actions = _Actions3['default'];
+
+	// deprecated
+
+	var _enableBeforeUnload2 = __webpack_require__(215);
+
+	var _enableBeforeUnload3 = _interopRequireDefault(_enableBeforeUnload2);
+
+	exports.enableBeforeUnload = _enableBeforeUnload3['default'];
+
+	var _enableQueries2 = __webpack_require__(216);
+
+	var _enableQueries3 = _interopRequireDefault(_enableQueries2);
+
+	exports.enableQueries = _enableQueries3['default'];
+
+/***/ },
+/* 213 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/** @jsx React.DOM */'use strict';
+
+	exports.__esModule = true;
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _invariant = __webpack_require__(165);
+
+	var _invariant2 = _interopRequireDefault(_invariant);
+
+	var _Actions = __webpack_require__(166);
+
+	var _ExecutionEnvironment = __webpack_require__(167);
+
+	var _DOMUtils = __webpack_require__(168);
+
+	var _DOMStateStorage = __webpack_require__(169);
+
+	var _createDOMHistory = __webpack_require__(170);
+
+	var _createDOMHistory2 = _interopRequireDefault(_createDOMHistory);
+
+	/**
+	 * Creates and returns a history object that uses HTML5's history API
+	 * (pushState, replaceState, and the popstate event) to manage history.
+	 * This is the recommended method of managing history in browsers because
+	 * it provides the cleanest URLs.
+	 *
+	 * Note: In browsers that do not support the HTML5 history API full
+	 * page reloads will be used to preserve URLs.
+	 */
+	function createBrowserHistory() {
+	  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	  !_ExecutionEnvironment.canUseDOM ? process.env.NODE_ENV !== 'production' ? _invariant2['default'](false, 'Browser history needs a DOM') : _invariant2['default'](false) : undefined;
+
+	  var forceRefresh = options.forceRefresh;
+
+	  var isSupported = _DOMUtils.supportsHistory();
+	  var useRefresh = !isSupported || forceRefresh;
+
+	  function getCurrentLocation(historyState) {
+	    historyState = historyState || window.history.state || {};
+
+	    var path = _DOMUtils.getWindowPath();
+	    var _historyState = historyState;
+	    var key = _historyState.key;
+
+	    var state = undefined;
+	    if (key) {
+	      state = _DOMStateStorage.readState(key);
+	    } else {
+	      state = null;
+	      key = history.createKey();
+
+	      if (isSupported) window.history.replaceState(_extends({}, historyState, { key: key }), null, path);
+	    }
+
+	    return history.createLocation(path, state, undefined, key);
+	  }
+
+	  function startPopStateListener(_ref) {
+	    var transitionTo = _ref.transitionTo;
+
+	    function popStateListener(event) {
+	      if (event.state === undefined) return; // Ignore extraneous popstate events in WebKit.
+
+	      transitionTo(getCurrentLocation(event.state));
+	    }
+
+	    _DOMUtils.addEventListener(window, 'popstate', popStateListener);
+
+	    return function () {
+	      _DOMUtils.removeEventListener(window, 'popstate', popStateListener);
+	    };
+	  }
+
+	  function finishTransition(location) {
+	    var basename = location.basename;
+	    var pathname = location.pathname;
+	    var search = location.search;
+	    var hash = location.hash;
+	    var state = location.state;
+	    var action = location.action;
+	    var key = location.key;
+
+	    if (action === _Actions.POP) return; // Nothing to do.
+
+	    _DOMStateStorage.saveState(key, state);
+
+	    var path = (basename || '') + pathname + search + hash;
+	    var historyState = {
+	      key: key
+	    };
+
+	    if (action === _Actions.PUSH) {
+	      if (useRefresh) {
+	        window.location.href = path;
+	        return false; // Prevent location update.
+	      } else {
+	          window.history.pushState(historyState, null, path);
+	        }
+	    } else {
+	      // REPLACE
+	      if (useRefresh) {
+	        window.location.replace(path);
+	        return false; // Prevent location update.
+	      } else {
+	          window.history.replaceState(historyState, null, path);
+	        }
+	    }
+	  }
+
+	  var history = _createDOMHistory2['default'](_extends({}, options, {
+	    getCurrentLocation: getCurrentLocation,
+	    finishTransition: finishTransition,
+	    saveState: _DOMStateStorage.saveState
+	  }));
+
+	  var listenerCount = 0,
+	      stopPopStateListener = undefined;
+
+	  function listenBefore(listener) {
+	    if (++listenerCount === 1) stopPopStateListener = startPopStateListener(history);
+
+	    var unlisten = history.listenBefore(listener);
+
+	    return function () {
+	      unlisten();
+
+	      if (--listenerCount === 0) stopPopStateListener();
+	    };
+	  }
+
+	  function listen(listener) {
+	    if (++listenerCount === 1) stopPopStateListener = startPopStateListener(history);
+
+	    var unlisten = history.listen(listener);
+
+	    return function () {
+	      unlisten();
+
+	      if (--listenerCount === 0) stopPopStateListener();
+	    };
+	  }
+
+	  // deprecated
+	  function registerTransitionHook(hook) {
+	    if (++listenerCount === 1) stopPopStateListener = startPopStateListener(history);
+
+	    history.registerTransitionHook(hook);
+	  }
+
+	  // deprecated
+	  function unregisterTransitionHook(hook) {
+	    history.unregisterTransitionHook(hook);
+
+	    if (--listenerCount === 0) stopPopStateListener();
+	  }
+
+	  return _extends({}, history, {
+	    listenBefore: listenBefore,
+	    listen: listen,
+	    registerTransitionHook: registerTransitionHook,
+	    unregisterTransitionHook: unregisterTransitionHook
+	  });
+	}
+
+	exports['default'] = createBrowserHistory;
+	module.exports = exports['default'];
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
+
+/***/ },
+/* 214 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/** @jsx React.DOM */'use strict';
+
+	exports.__esModule = true;
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _warning = __webpack_require__(164);
+
+	var _warning2 = _interopRequireDefault(_warning);
+
+	var _ExecutionEnvironment = __webpack_require__(167);
+
+	var _DOMUtils = __webpack_require__(168);
+
+	var _deprecate = __webpack_require__(180);
+
+	var _deprecate2 = _interopRequireDefault(_deprecate);
+
+	function startBeforeUnloadListener(getBeforeUnloadPromptMessage) {
+	  function listener(event) {
+	    var message = getBeforeUnloadPromptMessage();
+
+	    if (typeof message === 'string') {
+	      (event || window.event).returnValue = message;
+	      return message;
+	    }
+	  }
+
+	  _DOMUtils.addEventListener(window, 'beforeunload', listener);
+
+	  return function () {
+	    _DOMUtils.removeEventListener(window, 'beforeunload', listener);
+	  };
+	}
+
+	/**
+	 * Returns a new createHistory function that can be used to create
+	 * history objects that know how to use the beforeunload event in web
+	 * browsers to cancel navigation.
+	 */
+	function useBeforeUnload(createHistory) {
+	  return function (options) {
+	    var history = createHistory(options);
+
+	    var stopBeforeUnloadListener = undefined;
+	    var beforeUnloadHooks = [];
+
+	    function getBeforeUnloadPromptMessage() {
+	      var message = undefined;
+
+	      for (var i = 0, len = beforeUnloadHooks.length; message == null && i < len; ++i) {
+	        message = beforeUnloadHooks[i].call();
+	      }return message;
+	    }
+
+	    function listenBeforeUnload(hook) {
+	      beforeUnloadHooks.push(hook);
+
+	      if (beforeUnloadHooks.length === 1) {
+	        if (_ExecutionEnvironment.canUseDOM) {
+	          stopBeforeUnloadListener = startBeforeUnloadListener(getBeforeUnloadPromptMessage);
+	        } else {
+	          process.env.NODE_ENV !== 'production' ? _warning2['default'](false, 'listenBeforeUnload only works in DOM environments') : undefined;
+	        }
+	      }
+
+	      return function () {
+	        beforeUnloadHooks = beforeUnloadHooks.filter(function (item) {
+	          return item !== hook;
+	        });
+
+	        if (beforeUnloadHooks.length === 0 && stopBeforeUnloadListener) {
+	          stopBeforeUnloadListener();
+	          stopBeforeUnloadListener = null;
+	        }
+	      };
+	    }
+
+	    // deprecated
+	    function registerBeforeUnloadHook(hook) {
+	      if (_ExecutionEnvironment.canUseDOM && beforeUnloadHooks.indexOf(hook) === -1) {
+	        beforeUnloadHooks.push(hook);
+
+	        if (beforeUnloadHooks.length === 1) stopBeforeUnloadListener = startBeforeUnloadListener(getBeforeUnloadPromptMessage);
+	      }
+	    }
+
+	    // deprecated
+	    function unregisterBeforeUnloadHook(hook) {
+	      if (beforeUnloadHooks.length > 0) {
+	        beforeUnloadHooks = beforeUnloadHooks.filter(function (item) {
+	          return item !== hook;
+	        });
+
+	        if (beforeUnloadHooks.length === 0) stopBeforeUnloadListener();
+	      }
+	    }
+
+	    return _extends({}, history, {
+	      listenBeforeUnload: listenBeforeUnload,
+
+	      registerBeforeUnloadHook: _deprecate2['default'](registerBeforeUnloadHook, 'registerBeforeUnloadHook is deprecated; use listenBeforeUnload instead'),
+	      unregisterBeforeUnloadHook: _deprecate2['default'](unregisterBeforeUnloadHook, 'unregisterBeforeUnloadHook is deprecated; use the callback returned from listenBeforeUnload instead')
+	    });
+	  };
+	}
+
+	exports['default'] = useBeforeUnload;
+	module.exports = exports['default'];
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
+
+/***/ },
+/* 215 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict';
+
+	exports.__esModule = true;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _deprecate = __webpack_require__(180);
+
+	var _deprecate2 = _interopRequireDefault(_deprecate);
+
+	var _useBeforeUnload = __webpack_require__(214);
+
+	var _useBeforeUnload2 = _interopRequireDefault(_useBeforeUnload);
+
+	exports['default'] = _deprecate2['default'](_useBeforeUnload2['default'], 'enableBeforeUnload is deprecated, use useBeforeUnload instead');
+	module.exports = exports['default'];
+
+/***/ },
+/* 216 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict';
+
+	exports.__esModule = true;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _deprecate = __webpack_require__(180);
+
+	var _deprecate2 = _interopRequireDefault(_deprecate);
+
+	var _useQueries = __webpack_require__(187);
+
+	var _useQueries2 = _interopRequireDefault(_useQueries);
+
+	exports['default'] = _deprecate2['default'](_useQueries2['default'], 'enableQueries is deprecated, use useQueries instead');
+	module.exports = exports['default'];
+
+/***/ },
+/* 217 */
+/***/ function(module, exports) {
+
+	/** @jsx React.DOM */
+	// A dictionary mapping script URLs to a dictionary mapping
+	// component key to component for all components that are waiting
+	// for the script to load.
+	var scriptObservers = {};
+
+	// A dictionary mapping script URL to a boolean value indicating if the script
+	// has already been loaded.
+	var loadedScripts = {};
+
+	// A dictionary mapping script URL to a boolean value indicating if the script
+	// has failed to load.
+	var erroredScripts = {};
+
+	// A counter used to generate a unique id for each component that uses
+	// ScriptLoaderMixin.
+	var idCount = 0;
+
+	var ReactScriptLoader = {
+		componentDidMount: function(key, component, scriptURL) {
+			if (typeof component.onScriptLoaded !== 'function') {
+				throw new Error('ScriptLoader: Component class must implement onScriptLoaded()');
+			}
+			if (typeof component.onScriptError !== 'function') {
+				throw new Error('ScriptLoader: Component class must implement onScriptError()');
+			}
+			if (loadedScripts[scriptURL]) {
+				component.onScriptLoaded();
+				return;
+			}
+			if (erroredScripts[scriptURL]) {
+				component.onScriptError();
+				return;
+			}
+
+			// If the script is loading, add the component to the script's observers
+			// and return. Otherwise, initialize the script's observers with the component
+			// and start loading the script.
+			if (scriptObservers[scriptURL]) {
+				scriptObservers[scriptURL][key] = component;
+				return;
+			}
+
+			var observers = {};
+			observers[key] = component;
+			scriptObservers[scriptURL] = observers;
+
+			var script = document.createElement('script');
+			script.src = scriptURL;
+
+			var callObserverFuncAndRemoveObserver = function(func) {
+				var observers = scriptObservers[scriptURL];
+				for (var key in observers) {
+					observer = observers[key];
+					var removeObserver = func(observer);
+					if (removeObserver) {
+						delete scriptObservers[scriptURL][key];
+					}
+				}
+				//delete scriptObservers[scriptURL];
+			}
+			script.onload = function() {
+				loadedScripts[scriptURL] = true;
+				callObserverFuncAndRemoveObserver(function(observer) {
+					if (observer.deferOnScriptLoaded && observer.deferOnScriptLoaded()) {
+						return false;
+					}
+					observer.onScriptLoaded();
+					return true;
+				});
+			};
+			script.onerror = function(event) {
+				erroredScripts[scriptURL] = true;
+				callObserverFuncAndRemoveObserver(function(observer) {
+					observer.onScriptError();
+					return true;
+				});
+			};
+			document.body.appendChild(script);
+		},
+		componentWillUnmount: function(key, scriptURL) {
+			// If the component is waiting for the script to load, remove the
+			// component from the script's observers before unmounting the component.
+			var observers = scriptObservers[scriptURL];
+			if (observers) {
+				delete observers[key];
+			}
+		},
+		triggerOnScriptLoaded: function(scriptURL) {
+			if (!loadedScripts[scriptURL]) {
+				throw new Error('Error: only call this function after the script has in fact loaded.');
+			}
+			var observers = scriptObservers[scriptURL];
+			for (var key in observers) {
+				var observer = observers[key];
+				observer.onScriptLoaded();
+			}
+			delete scriptObservers[scriptURL];
+		}
+	};
+
+	var ReactScriptLoaderMixin = {
+		componentDidMount: function() {
+			if (typeof this.getScriptURL !== 'function') {
+				throw new Error("ScriptLoaderMixin: Component class must implement getScriptURL().")
+			}
+			ReactScriptLoader.componentDidMount(this.__getScriptLoaderID(), this, this.getScriptURL());
+		},
+		componentWillUnmount: function() {
+			ReactScriptLoader.componentWillUnmount(this.__getScriptLoaderID(), this.getScriptURL());
+		},
+		__getScriptLoaderID: function() {
+			return 'id' + idCount++;
+		},
+	};
+
+	exports.ReactScriptLoaderMixin = ReactScriptLoaderMixin;
+	exports.ReactScriptLoader = ReactScriptLoader;
+
 
 /***/ }
 /******/ ]);
