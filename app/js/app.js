@@ -162,23 +162,35 @@ var picStyle=
 var learn = React.createClass
 ({
   render: function() {
-    return (
-      <div style={center}>
-        <img src="pic.jpg" style={picStyle}/>
+    if(signedIn)
+    {
+      return
+      (
+        <div> <h1>you are signed in</h1></div>
+      );
+    }
+    else
+    {
+      return 
+      (
+        <div style={center}>
+          <img src="pic.jpg" style={picStyle}/>
 
-        <div className="jumbotron">
-          <p> Imagine trying to find parking at this event?<br/>
-              I am sure we can agree it would be a nightmare.<br/>
-                                                             <br/>
-              Now imagine living near this place and renting out<br/>
-              your driveway and you making easy cash.<br/>
-              <br/>
-              Just throw up your driveway on your profile, your asking<br/>
-              price, and times available, and we will do the rest. <br/>
-          </p>
+          <div className="jumbotron">
+            <p> Imagine trying to find parking at this event?<br/>
+                I am sure we can agree it would be a nightmare.<br/>
+                                                               <br/>
+                Now imagine living near this place and renting out<br/>
+                your driveway and you making easy cash.<br/>
+                <br/>
+                Just throw up your driveway on your profile, your asking<br/>
+                price, and times available, and we will do the rest. <br/>
+            </p>
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
+    
   }
 });
 

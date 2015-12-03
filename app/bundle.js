@@ -215,23 +215,35 @@
 	var learn = React.createClass
 	({displayName: "learn",
 	  render: function() {
-	    return (
-	      React.createElement("div", {style: center}, 
-	        React.createElement("img", {src: "pic.jpg", style: picStyle}), 
+	    if(signedIn)
+	    {
+	      return
+	      (
+	        React.createElement("div", null, " ", React.createElement("h1", null, "you are signed in"))
+	      );
+	    }
+	    else
+	    {
+	      return 
+	      (
+	        React.createElement("div", {style: center}, 
+	          React.createElement("img", {src: "pic.jpg", style: picStyle}), 
 
-	        React.createElement("div", {className: "jumbotron"}, 
-	          React.createElement("p", null, " Imagine trying to find parking at this event?", React.createElement("br", null), 
-	              "I am sure we can agree it would be a nightmare.", React.createElement("br", null), 
-	                                                             React.createElement("br", null), 
-	              "Now imagine living near this place and renting out", React.createElement("br", null), 
-	              "your driveway and you making easy cash.", React.createElement("br", null), 
-	              React.createElement("br", null), 
-	              "Just throw up your driveway on your profile, your asking", React.createElement("br", null), 
-	              "price, and times available, and we will do the rest. ", React.createElement("br", null)
+	          React.createElement("div", {className: "jumbotron"}, 
+	            React.createElement("p", null, " Imagine trying to find parking at this event?", React.createElement("br", null), 
+	                "I am sure we can agree it would be a nightmare.", React.createElement("br", null), 
+	                                                               React.createElement("br", null), 
+	                "Now imagine living near this place and renting out", React.createElement("br", null), 
+	                "your driveway and you making easy cash.", React.createElement("br", null), 
+	                React.createElement("br", null), 
+	                "Just throw up your driveway on your profile, your asking", React.createElement("br", null), 
+	                "price, and times available, and we will do the rest. ", React.createElement("br", null)
+	            )
 	          )
 	        )
-	      )
-	    );
+	      );
+	    }
+	    
 	  }
 	});
 
