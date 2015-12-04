@@ -69,10 +69,35 @@
 	var history = useBasename(createHistory)({
 	    basename: '/transitions'
 	})
+	var Button = __webpack_require__(218);
 	var profileDriveways = '';
 	var allDriveways = [];
 	var userDriveways = [];
 
+	function upperCaseFirstLetter(string)
+	{
+	  return string[0].toUpperCase() + string.substring(1, string.length);
+	}
+	function contains(array, json)
+	{
+	  for(var i = 0; i < array.length; i++)
+	  {
+	    var object = array[i];
+	    if(object.stateDay == json.stateDay && object.startTime == json.startTime && object.endTime == json.endTime)
+	      return true;
+	  }
+	  return false;
+	}
+	function stripCharacter(string, character)
+	{
+	  var charIndex = string.indexOf(character);
+	  var firstHalf = string.substring(0, charIndex);
+	  var secondHalf = string.substring(charIndex+1, string.indexOf(' '));
+
+	  if(character == ':' && firstHalf == '12')
+	    firstHalf = '0';
+	  return firstHalf + secondHalf;
+	}
 	function get(parameter)
 	{  
 	  var url = window.location.href;
@@ -261,6 +286,7 @@
 	  render: function() 
 	  {
 	    console.log("email: " + localStorage.email);
+	    //this.forceUpdate();
 	      return (
 	       React.createElement("div", null, 
 	        React.createElement("p", null, "username: ", React.createElement("br", null), localStorage.username), 
@@ -277,6 +303,7 @@
 	  getInitialState: function() 
 	  {
 	    var tempAddress = get('address');
+	    var allowNewTimes = false;
 	    if(tempAddress)
 	    {
 	      var address = tempAddress;
@@ -288,10 +315,13 @@
 	      return {address: address, numCars: numCars, zip: zip, city: city, state: state, editing: true};
 	    }
 	    else
-	        return {address: '', numCars: '1', zip:'', city: '', state:'AL', editing: false, time: '', day: ''};
+	        return {address: '', numCars: '1', zip:'', city: '', state:'', editing: false, startTime: '', endTime: '', day: '', times: [], displayTimes: []};
 	  },
 	  handleChange: function(event) 
 	  {
+	    var dayBool = false;
+	    var startTimeBool = false;
+	    var endTimeBool = false;
 	    if(event.target.name == 'address')
 	      this.setState({address: event.target.value});
 	    else if(event.target.name == 'numCars')
@@ -302,66 +332,126 @@
 	      this.setState({state: event.target.value});
 	    else if(event.target.name =='city')
 	      this.setState({city: event.target.value});
-	    else if(event.target.name == 'time')
-	      this.setState({time: event.target.value});
+	    else if(event.target.name == 'startTime')
+	    {
+	      this.setState({startTime: event.target.value});
+	      if(event.target.value != '')
+	        startTimeBool = true; //if the value was empty, then we don't want them to add another time!
+	    }
+	    else if(event.target.name == 'endTime')
+	    {
+	      this.setState({endTime: event.target.value});
+	      if(event.target.value != '')
+	        endTimeBool = true;
+	    }
 	    else if(event.target.name == 'day')
+	    {
 	      this.setState({day: event.target.value});
+	      if(event.target.value != '')
+	        dayBool = true; //if the value was empty, then we don't want them to add another time!
+	    }
+	    this.setState({allowNewTimes: false}); //set it to false initially to reset any previous hanging trues.
+	    //handle a finished time slot
+	    //since calling this.state.time or this.state.day doesn't return anything even after you set it, use
+	    //dayBool and timeBool indicating that we set it to something so you can set the allowNewTimes to true
 
+	    if(dayBool && this.state.startTime != '' && this.state.endTime != '') //dayBool = true
+	      this.setState({allowNewTimes: true});
+	    if(this.state.day != '' && startTimeBool && this.state.endTime != '') //startTimeBool = true
+	      this.setState({allowNewTimes: true});
+	    if(this.state.day != '' && this.state.startTime != '' && endTimeBool) //endTimeBool = true
+	      this.setState({allowNewTimes: true});
 	  },
 	  handleClick: function(event)
 	  {
-	    drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, this.state.zip, this.state.state);
+	    if(this.state.state == '')
+	      alert('You must pick a state');
+	    else
+	      drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, this.state.zip, this.state.state);
+	  },
+	  deleteTime: function(index)
+	  {
+
+	  },
+	  endAfterStart: function()
+	  {
+	    var startTime = this.state.startTime;
+	    var endTime = this.state.endTime;
+
+	    var startPM = true;
+	    if(startTime.slice(-2) == 'AM')
+	      startPM = false;
+
+	    var endPM = true;
+	    if(endTime.slice(-2) == 'AM')
+	      endPM = false;
+	    //now we know if they're am or pm.
+
+	    if(!endPM && startPM) //endPM = AM and startPM = PM
+	      return false;
+	    if(endPM && !startPM) //endPM = PM and startPM = AM
+	      return true;
+	    
+	    startTime = parseInt(stripCharacter(startTime, ':'));
+	    endTime = parseInt(stripCharacter(endTime, ':'));
+	    
+
+	    console.log('startPM: ' + startPM + ' endPM: ' + endPM);
+	    console.log("startTime: " + startTime + " endTime: " + endTime);
+	    if(endTime <= startTime)
+	    {
+	      console.log("false");
+	      return false;
+	    }
+	    console.log("true");
+	    return true;
 	  },
 	  addNewTime: function()
 	  {
-	      var br = document.createElement("br");
-
-	      var day = document.createTextNode("Day:   ");         
-	      document.getElementById("time").appendChild(day);
-	      var daySelect = document.createElement("select");
-	      var days = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-	      for(var i = 0; i < days.length; i++)
+	      if(!this.state.allowNewTimes)
 	      {
-	        var option = document.createElement('option');
-	        option.innerHTML = days[i];
-	        option.value = days[i].toLowerCase();
-	        daySelect.appendChild(option);
+	        alert("You need to finish your first time before you add another.");
+	        return;
 	      }
-	      document.getElementById("time").appendChild(daySelect);
-
-
-	      var time = document.createTextNode(" Times available: ");
-	      document.getElementById("time").appendChild(time);
-	      var timeSelect = document.createElement("select");
-	      var times =['', '5:00 AM', '5:15 AM', '5:30 AM', '5:45 AM',
-	                      '6:00 AM', '6:15 AM', '6:30 AM', '6:45 AM',
-	                      '7:00 AM', '7:15 AM', '7:30 AM', '7:45 AM',
-	                      '8:00 AM', '8:15 AM', '8:30 AM', '8:45 AM',                       
-	                      '9:00 AM', '9:15 AM', '9:30 AM', '9:45 AM',                       
-	                      '10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM',                       
-	                      '11:00 AM', '11:15 AM', '11:30 AM', '11:45 AM',                       
-	                      '12:00 PM', '12:15 PM', '12:30 PM', '12:45 PM',
-	                      '1:00 PM', '1:15 PM', '1:30 PM', '1:45 PM',                       
-	                      '2:00 PM', '2:15 PM', '2:30 PM', '2:45 PM',
-	                      '3:00 PM', '3:15 PM', '3:30 PM', '3:45 PM',                       
-	                      '4:00 PM', '4:15 PM', '4:30 PM', '4:45 PM',
-	                      '5:00 PM', '5:15 PM', '5:30 PM', '5:45 PM',
-	                      '6:00 PM', '6:15 PM', '6:30 PM', '6:45 PM',
-	                      '7:00 PM', '7:15 PM', '7:30 PM', '7:45 PM',
-	                      '8:00 PM', '8:15 PM', '8:30 PM', '8:45 PM',
-	                      '9:00 PM', '9:15 PM', '9:30 PM', '9:45 PM',
-	                      '10:00 PM', '10:15 PM', '10:30 PM', '10:45 PM',
-	                      '11:00 PM', '11:15 PM', '11:30 PM', '11:45 PM'];
+	      var stateDay = this.state.day;
+	      var startTime = this.state.startTime;           // for some reason webpack likes you to initialize
+	      var endTime = this.state.endTime;
+	      if(this.endAfterStart() == false)
+	      {
+	        alert("Pick correct times.");
+	        this.setState({endTime: ''});
+	        return;
+	      }
+	      var dayTimeObject = {startTime:startTime, endTime:endTime, stateDay:stateDay}; // your variables before putting it into a json
+	      var times = this.state.times;
+	      if(contains(times, dayTimeObject))
+	      {
+	        alert("This selection already exists");
+	        this.setState({day: ''});
+	        this.setState({startTime: ''});
+	        this.setState({endTime: ''});
+	        return;
+	      }
+	      this.state.times.push(dayTimeObject);
+	      
+	      
+	      this.state.displayTimes = [];
+	      var displayTimes = this.state.displayTimes;
 	      for(var i = 0; i < times.length; i++)
 	      {
-	        var option = document.createElement("option");
-	        option.innerHTML = times[i];
-	        option.value = times[i];
-	        timeSelect.appendChild(option);
+	        displayTimes.push(React.createElement("br", null));
+	        
+	        var upperCaseDay = upperCaseFirstLetter(times[i].stateDay);
+	        var value = upperCaseDay + 's from ' + times[i].startTime + ' to ' + times[i].endTime;
+	        displayTimes.push(value);
+	        displayTimes.push(React.createElement(Button, null));
 	      }
-	      document.getElementById("time").appendChild(timeSelect);
-	      document.getElementById("time").appendChild(br);
-	      document.getElementById('submit').style.display='visible';
+
+	      this.state.displayTimes = displayTimes;
+	      this.setState({day: ''});
+	      this.setState({startTime: ''});
+	      this.setState({endTime: ''});
+	      this.forceUpdate();
 	  },
 	  remove: function()
 	  {
@@ -374,6 +464,10 @@
 	    var zip = this.state.zip;
 	    var state = this.state.state;
 	    var city = this.state.city;
+	    var day = this.state.day;
+	    var startTime = this.state.startTime;
+	    var endTime = this.state.endTime;
+	    var displayTimes = this.state.displayTimes;
 	    if(!this.state.editing)
 	    {
 	      return (
@@ -382,6 +476,7 @@
 	          "Street address: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "address", value: address, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
 	          "City: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "city", value: city, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
 	          "State: ", React.createElement("br", null), React.createElement("select", {name: "state", value: state, onChange: this.handleChange}, 
+	                        React.createElement("option", {value: "-"}), 
 	                        React.createElement("option", {value: "AL"}, "Alabama"), 
 	                        React.createElement("option", {value: "AK"}, "Alaska"), 
 	                        React.createElement("option", {value: "AZ"}, "Arizona"), 
@@ -440,7 +535,8 @@
 	                        React.createElement("option", {value: "2"}, "2"), 
 	                        React.createElement("option", {value: "3"}, "3")
 	                      ), React.createElement("br", null), React.createElement("br", null), 
-	          "Day: ", React.createElement("space", null, " "), " ", React.createElement("select", {name: "day", id: "day", onChange: this.handleChange}, 
+	          React.createElement("p", {id: "chosenTimes"}, " Chosen times: ", displayTimes), 
+	          "Day: ", React.createElement("space", null, " "), " ", React.createElement("select", {name: "day", id: "day", value: day, onChange: this.handleChange}, 
 	                                  React.createElement("option", {value: ""}, " "), 
 	                                  React.createElement("option", {value: "monday"}, " Monday"), 
 	                                  React.createElement("option", {value: "tuesday"}, " Tuesday"), 
@@ -450,9 +546,108 @@
 	                                  React.createElement("option", {value: "saturday"}, " Saturday"), 
 	                                  React.createElement("option", {value: "sunday"}, " Sunday")
 	                                  ), " ", React.createElement("space", null), 
-	          "Times available: ", React.createElement("space", null, " "), 
-	                      React.createElement("select", {name: "time", id: "time", onChange: this.handleChange}, 
-	                        React.createElement("option", {value: "-"}), 
+	          
+	          "Start time: ", React.createElement("space", null, " "), 
+	                      React.createElement("select", {name: "startTime", id: "time", value: startTime, onChange: this.handleChange}, 
+	                        React.createElement("option", {value: ""}), 
+	                        React.createElement("option", {value: "5:00 AM"}, "5:00 AM"), 
+	                        React.createElement("option", {value: "5:15 AM"}, "5:15 AM"), 
+	                        React.createElement("option", {value: "5:30 AM"}, "5:30 AM"), 
+	                        React.createElement("option", {value: "5:45 AM"}, "5:45 AM"), 
+	                       
+	                        React.createElement("option", {value: "6:00 AM"}, "6:00 AM"), 
+	                        React.createElement("option", {value: "6:15 AM"}, "6:15 AM"), 
+	                        React.createElement("option", {value: "6:30 AM"}, "6:30 AM"), 
+	                        React.createElement("option", {value: "6:45 AM"}, "6:45 AM"), 
+	                       
+	                        React.createElement("option", {value: "7:00 AM"}, "7:00 AM"), 
+	                        React.createElement("option", {value: "7:15 AM"}, "7:15 AM"), 
+	                        React.createElement("option", {value: "7:30 AM"}, "7:30 AM"), 
+	                        React.createElement("option", {value: "7:45 AM"}, "7:45 AM"), 
+	                       
+	                        React.createElement("option", {value: "8:00 AM"}, "8:00 AM"), 
+	                        React.createElement("option", {value: "8:15 AM"}, "8:15 AM"), 
+	                        React.createElement("option", {value: "8:30 AM"}, "8:30 AM"), 
+	                        React.createElement("option", {value: "8:45 AM"}, "8:45 AM"), 
+	                       
+	                        React.createElement("option", {value: "9:00 AM"}, "9:00 AM"), 
+	                        React.createElement("option", {value: "9:15 AM"}, "9:15 AM"), 
+	                        React.createElement("option", {value: "9:30 AM"}, "9:30 AM"), 
+	                        React.createElement("option", {value: "9:45 AM"}, "9:45 AM"), 
+	                       
+	                        React.createElement("option", {value: "10:00 AM"}, "10:00 AM"), 
+	                        React.createElement("option", {value: "10:15 AM"}, "10:15 AM"), 
+	                        React.createElement("option", {value: "10:30 AM"}, "10:30 AM"), 
+	                        React.createElement("option", {value: "10:45 AM"}, "10:45 AM"), 
+	                       
+	                        React.createElement("option", {value: "11:00 AM"}, "11:00 AM"), 
+	                        React.createElement("option", {value: "11:15 AM"}, "11:15 AM"), 
+	                        React.createElement("option", {value: "11:30 AM"}, "11:30 AM"), 
+	                        React.createElement("option", {value: "11:45 AM"}, "11:45 AM"), 
+	                       
+	                        React.createElement("option", {value: "12:00 PM"}, "12:00 PM"), 
+	                        React.createElement("option", {value: "12:15 PM"}, "12:15 PM"), 
+	                        React.createElement("option", {value: "12:30 PM"}, "12:30 PM"), 
+	                        React.createElement("option", {value: "12:45 PM"}, "12:45 PM"), 
+	                       
+	                        React.createElement("option", {value: "1:00 PM"}, "1:00 PM"), 
+	                        React.createElement("option", {value: "1:15 PM"}, "1:15 PM"), 
+	                        React.createElement("option", {value: "1:30 PM"}, "1:30 PM"), 
+	                        React.createElement("option", {value: "1:45 PM"}, "1:45 PM"), 
+	                       
+	                        React.createElement("option", {value: "2:00 PM"}, "2:00 PM"), 
+	                        React.createElement("option", {value: "2:15 PM"}, "2:15 PM"), 
+	                        React.createElement("option", {value: "2:30 PM"}, "2:30 PM"), 
+	                        React.createElement("option", {value: "2:45 PM"}, "2:45 PM"), 
+	                       
+	                        React.createElement("option", {value: "3:00 PM"}, "3:00 PM"), 
+	                        React.createElement("option", {value: "3:15 PM"}, "3:15 PM"), 
+	                        React.createElement("option", {value: "3:30 PM"}, "3:30 PM"), 
+	                        React.createElement("option", {value: "3:45 PM"}, "3:45 PM"), 
+	                       
+	                        React.createElement("option", {value: "4:00 PM"}, "4:00 PM"), 
+	                        React.createElement("option", {value: "4:15 PM"}, "4:15 PM"), 
+	                        React.createElement("option", {value: "4:30 PM"}, "4:30 PM"), 
+	                        React.createElement("option", {value: "4:45 PM"}, "4:45 PM"), 
+	                       
+	                        React.createElement("option", {value: "5:00 PM"}, "5:00 PM"), 
+	                        React.createElement("option", {value: "5:15 PM"}, "5:15 PM"), 
+	                        React.createElement("option", {value: "5:30 PM"}, "5:30 PM"), 
+	                        React.createElement("option", {value: "5:45 PM"}, "5:45 PM"), 
+	                       
+	                        React.createElement("option", {value: "6:00 PM"}, "6:00 PM"), 
+	                        React.createElement("option", {value: "6:15 PM"}, "6:15 PM"), 
+	                        React.createElement("option", {value: "6:30 PM"}, "6:30 PM"), 
+	                        React.createElement("option", {value: "6:45 PM"}, "6:45 PM"), 
+	                       
+	                        React.createElement("option", {value: "7:00 PM"}, "7:00 PM"), 
+	                        React.createElement("option", {value: "7:15 PM"}, "7:15 PM"), 
+	                        React.createElement("option", {value: "7:30 PM"}, "7:30 PM"), 
+	                        React.createElement("option", {value: "7:45 PM"}, "7:45 PM"), 
+	                       
+	                        React.createElement("option", {value: "8:00 PM"}, "8:00 PM"), 
+	                        React.createElement("option", {value: "8:15 PM"}, "8:15 PM"), 
+	                        React.createElement("option", {value: "8:30 PM"}, "8:30 PM"), 
+	                        React.createElement("option", {value: "8:45 PM"}, "8:45 PM"), 
+	                       
+	                        React.createElement("option", {value: "9:00 PM"}, "9:00 PM"), 
+	                        React.createElement("option", {value: "9:15 PM"}, "9:15 PM"), 
+	                        React.createElement("option", {value: "9:30 PM"}, "9:30 PM"), 
+	                        React.createElement("option", {value: "9:45 PM"}, "9:45 PM"), 
+	                       
+	                        React.createElement("option", {value: "10:00 PM"}, "10:00 PM"), 
+	                        React.createElement("option", {value: "10:15 PM"}, "10:15 PM"), 
+	                        React.createElement("option", {value: "10:30 PM"}, "10:30 PM"), 
+	                        React.createElement("option", {value: "10:45 PM"}, "10:45 PM"), 
+	                       
+	                        React.createElement("option", {value: "11:00 PM"}, "11:00 PM"), 
+	                        React.createElement("option", {value: "11:15 PM"}, "11:15 PM"), 
+	                        React.createElement("option", {value: "11:30 PM"}, "11:30 PM"), 
+	                        React.createElement("option", {value: "11:45 PM"}, "11:45 PM")
+	                      ), React.createElement("space", null, " "), 
+	          "End time: ", React.createElement("space", null, " "), 
+	                      React.createElement("select", {name: "endTime", id: "endTime", value: endTime, onChange: this.handleChange}, 
+	                        React.createElement("option", {value: ""}), 
 	                        React.createElement("option", {value: "5:00 AM"}, "5:00 AM"), 
 	                        React.createElement("option", {value: "5:15 AM"}, "5:15 AM"), 
 	                        React.createElement("option", {value: "5:30 AM"}, "5:30 AM"), 
@@ -816,7 +1011,7 @@
 	    {
 	      localStorage.username = this.state.username;
 	      this.history.pushState(null, '/profile');
-	      this.history.pushState(null, '/profile');
+	      this.forceUpdate();
 	    }
 	          
 	  },
@@ -26017,6 +26212,995 @@
 	exports.ReactScriptLoaderMixin = ReactScriptLoaderMixin;
 	exports.ReactScriptLoader = ReactScriptLoader;
 
+
+/***/ },
+/* 218 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict'
+
+	var React     = __webpack_require__(2)
+	var assign    = __webpack_require__(219)
+	var normalize = __webpack_require__(220)
+
+	function emptyFn(){}
+
+	function toUpperFirst(s){
+	    return s?
+	            s.charAt(0).toUpperCase() + s.substring(1):
+	            ''
+	}
+
+	var ALIGN = (function(){
+	    var MAP = {
+	        left  : 'flex-start',
+	        start : 'flex-start',
+	        center: 'center',
+	        right : 'flex-end',
+	        end   : 'flex-end'
+	    }
+
+	    return function(value){
+	        return MAP[value] || value
+	    }
+	})()
+
+	var PropTypes    = React.PropTypes
+	var DISPLAY_NAME = 'ReactButton'
+
+	var THEME = {
+	    'default': {
+	        //default type
+	        style: {
+	            border    : '1px solid rgb(46, 153, 235)',
+	            color     : 'rgb(84, 84, 84)',
+	        },
+	                overStyle: {
+	                    background: 'linear-gradient(to bottom, rgb(125, 191, 242) 0%, rgb(110, 184, 241) 50%, rgb(117, 188, 242) 100%)',
+	                    color: 'white'
+	                },
+
+	                activeStyle: {
+	                    //-6 lightness from overStyle
+	                    background: ' linear-gradient(to bottom, rgb(106,182,240) 0%,rgb(91,175,239) 50%,rgb(96,178,240) 100%)',
+	                    color: 'white'
+	                },
+
+	            //disabled
+	            disabledStyle: {
+	                //theme properties
+	                background: 'rgb(221, 221, 221)',
+	                border: '1px solid rgb(147, 147, 147)',
+	                color: 'rgb(128, 128, 128)'
+	            },
+
+	            //pressed
+	            pressedStyle: {
+	                background: 'linear-gradient(to bottom, rgb(22,135,222) 0%,rgb(20,129,212) 50%,rgb(20,132,218) 100%)',
+	                color: 'white'
+	            },
+
+	                overPressedStyle: {
+	                    // +14 lightness from pressed style
+	                    background: 'linear-gradient(to bottom, rgb(48,153,234) 0%,rgb(36,148,234) 50%,rgb(41,151,235) 100%)',
+	                },
+
+	                activePressedStyle: {
+	                    background: 'linear-gradient(to bottom, rgb(58,159,236) 0%,rgb(45,153,235) 50%,rgb(50,155,236) 100%)'
+	                },
+
+	            //focused
+	            focusedStyle: {}
+	            //---NONE ----
+	    },
+	    'primary': {
+	        style: {
+	            background: 'linear-gradient(to bottom, #4ea9ee 0%,#41a2ed 50%,#46a5ee 100%)',
+	            color: 'white'
+	        },
+
+	                overStyle: {
+	                    // + 10 lightness from primary
+	                    background: 'linear-gradient(to bottom, rgb(96,178,240) 0%,rgb(83,171,239) 50%,rgb(88,174,240) 100%)'
+	                },
+
+	                activeStyle: {
+	                    // -5 lightness from primary
+	                    background: 'linear-gradient(to bottom, rgb(64,162,236) 0%,rgb(50,155,236) 50%,rgb(55,158,237) 100%)'
+	                },
+
+	            //disabled
+	            disabledStyle: {
+	                //theme properties
+	                background: 'rgb(116, 144, 166)',
+	                color: 'rgb(190, 190, 190)'
+	            }
+
+	            //pressed
+	            //---NONE---
+
+	            //focused
+	            //---NONE---
+	    }
+	}
+
+	var ReactButton = React.createClass({
+
+	    displayName: DISPLAY_NAME,
+
+	    propTypes: {
+	        fn: PropTypes.func,
+	        onClick: PropTypes.func,
+
+	        primary: PropTypes.bool,
+	        disabled: PropTypes.bool,
+	        pressed: PropTypes.bool,
+	        defaultPressed: PropTypes.bool,
+
+	        href: PropTypes.string,
+	        align: PropTypes.string,
+
+	        style: PropTypes.object,
+
+	        className       : PropTypes.string,
+	        activeClassName : PropTypes.string,
+	        overClassName   : PropTypes.string,
+	        focusedClassName: PropTypes.string,
+	        disabledClassName: PropTypes.string
+	    },
+
+	    getDefaultProps: function() {
+	        return {
+	            isReactButton: true,
+	            applyDefaultTheme: true,
+	            buttonStates: ['focused', 'pressed'],
+
+	            'data-display-name': DISPLAY_NAME,
+
+	            align: 'center',
+
+	            defaultStyle: {
+	                boxSizing     : 'border-box',
+
+	                display       : 'inline-flex',
+	                alignItems    : 'center',
+	                justifyContent: 'center',
+
+	                userSelect    : 'none',
+	                textDecoration: 'none',
+	                cursor        : 'pointer',
+	                overflow      : 'hidden',
+
+	                //theme properties
+	                //fontFamily: 'Arial',
+	                // fontSize  : '0.9em',
+	                whiteSpace: 'nowrap',
+	                padding   : 5,
+	                margin    : 2
+	            },
+
+	            defaultDisabledStyle: {
+	                cursor: 'default',
+	            },
+
+	            defaultLabelStyle: {
+	                display: 'inline-block'
+	            },
+
+	            ellipsisLabelStyle: {
+	                textOverflow: 'ellipsis',
+	                overflow: 'hidden',
+	                whiteSpace: 'nowrap'
+	            },
+
+	            ellipsis: true,
+
+	            href: ''
+	        }
+	    },
+
+	    getInitialState: function() {
+	        return {
+	            mouseOver: false,
+	            active: false,
+	            defaultPressed: this.props.defaultPressed
+	        }
+	    },
+
+	    isFocused: function() {
+	        return this.state.focused
+	    },
+
+	    isActive: function() {
+	        return !!this.state.active
+	    },
+
+	    render: function(){
+	        var props = this.prepareProps(this.props, this.state)
+
+	        return (props.factory || React.DOM.a)(props)
+	    },
+
+	    prepareProps: function(thisProps, state) {
+
+	        var props = {}
+
+	        assign(props, thisProps)
+
+	        props.theme = this.prepareTheme(props)
+
+	        var pressed = props.pressed != null? props.pressed: state.defaultPressed
+
+	        if (pressed != null){
+	            props.pressed = pressed
+	        }
+
+	        props.active    = props.activeState == null? !!state.active: props.activeState
+	        props.over      = props.overState == null? !!state.mouseOver: props.overState
+	        props.focused   = props.focusedState == null? !!state.focused: props.focusedState
+
+	        props['data-active']  = props.active
+	        props['data-over']    = props.over
+	        props['data-focused'] = props.focused
+	        props['data-pressed'] = props.pressed
+	        props['data-disabled'] = props.disabled
+
+	        props.style     = this.prepareStyle(props, state)
+	        props.className = this.prepareClassName(props, state)
+	        props.children  = this.prepareChildren(props)
+
+	        var handleClick = this.handleClick.bind(this, props)
+
+	        props.onClick = typeof props.interceptClick == 'function'?
+	                            props.interceptClick.bind(this, handleClick):
+	                            handleClick
+
+	        props.onFocus      = this.handleFocus.bind(this, props)
+	        props.onBlur       = this.handleBlur.bind(this, props)
+	        props.onMouseEnter = this.handleMouseEnter.bind(this, props)
+	        props.onMouseLeave = this.handleMouseLeave.bind(this, props)
+	        props.onMouseDown  = this.handleMouseDown.bind(this, props)
+	        props.onMouseUp    = this.handleMouseUp.bind(this, props)
+
+	        return props
+	    },
+
+	    handleFocus: function(props, event) {
+	        if (props.disabled){
+	            return
+	        }
+
+	        this.setState({
+	            focused: true
+	        })
+
+	        ;(this.props.onFocus || emptyFn)(event)
+	    },
+
+	    handleBlur: function(props, event) {
+	        if (props.disabled){
+	            return
+	        }
+
+	        this.setState({
+	            focused: false
+	        })
+
+	        ;(this.props.onBlur || emptyFn)(event)
+	    },
+
+	    handleClick: function(props, event) {
+	        if (!props.href || props.disabled){
+	            event.preventDefault()
+	        }
+
+	        if (props.disabled){
+	            return
+	        }
+
+	        if (props.pressed != null){
+	            var newPressed = !props.pressed
+
+	            if (this.props.pressed == null){
+	                this.setState({
+	                    defaultPressed: newPressed
+	                })
+	            }
+
+	            ;(this.props.onToggle || emptyFn)(newPressed, event)
+	        }
+
+	        ;(this.props.onClick || emptyFn)(event)
+	        ;(this.props.fn || emptyFn)(props, event)
+	    },
+
+	    handleMouseEnter: function(props, event) {
+	        if (props.disabled){
+	            return
+	        }
+
+	        this.setState({
+	            mouseOver: true
+	        })
+
+	        ;(this.props.onMouseEnter || emptyFn)(event)
+	    },
+
+	    handleMouseLeave: function(props, event) {
+	        if (props.disabled){
+	            return
+	        }
+
+	        this.setState({
+	            mouseOver: false
+	        })
+
+	        ;(this.props.onMouseLeave || emptyFn)(event)
+	    },
+
+	    handleMouseUp: function(props, event) {
+	        if (props.disabled){
+	            return
+	        }
+
+	        this.setState({
+	            active: false
+	        })
+
+	        window.removeEventListener('mouseup', this.handleMouseUp)
+
+	        ;(this.props.onMouseUp || emptyFn)(event)
+	        ;(this.props.onDeactivate || emptyFn)(event)
+	    },
+
+	    handleMouseDown: function(props, event) {
+
+	        if (props.disabled){
+	            return
+	        }
+
+	        this.setState({
+	            active: true
+	        })
+
+	        window.addEventListener('mouseup', this.handleMouseUp)
+
+	        ;(this.props.onMouseDown || emptyFn)(event)
+	        ;(this.props.onActivate || emptyFn)(event)
+	    },
+
+	    prepareTheme: function(props){
+	        var theme  = props.theme
+	        var THEMES = props.themes = props.themes || this.constructor.theme || THEME
+
+	        if (typeof theme == 'string'){
+	            theme = THEMES[theme]?
+	                        THEMES[theme]:
+	                        null
+	        }
+
+	        return theme == null?
+	                THEMES.default:
+	                theme
+	    },
+
+	    prepareChildren: function(props) {
+	        var children = props.children
+
+	        if (props.label){
+
+	            var labelProps = assign({}, props.defaultLabelProps, props.labelProps)
+	            var defaultLabelStyle = assign({}, props.defaultLabelStyle)
+
+	            if (props.ellipsis){
+	                assign(defaultLabelStyle, props.ellipsisLabelStyle)
+	            }
+
+	            var labelStyle = assign({}, defaultLabelStyle, labelProps.style, props.labelStyle)
+
+	            labelProps.style = labelStyle
+
+	            children = React.createElement("span", React.__spread({},  labelProps), 
+	                props.label
+	            )
+	        }
+
+	        if (typeof this.props.renderChildren === 'function'){
+	            return this.props.renderChildren(children)
+	        }
+
+	        return children
+	    },
+
+	    prepareClassName: function(props) {
+
+	        var className = props.className || ''
+
+	        if (props.disabled){
+	            if (props.disabledClassName){
+	                className += ' ' + props.disabledClassName
+	            }
+	        } else {
+	            if (props.active && props.activeClassName){
+	                className += ' ' + props.activeClassName
+	            }
+
+	            if (props.pressed && props.pressedClassName){
+	                className += ' ' + props.pressedClassName
+	            }
+
+	            if (props.over && props.overClassName){
+	                className += ' ' + props.overClassName
+	            }
+
+	            if (props.focused && props.focusedClassName){
+	                className += ' ' + props.focusedClassName
+	            }
+	        }
+
+	        return className
+	    },
+
+	    prepareComputedStyleNames: function(props){
+
+	        if (typeof props.computeStyleNames == 'function'){
+	            return props.computeStyleNames(props)
+	        }
+
+	        var names = ['style']
+
+	        if (props.disabled){
+	            names.push('disabledStyle')
+
+	            return names
+	        }
+
+	        if (props.focused){
+	            names.push('focusedStyle')
+	        }
+	        if (props.pressed){
+	            names.push('pressedStyle')
+	        }
+
+	        if (typeof props.addStateStyle == 'function'){
+	            props.addStateStyle(names)
+	        }
+
+	        if (props.focused && props.pressed){
+	            names.push('focusedPressedStyle')
+	        }
+
+	        if (typeof props.addCombinedStateStyle == 'function'){
+	            props.addCombinedStateStyle(names)
+	        }
+
+	        //names is something like ['style','focusedStyle','pressedStyle', 'focusedPressedStyle']
+	        //
+	        //now we add over and active styles
+
+	        var overNames
+	        if (props.over){
+	            overNames = names.map(function(name){
+	                return 'over' + toUpperFirst(name)
+	            })
+	        }
+
+	        var activeNames
+	        if (props.active){
+	            activeNames = names.map(function(name){
+	                return 'active' + toUpperFirst(name)
+	            })
+	        }
+
+	        overNames   && names.push.apply(names, overNames)
+	        activeNames && names.push.apply(names, activeNames)
+
+	        return names
+	    },
+
+	    prepareStyle: function(props) {
+
+	        var style = assign({}, this.prepareDefaultStyle(props))
+
+	        var styleNames = this.prepareComputedStyleNames(props)
+	        var theme      = props.theme
+	        var THEMES     = props.themes
+
+	        if (theme){
+	            //apply default theme first
+	            if (props.applyDefaultTheme && THEMES.default && theme != THEMES.default){
+	                styleNames.forEach(function(styleName){
+	                    assign(style, THEMES.default[styleName])
+	                })
+	            }
+
+	            //then apply theme
+	            styleNames.forEach(function(styleName){
+	                assign(style, theme[styleName])
+	            })
+	        }
+
+	        ;(props.onThemeStyleReady || emptyFn)(style, props)
+
+	        //TODO apply default non-theme first to typed buttons
+	        //then non-theme
+	        styleNames.forEach(function(styleName){
+	            assign(style, props[styleName])
+	        })
+
+	        ;(props.onStyleReady || emptyFn)(style, props)
+
+	        return normalize(style)
+	    },
+
+	    prepareDefaultStyle: function(props){
+	        var defaultStyle = assign({}, props.defaultStyle)
+
+	        if (props.block){
+	            defaultStyle.display = 'flex'
+	        }
+
+	        defaultStyle.justifyContent = ALIGN(props.align)
+
+	        if (props.disabled){
+	            assign(defaultStyle, props.defaultDisabledStyle)
+	        }
+
+	        return defaultStyle
+	    }
+	})
+
+	ReactButton.themes = THEME
+
+	module.exports = ReactButton
+
+/***/ },
+/* 219 */
+/***/ function(module, exports) {
+
+	/** @jsx React.DOM */'use strict';
+
+	function ToObject(val) {
+		if (val == null) {
+			throw new TypeError('Object.assign cannot be called with null or undefined');
+		}
+
+		return Object(val);
+	}
+
+	module.exports = Object.assign || function (target, source) {
+		var from;
+		var keys;
+		var to = ToObject(target);
+
+		for (var s = 1; s < arguments.length; s++) {
+			from = arguments[s];
+			keys = Object.keys(Object(from));
+
+			for (var i = 0; i < keys.length; i++) {
+				to[keys[i]] = from[keys[i]];
+			}
+		}
+
+		return to;
+	};
+
+
+/***/ },
+/* 220 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict';
+
+	var hasOwn      = __webpack_require__(221)
+	var getPrefixed = __webpack_require__(222)
+
+	var map      = __webpack_require__(228)
+	var plugable = __webpack_require__(229)
+
+	function plugins(key, value){
+
+		var result = {
+			key  : key,
+			value: value
+		}
+
+		;(RESULT.plugins || []).forEach(function(fn){
+
+			var tmp = map(function(res){
+				return fn(key, value, res)
+			}, result)
+
+			if (tmp){
+				result = tmp
+			}
+		})
+
+		return result
+	}
+
+	function normalize(key, value){
+
+		var result = plugins(key, value)
+
+		return map(function(result){
+			return {
+				key  : getPrefixed(result.key, result.value),
+				value: result.value
+			}
+		}, result)
+
+		return result
+	}
+
+	var RESULT = function(style){
+
+		var k
+		var item
+		var result = {}
+
+		for (k in style) if (hasOwn(style, k)){
+			item = normalize(k, style[k])
+
+			if (!item){
+				continue
+			}
+
+			map(function(item){
+				result[item.key] = item.value
+			}, item)
+		}
+
+		return result
+	}
+
+	module.exports = plugable(RESULT)
+
+/***/ },
+/* 221 */
+/***/ function(module, exports) {
+
+	/** @jsx React.DOM */'use strict';
+
+	module.exports = function(obj, prop){
+		return Object.prototype.hasOwnProperty.call(obj, prop)
+	}
+
+
+/***/ },
+/* 222 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict';
+
+	var getStylePrefixed = __webpack_require__(223)
+	var properties       = __webpack_require__(227)
+
+	module.exports = function(key, value){
+
+		if (!properties[key]){
+			return key
+		}
+
+		return getStylePrefixed(key, value)
+	}
+
+/***/ },
+/* 223 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict';
+
+	var toUpperFirst = __webpack_require__(224)
+	var getPrefix    = __webpack_require__(225)
+	var el           = __webpack_require__(226)
+
+	var MEMORY = {}
+	var STYLE
+	var ELEMENT
+
+	var PREFIX
+
+	module.exports = function(key, value){
+
+	    ELEMENT = ELEMENT || el()
+	    STYLE   = STYLE   || ELEMENT.style
+
+	    var k = key// + ': ' + value
+
+	    if (MEMORY[k]){
+	        return MEMORY[k]
+	    }
+
+	    var prefix
+	    var prefixed
+
+	    if (!(key in STYLE)){//we have to prefix
+
+	        // if (PREFIX){
+	        //     prefix = PREFIX
+	        // } else {
+	            prefix = getPrefix('appearance')
+
+	        //     if (prefix){
+	        //         prefix = PREFIX = prefix.toLowerCase()
+	        //     }
+	        // }
+
+	        if (prefix){
+	            prefixed = prefix + toUpperFirst(key)
+
+	            if (prefixed in STYLE){
+	                key = prefixed
+	            }
+	        }
+	    }
+
+	    MEMORY[k] = key
+
+	    return key
+	}
+
+/***/ },
+/* 224 */
+/***/ function(module, exports) {
+
+	/** @jsx React.DOM */'use strict';
+
+	module.exports = function(str){
+		return str?
+				str.charAt(0).toUpperCase() + str.slice(1):
+				''
+	}
+
+/***/ },
+/* 225 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict';
+
+	var toUpperFirst = __webpack_require__(224)
+	var prefixes     = ["ms", "Moz", "Webkit", "O"]
+
+	var el = __webpack_require__(226)
+
+	var ELEMENT
+	var PREFIX
+
+	module.exports = function(key){
+
+		if (PREFIX !== undefined){
+			return PREFIX
+		}
+
+		ELEMENT = ELEMENT || el()
+
+		var i = 0
+		var len = prefixes.length
+		var tmp
+		var prefix
+
+		for (; i < len; i++){
+			prefix = prefixes[i]
+			tmp = prefix + toUpperFirst(key)
+
+			if (typeof ELEMENT.style[tmp] != 'undefined'){
+				return PREFIX = prefix
+			}
+		}
+
+		return PREFIX
+	}
+
+/***/ },
+/* 226 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {/** @jsx React.DOM */'use strict';
+
+	var el
+
+	module.exports = function(){
+
+		if(!el && !!global.document){
+		  	el = global.document.createElement('div')
+		}
+
+		if (!el){
+			el = {style: {}}
+		}
+
+		return el
+	}
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 227 */
+/***/ function(module, exports) {
+
+	/** @jsx React.DOM */'use strict';
+
+	module.exports = {
+	  'alignItems': 1,
+	  'justifyContent': 1,
+	  'flex': 1,
+	  'flexFlow': 1,
+	  'flexGrow': 1,
+	  'flexShrink': 1,
+	  'flexBasis': 1,
+	  'flexDirection': 1,
+	  'flexWrap': 1,
+	  'alignContent': 1,
+	  'alignSelf': 1,
+
+	  'userSelect': 1,
+	  'transform': 1,
+	  'transition': 1,
+	  'transformOrigin': 1,
+	  'transformStyle': 1,
+	  'transitionProperty': 1,
+	  'transitionDuration': 1,
+	  'transitionTimingFunction': 1,
+	  'transitionDelay': 1,
+	  'borderImage': 1,
+	  'borderImageSlice': 1,
+	  'boxShadow': 1,
+	  'backgroundClip': 1,
+	  'backfaceVisibility': 1,
+	  'perspective': 1,
+	  'perspectiveOrigin': 1,
+	  'animation': 1,
+	  'animationDuration': 1,
+	  'animationName': 1,
+	  'animationDelay': 1,
+	  'animationDirection': 1,
+	  'animationIterationCount': 1,
+	  'animationTimingFunction': 1,
+	  'animationPlayState': 1,
+	  'animationFillMode': 1,
+	  'appearance': 1
+	}
+
+
+/***/ },
+/* 228 */
+/***/ function(module, exports) {
+
+	/** @jsx React.DOM */'use strict';
+
+	module.exports = function(fn, item){
+
+		if (!item){
+			return
+		}
+
+		if (Array.isArray(item)){
+			return item.map(fn).filter(function(x){
+				return !!x
+			})
+		} else {
+			return fn(item)
+		}
+	}
+
+/***/ },
+/* 229 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict';
+
+	var getCssPrefixedValue = __webpack_require__(230)
+
+	module.exports = function(target){
+		target.plugins = target.plugins || [
+			(function(){
+				var values = {
+					'flex':1,
+					'inline-flex':1
+				}
+
+				return function(key, value){
+					if (key === 'display' && value in values){
+						return {
+							key  : key,
+							value: getCssPrefixedValue(key, value, true)
+						}
+					}
+				}
+			})()
+		]
+
+		target.plugin = function(fn){
+			target.plugins = target.plugins || []
+
+			target.plugins.push(fn)
+		}
+
+		return target
+	}
+
+/***/ },
+/* 230 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict';
+
+	var getPrefix     = __webpack_require__(225)
+	var forcePrefixed = __webpack_require__(231)
+	var el            = __webpack_require__(226)
+
+	var MEMORY = {}
+	var STYLE
+	var ELEMENT
+
+	module.exports = function(key, value, force){
+
+	    ELEMENT = ELEMENT || el()
+	    STYLE   = STYLE   ||  ELEMENT.style
+
+	    var k = key + ': ' + value
+
+	    if (MEMORY[k]){
+	        return MEMORY[k]
+	    }
+
+	    var prefix
+	    var prefixed
+	    var prefixedValue
+
+	    if (force || !(key in STYLE)){
+
+	        prefix = getPrefix('appearance')
+
+	        if (prefix){
+	            prefixed = forcePrefixed(key, value)
+
+	            prefixedValue = '-' + prefix.toLowerCase() + '-' + value
+
+	            if (prefixed in STYLE){
+	                ELEMENT.style[prefixed] = ''
+	                ELEMENT.style[prefixed] = prefixedValue
+
+	                if (ELEMENT.style[prefixed] !== ''){
+	                    value = prefixedValue
+	                }
+	            }
+	        }
+	    }
+
+	    MEMORY[k] = value
+
+	    return value
+	}
+
+/***/ },
+/* 231 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict';
+
+	var toUpperFirst = __webpack_require__(224)
+	var getPrefix    = __webpack_require__(225)
+	var properties   = __webpack_require__(227)
+
+	/**
+	 * Returns the given key prefixed, if the property is found in the prefixProps map.
+	 *
+	 * Does not test if the property supports the given value unprefixed.
+	 * If you need this, use './getPrefixed' instead
+	 */
+	module.exports = function(key, value){
+
+		if (!properties[key]){
+			return key
+		}
+
+		var prefix = getPrefix(key)
+
+		return prefix?
+					prefix + toUpperFirst(key):
+					key
+	}
 
 /***/ }
 /******/ ]);

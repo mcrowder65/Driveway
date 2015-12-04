@@ -16,10 +16,35 @@ var {Lifecycle} = require('react-router');
 var history = useBasename(createHistory)({
     basename: '/transitions'
 })
+var Button = require('react-button');
 var profileDriveways = '';
 var allDriveways = [];
 var userDriveways = [];
 
+function upperCaseFirstLetter(string)
+{
+  return string[0].toUpperCase() + string.substring(1, string.length);
+}
+function contains(array, json)
+{
+  for(var i = 0; i < array.length; i++)
+  {
+    var object = array[i];
+    if(object.stateDay == json.stateDay && object.startTime == json.startTime && object.endTime == json.endTime)
+      return true;
+  }
+  return false;
+}
+function stripCharacter(string, character)
+{
+  var charIndex = string.indexOf(character);
+  var firstHalf = string.substring(0, charIndex);
+  var secondHalf = string.substring(charIndex+1, string.indexOf(' '));
+
+  if(character == ':' && firstHalf == '12')
+    firstHalf = '0';
+  return firstHalf + secondHalf;
+}
 function get(parameter)
 {  
   var url = window.location.href;
@@ -208,6 +233,7 @@ var profile = React.createClass
   render: function() 
   {
     console.log("email: " + localStorage.email);
+    //this.forceUpdate();
       return (
        <div>
         <p>username: <br/>{localStorage.username}</p>
@@ -224,6 +250,7 @@ var driveway = React.createClass
   getInitialState: function() 
   {
     var tempAddress = get('address');
+    var allowNewTimes = false;
     if(tempAddress)
     {
       var address = tempAddress;
@@ -235,10 +262,13 @@ var driveway = React.createClass
       return {address: address, numCars: numCars, zip: zip, city: city, state: state, editing: true};
     }
     else
-        return {address: '', numCars: '1', zip:'', city: '', state:'AL', editing: false, time: '', day: ''};
+        return {address: '', numCars: '1', zip:'', city: '', state:'', editing: false, startTime: '', endTime: '', day: '', times: [], displayTimes: []};
   },
   handleChange: function(event) 
   {
+    var dayBool = false;
+    var startTimeBool = false;
+    var endTimeBool = false;
     if(event.target.name == 'address')
       this.setState({address: event.target.value});
     else if(event.target.name == 'numCars')
@@ -249,66 +279,126 @@ var driveway = React.createClass
       this.setState({state: event.target.value});
     else if(event.target.name =='city')
       this.setState({city: event.target.value});
-    else if(event.target.name == 'time')
-      this.setState({time: event.target.value});
+    else if(event.target.name == 'startTime')
+    {
+      this.setState({startTime: event.target.value});
+      if(event.target.value != '')
+        startTimeBool = true; //if the value was empty, then we don't want them to add another time!
+    }
+    else if(event.target.name == 'endTime')
+    {
+      this.setState({endTime: event.target.value});
+      if(event.target.value != '')
+        endTimeBool = true;
+    }
     else if(event.target.name == 'day')
+    {
       this.setState({day: event.target.value});
+      if(event.target.value != '')
+        dayBool = true; //if the value was empty, then we don't want them to add another time!
+    }
+    this.setState({allowNewTimes: false}); //set it to false initially to reset any previous hanging trues.
+    //handle a finished time slot
+    //since calling this.state.time or this.state.day doesn't return anything even after you set it, use
+    //dayBool and timeBool indicating that we set it to something so you can set the allowNewTimes to true
 
+    if(dayBool && this.state.startTime != '' && this.state.endTime != '') //dayBool = true
+      this.setState({allowNewTimes: true});
+    if(this.state.day != '' && startTimeBool && this.state.endTime != '') //startTimeBool = true
+      this.setState({allowNewTimes: true});
+    if(this.state.day != '' && this.state.startTime != '' && endTimeBool) //endTimeBool = true
+      this.setState({allowNewTimes: true});
   },
   handleClick: function(event)
   {
-    drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, this.state.zip, this.state.state);
+    if(this.state.state == '')
+      alert('You must pick a state');
+    else
+      drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, this.state.zip, this.state.state);
+  },
+  deleteTime: function(index)
+  {
+
+  },
+  endAfterStart: function()
+  {
+    var startTime = this.state.startTime;
+    var endTime = this.state.endTime;
+
+    var startPM = true;
+    if(startTime.slice(-2) == 'AM')
+      startPM = false;
+
+    var endPM = true;
+    if(endTime.slice(-2) == 'AM')
+      endPM = false;
+    //now we know if they're am or pm.
+
+    if(!endPM && startPM) //endPM = AM and startPM = PM
+      return false;
+    if(endPM && !startPM) //endPM = PM and startPM = AM
+      return true;
+    
+    startTime = parseInt(stripCharacter(startTime, ':'));
+    endTime = parseInt(stripCharacter(endTime, ':'));
+    
+
+    console.log('startPM: ' + startPM + ' endPM: ' + endPM);
+    console.log("startTime: " + startTime + " endTime: " + endTime);
+    if(endTime <= startTime)
+    {
+      console.log("false");
+      return false;
+    }
+    console.log("true");
+    return true;
   },
   addNewTime: function()
   {
-      var br = document.createElement("br");
-
-      var day = document.createTextNode("Day:   ");         
-      document.getElementById("time").appendChild(day);
-      var daySelect = document.createElement("select");
-      var days = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-      for(var i = 0; i < days.length; i++)
+      if(!this.state.allowNewTimes)
       {
-        var option = document.createElement('option');
-        option.innerHTML = days[i];
-        option.value = days[i].toLowerCase();
-        daySelect.appendChild(option);
+        alert("You need to finish your first time before you add another.");
+        return;
       }
-      document.getElementById("time").appendChild(daySelect);
-
-
-      var time = document.createTextNode(" Times available: ");
-      document.getElementById("time").appendChild(time);
-      var timeSelect = document.createElement("select");
-      var times =['', '5:00 AM', '5:15 AM', '5:30 AM', '5:45 AM',
-                      '6:00 AM', '6:15 AM', '6:30 AM', '6:45 AM',
-                      '7:00 AM', '7:15 AM', '7:30 AM', '7:45 AM',
-                      '8:00 AM', '8:15 AM', '8:30 AM', '8:45 AM',                       
-                      '9:00 AM', '9:15 AM', '9:30 AM', '9:45 AM',                       
-                      '10:00 AM', '10:15 AM', '10:30 AM', '10:45 AM',                       
-                      '11:00 AM', '11:15 AM', '11:30 AM', '11:45 AM',                       
-                      '12:00 PM', '12:15 PM', '12:30 PM', '12:45 PM',
-                      '1:00 PM', '1:15 PM', '1:30 PM', '1:45 PM',                       
-                      '2:00 PM', '2:15 PM', '2:30 PM', '2:45 PM',
-                      '3:00 PM', '3:15 PM', '3:30 PM', '3:45 PM',                       
-                      '4:00 PM', '4:15 PM', '4:30 PM', '4:45 PM',
-                      '5:00 PM', '5:15 PM', '5:30 PM', '5:45 PM',
-                      '6:00 PM', '6:15 PM', '6:30 PM', '6:45 PM',
-                      '7:00 PM', '7:15 PM', '7:30 PM', '7:45 PM',
-                      '8:00 PM', '8:15 PM', '8:30 PM', '8:45 PM',
-                      '9:00 PM', '9:15 PM', '9:30 PM', '9:45 PM',
-                      '10:00 PM', '10:15 PM', '10:30 PM', '10:45 PM',
-                      '11:00 PM', '11:15 PM', '11:30 PM', '11:45 PM'];
+      var stateDay = this.state.day;
+      var startTime = this.state.startTime;           // for some reason webpack likes you to initialize
+      var endTime = this.state.endTime;
+      if(this.endAfterStart() == false)
+      {
+        alert("Pick correct times.");
+        this.setState({endTime: ''});
+        return;
+      }
+      var dayTimeObject = {startTime, endTime, stateDay}; // your variables before putting it into a json
+      var times = this.state.times;
+      if(contains(times, dayTimeObject))
+      {
+        alert("This selection already exists");
+        this.setState({day: ''});
+        this.setState({startTime: ''});
+        this.setState({endTime: ''});
+        return;
+      }
+      this.state.times.push(dayTimeObject);
+      
+      
+      this.state.displayTimes = [];
+      var displayTimes = this.state.displayTimes;
       for(var i = 0; i < times.length; i++)
       {
-        var option = document.createElement("option");
-        option.innerHTML = times[i];
-        option.value = times[i];
-        timeSelect.appendChild(option);
+        displayTimes.push(React.createElement("br", null));
+        
+        var upperCaseDay = upperCaseFirstLetter(times[i].stateDay);
+        var value = upperCaseDay + 's from ' + times[i].startTime + ' to ' + times[i].endTime;
+        displayTimes.push(value);
+        displayTimes.push(React.createElement(Button, null));
       }
-      document.getElementById("time").appendChild(timeSelect);
-      document.getElementById("time").appendChild(br);
-      document.getElementById('submit').style.display='visible';
+
+      this.state.displayTimes = displayTimes;
+      this.setState({day: ''});
+      this.setState({startTime: ''});
+      this.setState({endTime: ''});
+      this.forceUpdate();
   },
   remove: function()
   {
@@ -321,6 +411,10 @@ var driveway = React.createClass
     var zip = this.state.zip;
     var state = this.state.state;
     var city = this.state.city;
+    var day = this.state.day;
+    var startTime = this.state.startTime;
+    var endTime = this.state.endTime;
+    var displayTimes = this.state.displayTimes;
     if(!this.state.editing)
     {
       return (
@@ -329,6 +423,7 @@ var driveway = React.createClass
           Street address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
           City: <br/><input type="text" name="city" value={city} onChange={this.handleChange}/><br/><br/>
           State: <br/><select name="state" value={state} onChange={this.handleChange}>
+                        <option value="-"></option>
                         <option value="AL">Alabama</option>
                         <option value="AK">Alaska</option>
                         <option value="AZ">Arizona</option>
@@ -387,7 +482,8 @@ var driveway = React.createClass
                         <option value='2'>2</option>
                         <option value='3'>3</option>
                       </select><br/><br/>
-          Day: <space> </space> <select name="day" id="day" onChange={this.handleChange}>
+          <p id='chosenTimes'> Chosen times: {displayTimes}</p>            
+          Day: <space> </space> <select name="day" id="day" value={day} onChange={this.handleChange}>
                                   <option value=""> </option>
                                   <option value="monday"> Monday</option>
                                   <option value="tuesday"> Tuesday</option>
@@ -397,9 +493,10 @@ var driveway = React.createClass
                                   <option value="saturday"> Saturday</option>
                                   <option value="sunday"> Sunday</option>
                                   </select> <space></space>
-          Times available: <space> </space>
-                      <select name="time" id="time" onChange={this.handleChange}>
-                        <option value="-"></option>
+          
+          Start time: <space> </space>
+                      <select name="startTime" id="time" value={startTime} onChange={this.handleChange}>
+                        <option value=""></option>
                         <option value="5:00 AM">5:00 AM</option>
                         <option value="5:15 AM">5:15 AM</option>
                         <option value="5:30 AM">5:30 AM</option>
@@ -495,6 +592,104 @@ var driveway = React.createClass
                         <option value="11:30 PM">11:30 PM</option>
                         <option value="11:45 PM">11:45 PM</option>
                       </select><space> </space>
+          End time: <space> </space>
+                      <select name="endTime" id="endTime" value={endTime} onChange={this.handleChange}>
+                        <option value=""></option>
+                        <option value="5:00 AM">5:00 AM</option>
+                        <option value="5:15 AM">5:15 AM</option>
+                        <option value="5:30 AM">5:30 AM</option>
+                        <option value="5:45 AM">5:45 AM</option>
+                       
+                        <option value="6:00 AM">6:00 AM</option>
+                        <option value="6:15 AM">6:15 AM</option>
+                        <option value="6:30 AM">6:30 AM</option>
+                        <option value="6:45 AM">6:45 AM</option>
+                       
+                        <option value="7:00 AM">7:00 AM</option>
+                        <option value="7:15 AM">7:15 AM</option>
+                        <option value="7:30 AM">7:30 AM</option>
+                        <option value="7:45 AM">7:45 AM</option>
+                       
+                        <option value="8:00 AM">8:00 AM</option>
+                        <option value="8:15 AM">8:15 AM</option>
+                        <option value="8:30 AM">8:30 AM</option>
+                        <option value="8:45 AM">8:45 AM</option>
+                       
+                        <option value="9:00 AM">9:00 AM</option>
+                        <option value="9:15 AM">9:15 AM</option>
+                        <option value="9:30 AM">9:30 AM</option>
+                        <option value="9:45 AM">9:45 AM</option>
+                       
+                        <option value="10:00 AM">10:00 AM</option>
+                        <option value="10:15 AM">10:15 AM</option>
+                        <option value="10:30 AM">10:30 AM</option>
+                        <option value="10:45 AM">10:45 AM</option>
+                       
+                        <option value="11:00 AM">11:00 AM</option>
+                        <option value="11:15 AM">11:15 AM</option>
+                        <option value="11:30 AM">11:30 AM</option>
+                        <option value="11:45 AM">11:45 AM</option>
+                       
+                        <option value="12:00 PM">12:00 PM</option>
+                        <option value="12:15 PM">12:15 PM</option>
+                        <option value="12:30 PM">12:30 PM</option>
+                        <option value="12:45 PM">12:45 PM</option>
+                       
+                        <option value="1:00 PM">1:00 PM</option>
+                        <option value="1:15 PM">1:15 PM</option>
+                        <option value="1:30 PM">1:30 PM</option>
+                        <option value="1:45 PM">1:45 PM</option>
+                       
+                        <option value="2:00 PM">2:00 PM</option>
+                        <option value="2:15 PM">2:15 PM</option>
+                        <option value="2:30 PM">2:30 PM</option>
+                        <option value="2:45 PM">2:45 PM</option>
+                       
+                        <option value="3:00 PM">3:00 PM</option>
+                        <option value="3:15 PM">3:15 PM</option>
+                        <option value="3:30 PM">3:30 PM</option>
+                        <option value="3:45 PM">3:45 PM</option>
+                       
+                        <option value="4:00 PM">4:00 PM</option>
+                        <option value="4:15 PM">4:15 PM</option>
+                        <option value="4:30 PM">4:30 PM</option>
+                        <option value="4:45 PM">4:45 PM</option>
+                       
+                        <option value="5:00 PM">5:00 PM</option>
+                        <option value="5:15 PM">5:15 PM</option>
+                        <option value="5:30 PM">5:30 PM</option>
+                        <option value="5:45 PM">5:45 PM</option>
+                       
+                        <option value="6:00 PM">6:00 PM</option>
+                        <option value="6:15 PM">6:15 PM</option>
+                        <option value="6:30 PM">6:30 PM</option>
+                        <option value="6:45 PM">6:45 PM</option>
+                       
+                        <option value="7:00 PM">7:00 PM</option>
+                        <option value="7:15 PM">7:15 PM</option>
+                        <option value="7:30 PM">7:30 PM</option>
+                        <option value="7:45 PM">7:45 PM</option>
+                       
+                        <option value="8:00 PM">8:00 PM</option>
+                        <option value="8:15 PM">8:15 PM</option>
+                        <option value="8:30 PM">8:30 PM</option>
+                        <option value="8:45 PM">8:45 PM</option>
+                       
+                        <option value="9:00 PM">9:00 PM</option>
+                        <option value="9:15 PM">9:15 PM</option>
+                        <option value="9:30 PM">9:30 PM</option>
+                        <option value="9:45 PM">9:45 PM</option>
+                       
+                        <option value="10:00 PM">10:00 PM</option>
+                        <option value="10:15 PM">10:15 PM</option>
+                        <option value="10:30 PM">10:30 PM</option>
+                        <option value="10:45 PM">10:45 PM</option>
+                       
+                        <option value="11:00 PM">11:00 PM</option>
+                        <option value="11:15 PM">11:15 PM</option>
+                        <option value="11:30 PM">11:30 PM</option>
+                        <option value="11:45 PM">11:45 PM</option>
+                      </select><space> </space>            
           <button onClick={this.addNewTime}> Add another time</button><br/><br/>
           </div>
           <div>
@@ -763,7 +958,7 @@ var signIn = React.createClass
     {
       localStorage.username = this.state.username;
       this.history.pushState(null, '/profile');
-      this.history.pushState(null, '/profile');
+      this.forceUpdate();
     }
           
   },
