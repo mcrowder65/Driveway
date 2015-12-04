@@ -7,7 +7,6 @@ var IndexRoute = require('react-router').IndexRoute;
 var ParkingMap = require('./components/parkingMap.js');
 var RouteHandler = Router.RouteHandler;
 var Redirect = Router.Redirect;
-var CheckoutStrip = require('./components/StripePayment.js');
 var signedIn = true;
 var transitionTo = Router.transitionTo;
 var History = require('react-router').History;
@@ -163,35 +162,23 @@ var picStyle=
 var learn = React.createClass
 ({
   render: function() {
-    if(signedIn)
-    {
-      return
-      (
-        <div> <h1>you are signed in</h1></div>
-      );
-    }
-    else
-    {
-      return 
-      (
-        <div style={center}>
-          <img src="pic.jpg" style={picStyle}/>
+    return (
+      <div style={center}>
+        <img src="pic.jpg" style={picStyle}/>
 
-          <div className="jumbotron">
-            <p> Imagine trying to find parking at this event?<br/>
-                I am sure we can agree it would be a nightmare.<br/>
-                                                               <br/>
-                Now imagine living near this place and renting out<br/>
-                your driveway and you making easy cash.<br/>
-                <br/>
-                Just throw up your driveway on your profile, your asking<br/>
-                price, and times available, and we will do the rest. <br/>
-            </p>
-          </div>
+        <div className="jumbotron">
+          <p> Imagine trying to find parking at this event?<br/>
+              I am sure we can agree it would be a nightmare.<br/>
+                                                             <br/>
+              Now imagine living near this place and renting out<br/>
+              your driveway and you making easy cash.<br/>
+              <br/>
+              Just throw up your driveway on your profile, your asking<br/>
+              price, and times available, and we will do the rest. <br/>
+          </p>
         </div>
-      );
-    }
-    
+      </div>
+    );
   }
 });
 
@@ -829,64 +816,16 @@ var signInAuthorization =
     },
 };
 
-var pay = React.createClass
+var PaymentPage = React.createClass
 ({
-  contextTypes: {
-        router: React.PropTypes.func
-  },
-
-  getInitialState: function()
+  contextTypes: 
   {
-    return {email: ''}, {address: ''}, {price: ''};
+    router: React.PropTypes.func
   },
-  handleChange: function(event)
-  {
-
-    if(event.target.name == "email")
-    {
-      this.setState({email: event.target.value});
-        //console.log(event.target.value);
-    }
-    else if(event.target.name == "address")
-    {
-      this.setState({address: event.target.value});
-        //console.log(event.target.value);
-    }
-    else if(event.target.name == "price")
-    {
-    this.setState({price: event.target.value});
-        //console.log(event.target.value);
-    }
-
-  },
-
   render: function() {
-    var email = this.state.email;
-    var address = this.state.address;
-    var price = this.state.price;
-    var streetA = "297 S 760 W";
-    var zip = "84058";
-    var state1 = "UT";
-    var rDate = "12/12/16";
-    var duration1 = "4";
-    var rTime = "6:00 PM";
-    var city = "orem"
-
-    var data = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city}, parking: []};
     return (
-
-         <div style={formStyle}>
-            Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
-            Address: <br/><input type="text" name="address" value ={address} onChange={this.handleChange}/><br/><br/>
-            Price: <br/><input type="text" name="price" value ={price} onChange={this.handleChange}/><br/>
-           <input type="radio">
-            I agree to the <a href="terms.html">terms of service</a>
-            </input><br/><br/>
-            <CheckoutStrip data={data}/>
-        </div>
-
-
-      );
+      <h1>Payment</h1>
+    );
   }
 });
 
@@ -984,100 +923,6 @@ var auth =
     },
 };
 
-var confirmPage = React.createClass
-({
-  getInitialState: function()
-  {
-    return {email: ''}, {address: ''}, {price: ''};
-
-  },
-
-  handleChange: function(event)
-  {
-
-    if(event.target.name == "email")
-    {
-      this.setState({email: event.target.value});
-        //console.log(event.target.value);
-    }
-
-  },
-
-  render: function() {
-
-    var email = this.state.email;
-    var email2 = "Email: " + localStorage.email;
-    var name = "Name: " + localStorage.Name;
-    var cardType = "Card Type: " + localStorage.cardType;
-    var Last4 = "Last 4 Digits: " + localStorage.Last4;
-    var ReservedAddress = "Reserved Address: " + localStorage.ResAddress;
-    var State = "State: " + localStorage.state;
-    var City = "City: " + localStorage.City;
-    var DOR = "Date of Reservation: " + localStorage.ResDate;
-    var ResTime = "Email: " + localStorage.ResTime;
-    var resDur = "Reservation Duration: " + localStorage.ResDuration + " hours";
-    var price2 = localStorage.price/100;
-    console.log(price2);
-    var price = "Total Price: $" + price2;
-    var ZIP = "Zip Code: " + localStorage.zip;
-    
-    
-    return (
-      <div>
-        <div className="well">
-          <div style={formStyle}>
-           <h1>Thank you for your order!</h1>
-           <p>Plese save the following order confirmation and leave it in your windshield when you arrive at your destination</p>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-6">
-            <div className="panel panel-primary">
-              <div className="panel-heading" style={fontStyle2}>Order Information</div>
-              <div className="panel-body">
-                <p>{ReservedAddress}</p>
-                <p>{State}</p>
-                <p>{ZIP}</p>
-                <p>{DOR}</p>
-                <p>{ResTime}</p>
-                <p>{resDur}</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="panel panel-primary">
-              <div className="panel-heading" style={fontStyle2}>Personal Information</div>
-              <div className="panel-body">
-                <p>{name}</p>
-                <p>{email2}</p>
-                <p>{cardType}</p>
-                <p>{Last4}</p>
-                <p>{price}</p>
-                <p>Total Amount due: $0.00</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-12">
-            <div className="panel panel-primary">
-              <div className="panel-heading" style={fontStyle2}>Email Me!</div>
-              <div className="panel-body">
-                <p style={jumboStyle}>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </p>
-                <div style={jumboStyle}>
-                  Email: <input type="text" name="email" value={email} onChange={this.handleChange}/>
-                  <a className="btn btn-primary btn-sm" href="#" role="button">Learn more</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      );
-  }
-});
-
 // Run the routes
 var routes = (
       <Router>
@@ -1086,14 +931,13 @@ var routes = (
           <Route name="home" path="/home" component={Home}/>
           <Route name="learn" path="/learn" component={learn} /> 
           <Route name="allDriveways" path="/allDriveways" component={allDriveways} /> 
-          <Route name="pay" path="/pay" component={pay} />
+          <Route name="pay" path="/pay" component={PaymentPage} />
           <Route name="map" path="/map" component={MapHolder} /> 
           <Route name="driveway" path="/driveway" component={driveway} />
           <Route name="signUp" path="/signUp" component={signUp} />
           <Route name="signIn" path="/signIn" component={signIn}/>
           <Route name="logOut" path="/logOut" component={logOut}/>
           <Route name="profile" path="/profile" component={profile}/>
-          <Route name="confirm" path="/confirm" component={confirmPage} /> 
         </Route>
       </Router>
 );
