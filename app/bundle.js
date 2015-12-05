@@ -52,6 +52,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */var React   = __webpack_require__(2);
+
 	var ReactDOM = __webpack_require__(159);
 	var Router = __webpack_require__(160).Router;
 	var Route = __webpack_require__(160).Route;
@@ -302,6 +303,7 @@
 	    //this.forceUpdate();
 	      return (
 	       React.createElement("div", null, 
+	        React.createElement("h1", {style: center}, " ", localStorage.username.toUpperCase(), " "), 
 	        React.createElement("p", null, "username: ", React.createElement("br", null), localStorage.username), 
 	        React.createElement("p", null, "email: ", React.createElement("br", null), localStorage.email), 
 	        React.createElement("p", null, "Addresses: ", React.createElement("br", null), userDriveways), 
@@ -1591,6 +1593,20 @@
 	      );
 	  }
 	});
+	var signUpForm =
+	{
+	  textAlign: 'center'
+	};
+	var signUpJumbo =
+	{
+	  width: '50%',
+	  marginLeft: '25%',
+	  position: 'center'
+	};
+	var redBorder =
+	{
+	  border: '2px solid red'
+	};
 
 	var signUp = React.createClass
 	({displayName: "signUp",
@@ -1608,13 +1624,14 @@
 	      this.setState({password: event.target.value});
 	    else if(event.target.name == "confirmPassword")
 	      this.setState({confirmPassword: event.target.value});
+
+
+	    this.forceUpdate();
 	  },
 	  register: function()
 	  {
 	    if(this.state.password !== this.state.confirmPassword)
-	    {
-	        alert("PASSWORDS ARE DIFFERENT");
-	    }
+	        return;
 	    else if(this.state.password.length < 8)
 	    {
 	      alert("Your password must be greater than 7 characters");
@@ -1622,7 +1639,10 @@
 	    else if(!this.terms)
 	      alert("You need to accept the terms and conditions");
 	    else
+	    {
 	        auth.register(this.state.email, this.state.username, this.state.password);
+	        
+	    }
 	  },
 	  handleTerms: function()
 	  {
@@ -1637,17 +1657,49 @@
 	    var username = this.state.username;
 	    var password = this.state.password;
 	    var confirmPassword = this.state.confirmPassword;
-	    return (
+	    //<div className="glyphicon glyphicon-ok" display='none'></div>  <br/>
+	    if(document.getElementById('password'))
+	    {
+	      if(password == '' || confirmPassword == '')
+	      {
 
-	         React.createElement("div", {style: formStyle}, 
-	            "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-	            "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-	            "Password: ", React.createElement("br", null), React.createElement("input", {type: "password", name: "password", value: password, onChange: this.handleChange}), React.createElement("br", null), 
-	            "Confirm Password: ", React.createElement("br", null), React.createElement("input", {type: "password", name: "confirmPassword", value: confirmPassword, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-	           React.createElement("input", {type: "radio", onClick: this.handleTerms, id: "terms"}, 
-	              "I agree to the ", React.createElement("a", {href: "randomHTMLFiles/terms.html"}, "terms and conditions")
-	            ), React.createElement("br", null), React.createElement("br", null), 
-	            React.createElement("input", {type: "submit", value: "SIGN UP", onClick: this.register})
+	      }
+	      else if(password != confirmPassword)
+	      {
+	        document.getElementById('password').style.border ='2px solid red';
+	        document.getElementById('confirmPassword').style.border = '2px solid red';
+	      }
+	      else
+	      {
+	        document.getElementById('password').style.border ='2px solid #00FF00';
+	        document.getElementById('confirmPassword').style.border = '2px solid #00FF00';
+	      }
+
+	    }
+	    return (
+	        React.createElement("div", null, 
+	          React.createElement("div", {style: center}, 
+	            React.createElement("h1", null, " Sign up for Driveway! ")
+	          ), 
+	          React.createElement("div", {style: signUpForm}, 
+	           React.createElement("div", {className: "jumbotron", style: signUpJumbo}, 
+	           
+	                "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	                "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	                React.createElement("div", {className: "password"}, 
+	                  "Password: ", React.createElement("br", null), React.createElement("input", {id: "password", type: "password", name: "password", value: password, onChange: this.handleChange})
+	                ), 
+
+	                React.createElement("div", {className: "confirmPassword"}, 
+	                  "Confirm Password: ", React.createElement("br", null), React.createElement("input", {id: "confirmPassword", type: "password", name: "confirmPassword", value: confirmPassword, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null)
+	                ), 
+	                React.createElement("input", {type: "radio", onClick: this.handleTerms, id: "terms"}, 
+	                  "I agree to the ", React.createElement("a", {href: "randomHTMLFiles/terms.html"}, "terms and conditions")
+	                ), React.createElement("br", null), React.createElement("br", null), 
+	                React.createElement("input", {type: "submit", value: "SIGN UP", onClick: this.register})
+	            
+	           )
+	          )
 	        )
 
 
@@ -1676,7 +1728,9 @@
 	            async: false,
 	            success: function(res) 
 	            {
-	              location.href='/#/signIn';
+	              signInAuthorization.login(username, password);
+	              localStorage.username = username;
+	              location.href ='/#/profile';
 	            }.bind(this),
 	            error: function()
 	            {

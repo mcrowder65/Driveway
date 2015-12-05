@@ -1,4 +1,5 @@
 var React   = require('react');
+
 var ReactDOM = require('react-dom');
 var Router = require('react-router').Router;
 var Route = require('react-router').Route;
@@ -249,6 +250,7 @@ var profile = React.createClass
     //this.forceUpdate();
       return (
        <div>
+        <h1 style={center}> {localStorage.username.toUpperCase()} </h1>
         <p>username: <br/>{localStorage.username}</p>
         <p>email: <br/>{localStorage.email}</p>
         <p>Addresses: <br/>{userDriveways}</p>
@@ -1538,6 +1540,20 @@ var confirmPage = React.createClass
       );
   }
 });
+var signUpForm =
+{
+  textAlign: 'center'
+};
+var signUpJumbo =
+{
+  width: '50%',
+  marginLeft: '25%',
+  position: 'center'
+};
+var redBorder =
+{
+  border: '2px solid red'
+};
 
 var signUp = React.createClass
 ({
@@ -1555,13 +1571,14 @@ var signUp = React.createClass
       this.setState({password: event.target.value});
     else if(event.target.name == "confirmPassword")
       this.setState({confirmPassword: event.target.value});
+
+
+    this.forceUpdate();
   },
   register: function()
   {
     if(this.state.password !== this.state.confirmPassword)
-    {
-        alert("PASSWORDS ARE DIFFERENT");
-    }
+        return;
     else if(this.state.password.length < 8)
     {
       alert("Your password must be greater than 7 characters");
@@ -1569,7 +1586,10 @@ var signUp = React.createClass
     else if(!this.terms)
       alert("You need to accept the terms and conditions");
     else
+    {
         auth.register(this.state.email, this.state.username, this.state.password);
+        
+    }
   },
   handleTerms: function()
   {
@@ -1584,17 +1604,49 @@ var signUp = React.createClass
     var username = this.state.username;
     var password = this.state.password;
     var confirmPassword = this.state.confirmPassword;
-    return (
+    //<div className="glyphicon glyphicon-ok" display='none'></div>  <br/>
+    if(document.getElementById('password'))
+    {
+      if(password == '' || confirmPassword == '')
+      {
 
-         <div style={formStyle}>
-            Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
-            Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
-            Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
-            Confirm Password: <br/><input type="password" name="confirmPassword" value ={confirmPassword} onChange={this.handleChange}/><br/><br/>
-           <input type="radio" onClick={this.handleTerms} id="terms"> 
-              I agree to the <a href="randomHTMLFiles/terms.html">terms and conditions</a>
-            </input><br/><br/>
-            <input type="submit" value="SIGN UP" onClick={this.register}/> 
+      }
+      else if(password != confirmPassword)
+      {
+        document.getElementById('password').style.border ='2px solid red';
+        document.getElementById('confirmPassword').style.border = '2px solid red';
+      }
+      else
+      {
+        document.getElementById('password').style.border ='2px solid #00FF00';
+        document.getElementById('confirmPassword').style.border = '2px solid #00FF00';
+      }
+
+    }
+    return (
+        <div>
+          <div style={center}>
+            <h1> Sign up for Driveway! </h1>
+          </div>
+          <div style={signUpForm}>
+           <div className="jumbotron" style={signUpJumbo}>
+           
+                Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
+                Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
+                <div className='password'>
+                  Password: <br/><input id='password' type="password" name="password" value ={password} onChange={this.handleChange}/>
+                </div>
+
+                <div className='confirmPassword'>
+                  Confirm Password: <br/><input id='confirmPassword' type="password" name="confirmPassword" value ={confirmPassword} onChange={this.handleChange}/><br/><br/>
+                </div>
+                <input type="radio" onClick={this.handleTerms} id="terms"> 
+                  I agree to the <a href="randomHTMLFiles/terms.html">terms and conditions</a>
+                </input><br/><br/>
+                <input type="submit" value="SIGN UP" onClick={this.register}/> 
+            
+           </div>
+          </div>
         </div>
 
 
@@ -1623,7 +1675,9 @@ var auth =
             async: false,
             success: function(res) 
             {
-              location.href='/#/signIn';
+              signInAuthorization.login(username, password);
+              localStorage.username = username;
+              location.href ='/#/profile';
             }.bind(this),
             error: function()
             {
