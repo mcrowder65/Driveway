@@ -127,6 +127,38 @@ app.post
 	}
 );
 
+app.post
+('/api/users/addReservation',
+	function (req, res)
+	{
+		reservation.findOrCreate({drivewayId: req.body.drivewayId, date: req.body.resDate, buyer: req.body.buyer},
+		function(err, reservation, created)
+		{
+			if (created)
+			{
+				reservation.buyer = req.body.buyer;
+				reservation.owner = req.body.owner;
+				reservation.drivewayId = req.body.drivewayId;
+				reservation.date = req.body.resDate;
+				reservation.time = req.body.resTime;
+				reservation.save
+				(
+					function(err)
+					{
+						if(err)
+						{
+							res.sendStatus("403");
+							return;
+						}
+					}
+				);
+			}
+			else
+				res.sendStatus("403");
+		});
+	}
+);
+
 app.post('/api/users/login', function (req, res) 
 {
     // find the user with the given username
@@ -217,6 +249,8 @@ app.post('/api/payment/chargeToken', function (req, res)
 	  }
 	});
 });
+
+
 
 
 
