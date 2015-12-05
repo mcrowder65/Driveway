@@ -7,6 +7,7 @@ var IndexRoute = require('react-router').IndexRoute;
 var ParkingMap = require('./components/parkingMap.js');
 var RouteHandler = Router.RouteHandler;
 var Redirect = Router.Redirect;
+var CheckoutStrip = require('./components/StripePayment.js');
 var signedIn = true;
 var transitionTo = Router.transitionTo;
 var History = require('react-router').History;
@@ -1015,16 +1016,64 @@ var signInAuthorization =
     },
 };
 
-var PaymentPage = React.createClass
+var pay = React.createClass
 ({
-  contextTypes: 
-  {
-    router: React.PropTypes.func
+  contextTypes: {
+        router: React.PropTypes.func
   },
+
+  getInitialState: function()
+  {
+    return {email: ''}, {address: ''}, {price: ''};
+  },
+  handleChange: function(event)
+  {
+
+    if(event.target.name == "email")
+    {
+      this.setState({email: event.target.value});
+        //console.log(event.target.value);
+    }
+    else if(event.target.name == "address")
+    {
+      this.setState({address: event.target.value});
+        //console.log(event.target.value);
+    }
+    else if(event.target.name == "price")
+    {
+    this.setState({price: event.target.value});
+        //console.log(event.target.value);
+    }
+
+  },
+
   render: function() {
+    var email = this.state.email;
+    var address = this.state.address;
+    var price = this.state.price;
+    var streetA = "297 S 760 W";
+    var zip = "84058";
+    var state1 = "UT";
+    var rDate = "12/12/16";
+    var duration1 = "4";
+    var rTime = "6:00 PM";
+    var city = "orem"
+
+    var data = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city}, parking: []};
     return (
-      <h1>Payment</h1>
-    );
+
+         <div style={formStyle}>
+            Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
+            Address: <br/><input type="text" name="address" value ={address} onChange={this.handleChange}/><br/><br/>
+            Price: <br/><input type="text" name="price" value ={price} onChange={this.handleChange}/><br/>
+           <input type="radio">
+            I agree to the <a href="terms.html">terms of service</a>
+            </input><br/><br/>
+            <CheckoutStrip data={data}/>
+        </div>
+
+
+      );
   }
 });
 
@@ -1130,7 +1179,7 @@ var routes = (
           <Route name="home" path="/home" component={Home}/>
           <Route name="learn" path="/learn" component={learn} /> 
           <Route name="allDriveways" path="/allDriveways" component={allDriveways} /> 
-          <Route name="pay" path="/pay" component={PaymentPage} />
+          <Route name="pay" path="/pay" component={pay} />
           <Route name="map" path="/map" component={MapHolder} /> 
           <Route name="driveway" path="/driveway" component={driveway} />
           <Route name="signUp" path="/signUp" component={signUp} />
