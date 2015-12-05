@@ -371,7 +371,11 @@
 	  },
 	  deleteTime: function(index)
 	  {
-
+	    console.log("trying to delete time");
+	    // var times = this.state.times;
+	    // times.splice(index, 1);
+	    // this.state.times = times;
+	    // this.forceUpdate();
 	  },
 	  endAfterStart: function()
 	  {
@@ -444,7 +448,7 @@
 	        var upperCaseDay = upperCaseFirstLetter(times[i].stateDay);
 	        var value = upperCaseDay + 's from ' + times[i].startTime + ' to ' + times[i].endTime;
 	        displayTimes.push(value);
-	        displayTimes.push(React.createElement(Button, null));
+	        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, innerHTML: 'hello'}));
 	      }
 
 	      this.state.displayTimes = displayTimes;
