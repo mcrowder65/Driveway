@@ -25909,7 +25909,6 @@
 	                key: 'pk_test_HSPvK9dod2Uhf8JRQJIBP4rW',
 	                image: './app/gg.png',
 	                token: function(token) {
-	                  tokenId = token.Id;
 	                  var url = "/api/payment/chargeToken";
 	                  var price = priceT;
 	                  var streetAddress2 = streetAddress;
@@ -25942,9 +25941,10 @@
 	                            reservationTime: reservationTime2
 	                            
 	                        },
+	                        async:false,
 	                        success: function(res) 
 	                        {
-	                          
+	                            tokenId = res.tokenId;
 	                            console.log("success");
 	                          
 

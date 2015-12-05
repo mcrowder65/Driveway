@@ -238,6 +238,8 @@ app.post('/api/payment/chargeToken', function (req, res)
 	  						res.sendStatus("403");
 	  						return;
 	  					}
+
+	  					res.json({tokenId: stripeToken.id});
 	  				}
 	  			);
 	  		}
