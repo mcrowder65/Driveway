@@ -25881,6 +25881,10 @@
 	var reservationTime;
 	var city;
 	var tokenId ="null";
+	var Name;
+	var Email;
+	var CardType;
+	var Last4;
 
 	var StripeButton = React.createClass({displayName: "StripeButton",
 	    mixins: [ReactScriptLoaderMixin, History, Lifecycle],
@@ -25905,7 +25909,7 @@
 	                key: 'pk_test_HSPvK9dod2Uhf8JRQJIBP4rW',
 	                image: './app/gg.png',
 	                token: function(token) {
-	                    tokenId = token.Id;
+	                  tokenId = token.Id;
 	                  var url = "/api/payment/chargeToken";
 	                  var price = priceT;
 	                  var streetAddress2 = streetAddress;
@@ -25915,6 +25919,10 @@
 	                  var reservationDuration2 = reservationDuration;
 	                  var reservationTime2 = reservationTime;
 	                  var city2 = city;
+	                  Name = token.card.name;
+	                  Email = token.email;
+	                  CardType = token.card.brand;
+	                  Last4 = token.card.last4;
 	                    $.ajax
 	                    ({
 	                        url: url,
@@ -25954,6 +25962,18 @@
 	                        var data1 = {Price: priceT};
 	                        tokenId = "null";
 	                        localStorage.price = priceT;
+	                        localStorage.Name = Name;
+	                        localStorage.ResAddress = streetAddress;
+	                        localStorage.State = state;
+	                        localStorage.City = city;
+	                        localStorage.Zip = zip;
+	                        localStorage.ResDate = reservationDate;
+	                        localStorage.ResDuration = reservationDuration;
+	                        localStorage.ResTime = reservationTime;
+	                        localStorage.email = Email;
+	                        localStorage.cardType = CardType;
+	                        localStorage.Last4 = Last4;
+
 
 	                        self.history.pushState(null,'/confirm');
 	                    }
