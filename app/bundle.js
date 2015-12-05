@@ -25978,6 +25978,40 @@
 	                        localStorage.cardType = CardType;
 	                        localStorage.Last4 = Last4;
 
+	                        var url2 = "/api/users/addReservation";
+	                        var driveId = 123456;
+	                        var owner = "John doe";
+
+
+
+	                        $.ajax
+	                        ({
+	                            url: url2,
+	                            dataType: 'json',
+	                            type: 'POST',
+	                            data: {
+	                                
+	                                buyer: Name,
+	                                owner: owner,
+	                                drivewayId: driveId,
+	                                date: reservationDate,
+	                                time: reservationTime  
+	                     
+	                            },
+	                            async:false,
+	                            success: function(res) 
+	                            {
+	                                console.log(res.drivewayId);
+	                              
+
+	                            }.bind(this),
+	                            error: function()
+	                            {
+	                                
+	                            }.bind(this)
+
+	                        });
+
 
 	                        self.history.pushState(null,'/confirm');
 	                    }
