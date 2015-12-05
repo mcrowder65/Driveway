@@ -15,6 +15,37 @@ var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
 
 app.post
+('/api/users/updateDriveway',
+	function(req, res)
+	{
+		driveway.update({_id: req.body._id}, {address: req.body.address, numCars: req.body.numCars,
+											  city: req.body.city, zip: req.body.zip, state: req.body.state,
+											  times: req.body.times, fee: req.body.fee},
+		function(err, driveway)
+		{
+			if(driveway)
+				res.json({driveway: driveway});
+			else
+				res.sendStatus('403');
+		});
+	}
+);
+app.post
+('/api/users/queryID',
+	function(req, res)
+	{
+		driveway.find({_id: req.body._id},
+		function(err, driveway)
+		{
+			if(driveway)
+				res.json({driveway: driveway});
+			else
+				res.sendStatus('403');
+		});
+	}
+);
+
+app.post
 ('/api/users/getDriveways',
 	function (req, res)
 	{
@@ -32,7 +63,7 @@ app.post
 ('/api/users/deleteDriveway',
 	function (req, res)
 	{
-		driveway.remove({username: req.body.username, address: req.body.address, zip: req.body.zip, city: req.body.city, state: req.body.state, numCars: req.body.numCars},
+		driveway.remove({_id: req.body._id},
 		function(err, driveway)
 		{
 			if (driveway)
@@ -60,7 +91,11 @@ app.post
 ('/api/users/addDriveway',
 	function (req, res)
 	{
-		driveway.findOrCreate({username: req.body.username, address: req.body.address, zip: req.body.zip, city: req.body.city, state: req.body.state, numCars: req.body.numCars},
+		driveway.findOrCreate({
+			username: req.body.username, address: req.body.address, zip: req.body.zip, 
+			city: req.body.city, state: req.body.state, numCars: req.body.numCars, 
+			times: req.body.times, fee: req.body.fee},
+		
 		function(err, driveway, created)
 		{
 			if (created)
@@ -69,6 +104,8 @@ app.post
 				driveway.username = req.body.username;
 				driveway.zip = req.body.zip;
 				driveway.city = req.body.city;
+				driveway.times = req.body.times;
+				driveway.fee = req.body.fee;
 				driveway.save
 				(
 					function(err)
@@ -78,7 +115,7 @@ app.post
 							res.sendStatus("403");
 							return;
 						}
-						res.json({username: driveway.username, address: driveway.address, zip: driveway.zip});
+						res.json({username: driveway.username, address: driveway.address, zip: driveway.zip, times: driveway.times});
 					}
 				);
 			}
@@ -89,7 +126,6 @@ app.post
 		});
 	}
 );
-
 app.post
 ('/api/users/register', 
 	function (req, res) 

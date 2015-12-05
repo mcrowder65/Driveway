@@ -36,6 +36,16 @@ function contains(array, json)
   }
   return false;
 }
+function stripChar(string, character)
+{
+  var charIndex = string.indexOf(character);
+  var firstHalf = string.substring(0, charIndex);
+  var secondHalf = string.substring(charIndex+1, string.length);
+
+  if(character == ':' && firstHalf == '12')
+    firstHalf = '0';
+  return firstHalf + secondHalf;
+}
 function stripCharacter(string, character)
 {
   var charIndex = string.indexOf(character);
@@ -231,8 +241,6 @@ var MapHolder = React.createClass({
   }
 });
 
-
-
 var profile = React.createClass
 ({
   render: function() 
@@ -254,20 +262,42 @@ var driveway = React.createClass
   mixins: [History, Lifecycle],
   getInitialState: function() 
   {
-    var tempAddress = get('address');
+    var id = get('_id');
     var allowNewTimes = false;
-    if(tempAddress)
+    if(id)
     {
-      var address = tempAddress;
-      var numCars = get('numCars');
-      var zip = get('zip');
-      var state = get('state');
-      var city = get('city');
-      drivewayDAO.erase(localStorage.username, address, numCars, zip, state, city);
-      return {address: address, numCars: numCars, zip: zip, city: city, state: state, editing: true};
+      var obj = drivewayDAO.queryID(id);
+      console.log(obj);
+      var address = obj.address;
+      var username = obj.username;
+      var zip = obj.zip;
+      var city = obj.city;
+      var times = obj.times;
+      var numCars = obj.numCars;
+      var state = obj.state;
+      var fee = obj.fee;
+      var displayTimes = [];
+
+      for(var i = 0; i < times.length; i++)
+      {
+        displayTimes.push(React.createElement("br", null));
+        var time = times[i];
+        var startTime = time.startTime;
+        var endTime = time.endTime;
+        var stateDay = upperCaseFirstLetter(time.stateDay);
+        var value = stateDay + 's from ' + startTime + ' to ' + endTime;
+        
+        var htmlID = stateDay+ ' ' + startTime + ' ' + endTime;
+        displayTimes.push(value);
+        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: htmlID}, 'Delete'));
+      }
+      return{ address: address, zip: zip, city: city, times: times, 
+              numCars: numCars, state: state, startTime: '', endTime: '', 
+              day: '', editing: true,  displayTimes: displayTimes, id: id, fee: fee};
     }
     else
-        return {address: '', numCars: '1', zip:'', city: '', state:'', editing: false, startTime: '', endTime: '', day: '', times: [], displayTimes: []};
+        return {address: '', numCars: '1', zip:'', city: '', state:'', editing: false, 
+                startTime: '', endTime: '', day: '', times: [], displayTimes: [], fee: fee};
   },
   handleChange: function(event) 
   {
@@ -284,6 +314,8 @@ var driveway = React.createClass
       this.setState({state: event.target.value});
     else if(event.target.name =='city')
       this.setState({city: event.target.value});
+    else if(event.target.name =='fee')
+      this.setState({fee: event.target.value});
     else if(event.target.name == 'startTime')
     {
       this.setState({startTime: event.target.value});
@@ -318,16 +350,52 @@ var driveway = React.createClass
   {
     if(this.state.state == '')
       alert('You must pick a state');
+
+    if(this.state.editing)
+      drivewayDAO.update(this.state.id, this.state.address, this.state.numCars, this.state.city, 
+                         this.state.zip, this.state.state, this.state.times, this.state.fee);
     else
-      drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, this.state.zip, this.state.state);
+      drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, 
+                      this.state.zip, this.state.state, this.state.times, this.state.fee);
+    this.history.pushState(null, '/profile');  
   },
-  deleteTime: function(index)
-  {
-    console.log("trying to delete time");
-    // var times = this.state.times;
-    // times.splice(index, 1);
-    // this.state.times = times;
-    // this.forceUpdate();
+  deleteTime: function(event)
+  {//{stateDay, start, end};
+    var currentID = event.currentTarget.id;
+
+
+    var times = this.state.times;
+    for(var i = 0; i < times.length; i++)
+    {
+      var time = times[i];
+      var timeID = upperCaseFirstLetter(time.stateDay) + ' ' + time.startTime + ' ' + time.endTime;
+      if(timeID == currentID)
+      {
+        times.splice(i, 1);
+        break;
+      }
+    }
+
+    this.setState({times: times});
+    var displayTimes = this.state.displayTimes;
+    displayTimes = [];
+
+    for(var i = 0; i < times.length; i++)
+    {
+
+      displayTimes.push(React.createElement("br", null));
+      var time = times[i];
+      var startTime = time.startTime;
+      var endTime = time.endTime;
+      var stateDay = upperCaseFirstLetter(time.stateDay);
+      var value = stateDay + 's from ' + startTime + ' to ' + endTime;
+      
+      var id = stateDay+ ' ' + startTime + ' ' + endTime;
+      displayTimes.push(value);
+      displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id}, 'Delete'));
+    }
+    this.setState({displayTimes: displayTimes});
+    this.forceUpdate();
   },
   endAfterStart: function()
   {
@@ -351,15 +419,8 @@ var driveway = React.createClass
     startTime = parseInt(stripCharacter(startTime, ':'));
     endTime = parseInt(stripCharacter(endTime, ':'));
     
-
-    console.log('startPM: ' + startPM + ' endPM: ' + endPM);
-    console.log("startTime: " + startTime + " endTime: " + endTime);
     if(endTime <= startTime)
-    {
-      console.log("false");
       return false;
-    }
-    console.log("true");
     return true;
   },
   addNewTime: function()
@@ -397,10 +458,13 @@ var driveway = React.createClass
       {
         displayTimes.push(React.createElement("br", null));
         
-        var upperCaseDay = upperCaseFirstLetter(times[i].stateDay);
-        var value = upperCaseDay + 's from ' + times[i].startTime + ' to ' + times[i].endTime;
+        stateDay = upperCaseFirstLetter(times[i].stateDay);
+        var value = stateDay + 's from ' + times[i].startTime + ' to ' + times[i].endTime;
+        var start = times[i].startTime;
+        var end = times[i].endTime;
+        var id = stateDay+ ' ' + start + ' ' + end;
         displayTimes.push(value);
-        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, innerHTML: 'hello'}));
+        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id}, 'Delete'));
       }
 
       this.state.displayTimes = displayTimes;
@@ -411,6 +475,7 @@ var driveway = React.createClass
   },
   remove: function()
   {
+    drivewayDAO.erase(this.state.id);
     this.history.pushState(null, '/profile');
   },
   render: function() 
@@ -424,6 +489,7 @@ var driveway = React.createClass
     var startTime = this.state.startTime;
     var endTime = this.state.endTime;
     var displayTimes = this.state.displayTimes;
+    var fee = this.state.fee;
     if(!this.state.editing)
     {
       return (
@@ -491,6 +557,7 @@ var driveway = React.createClass
                         <option value='2'>2</option>
                         <option value='3'>3</option>
                       </select><br/><br/>
+          Fee: <br/><input type="text" name="fee" value={fee} onChange={this.handleChange}/><br/><br/>
           <p id='chosenTimes'> Chosen times: {displayTimes}</p>            
           Day: <space> </space> <select name="day" id="day" value={day} onChange={this.handleChange}>
                                   <option value=""> </option>
@@ -699,7 +766,7 @@ var driveway = React.createClass
                         <option value="11:30 PM">11:30 PM</option>
                         <option value="11:45 PM">11:45 PM</option>
                       </select><space> </space>            
-          <button onClick={this.addNewTime}> Add another time</button><br/><br/>
+          <button onClick={this.addNewTime}> Add time</button><br/><br/>
           </div>
           <div>
             <button id='submit' onClick={this.handleClick}> Submit </button>  
@@ -713,6 +780,7 @@ var driveway = React.createClass
     {
       return (
       <div>
+        <div>
           <p>You must follow through with this edit, if you do not want to edit anything,
         just click submit again; otherwise, your address will be deleted.</p>
           Street address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
@@ -775,13 +843,226 @@ var driveway = React.createClass
                         <option value='1'>1</option>
                         <option value='2'>2</option>
                         <option value='3'>3</option>
-                      </select>
-        <br/><br/><button onClick={this.handleClick}>
-        Submit
-        </button>
-        <text>     </text>
-        <button onClick={this.remove}>
-        Delete</button>
+                      </select><br/><br/>
+          Fee: <br/><input type="text" name="fee" value={fee} onChange={this.handleChange}/><br/><br/>
+          <p id='chosenTimes'> Chosen times: {displayTimes}</p>            
+          Day: <space> </space> <select name="day" id="day" value={day} onChange={this.handleChange}>
+                                  <option value=""> </option>
+                                  <option value="monday"> Monday</option>
+                                  <option value="tuesday"> Tuesday</option>
+                                  <option value="wednesday"> Wednesday</option>
+                                  <option value="thursday"> Thursday</option>
+                                  <option value="friday"> Friday</option>
+                                  <option value="saturday"> Saturday</option>
+                                  <option value="sunday"> Sunday</option>
+                                  </select> <space></space>
+          Start time: <space> </space>
+                      <select name="startTime" id="time" value={startTime} onChange={this.handleChange}>
+                        <option value=""></option>
+                        <option value="5:00 AM">5:00 AM</option>
+                        <option value="5:15 AM">5:15 AM</option>
+                        <option value="5:30 AM">5:30 AM</option>
+                        <option value="5:45 AM">5:45 AM</option>
+                       
+                        <option value="6:00 AM">6:00 AM</option>
+                        <option value="6:15 AM">6:15 AM</option>
+                        <option value="6:30 AM">6:30 AM</option>
+                        <option value="6:45 AM">6:45 AM</option>
+                       
+                        <option value="7:00 AM">7:00 AM</option>
+                        <option value="7:15 AM">7:15 AM</option>
+                        <option value="7:30 AM">7:30 AM</option>
+                        <option value="7:45 AM">7:45 AM</option>
+                       
+                        <option value="8:00 AM">8:00 AM</option>
+                        <option value="8:15 AM">8:15 AM</option>
+                        <option value="8:30 AM">8:30 AM</option>
+                        <option value="8:45 AM">8:45 AM</option>
+                       
+                        <option value="9:00 AM">9:00 AM</option>
+                        <option value="9:15 AM">9:15 AM</option>
+                        <option value="9:30 AM">9:30 AM</option>
+                        <option value="9:45 AM">9:45 AM</option>
+                       
+                        <option value="10:00 AM">10:00 AM</option>
+                        <option value="10:15 AM">10:15 AM</option>
+                        <option value="10:30 AM">10:30 AM</option>
+                        <option value="10:45 AM">10:45 AM</option>
+                       
+                        <option value="11:00 AM">11:00 AM</option>
+                        <option value="11:15 AM">11:15 AM</option>
+                        <option value="11:30 AM">11:30 AM</option>
+                        <option value="11:45 AM">11:45 AM</option>
+                       
+                        <option value="12:00 PM">12:00 PM</option>
+                        <option value="12:15 PM">12:15 PM</option>
+                        <option value="12:30 PM">12:30 PM</option>
+                        <option value="12:45 PM">12:45 PM</option>
+                       
+                        <option value="1:00 PM">1:00 PM</option>
+                        <option value="1:15 PM">1:15 PM</option>
+                        <option value="1:30 PM">1:30 PM</option>
+                        <option value="1:45 PM">1:45 PM</option>
+                       
+                        <option value="2:00 PM">2:00 PM</option>
+                        <option value="2:15 PM">2:15 PM</option>
+                        <option value="2:30 PM">2:30 PM</option>
+                        <option value="2:45 PM">2:45 PM</option>
+                       
+                        <option value="3:00 PM">3:00 PM</option>
+                        <option value="3:15 PM">3:15 PM</option>
+                        <option value="3:30 PM">3:30 PM</option>
+                        <option value="3:45 PM">3:45 PM</option>
+                       
+                        <option value="4:00 PM">4:00 PM</option>
+                        <option value="4:15 PM">4:15 PM</option>
+                        <option value="4:30 PM">4:30 PM</option>
+                        <option value="4:45 PM">4:45 PM</option>
+                       
+                        <option value="5:00 PM">5:00 PM</option>
+                        <option value="5:15 PM">5:15 PM</option>
+                        <option value="5:30 PM">5:30 PM</option>
+                        <option value="5:45 PM">5:45 PM</option>
+                       
+                        <option value="6:00 PM">6:00 PM</option>
+                        <option value="6:15 PM">6:15 PM</option>
+                        <option value="6:30 PM">6:30 PM</option>
+                        <option value="6:45 PM">6:45 PM</option>
+                       
+                        <option value="7:00 PM">7:00 PM</option>
+                        <option value="7:15 PM">7:15 PM</option>
+                        <option value="7:30 PM">7:30 PM</option>
+                        <option value="7:45 PM">7:45 PM</option>
+                       
+                        <option value="8:00 PM">8:00 PM</option>
+                        <option value="8:15 PM">8:15 PM</option>
+                        <option value="8:30 PM">8:30 PM</option>
+                        <option value="8:45 PM">8:45 PM</option>
+                       
+                        <option value="9:00 PM">9:00 PM</option>
+                        <option value="9:15 PM">9:15 PM</option>
+                        <option value="9:30 PM">9:30 PM</option>
+                        <option value="9:45 PM">9:45 PM</option>
+                       
+                        <option value="10:00 PM">10:00 PM</option>
+                        <option value="10:15 PM">10:15 PM</option>
+                        <option value="10:30 PM">10:30 PM</option>
+                        <option value="10:45 PM">10:45 PM</option>
+                       
+                        <option value="11:00 PM">11:00 PM</option>
+                        <option value="11:15 PM">11:15 PM</option>
+                        <option value="11:30 PM">11:30 PM</option>
+                        <option value="11:45 PM">11:45 PM</option>
+                      </select><space> </space>
+          End time: <space> </space>
+                      <select name="endTime" id="endTime" value={endTime} onChange={this.handleChange}>
+                        <option value=""></option>
+                        <option value="5:00 AM">5:00 AM</option>
+                        <option value="5:15 AM">5:15 AM</option>
+                        <option value="5:30 AM">5:30 AM</option>
+                        <option value="5:45 AM">5:45 AM</option>
+                       
+                        <option value="6:00 AM">6:00 AM</option>
+                        <option value="6:15 AM">6:15 AM</option>
+                        <option value="6:30 AM">6:30 AM</option>
+                        <option value="6:45 AM">6:45 AM</option>
+                       
+                        <option value="7:00 AM">7:00 AM</option>
+                        <option value="7:15 AM">7:15 AM</option>
+                        <option value="7:30 AM">7:30 AM</option>
+                        <option value="7:45 AM">7:45 AM</option>
+                       
+                        <option value="8:00 AM">8:00 AM</option>
+                        <option value="8:15 AM">8:15 AM</option>
+                        <option value="8:30 AM">8:30 AM</option>
+                        <option value="8:45 AM">8:45 AM</option>
+                       
+                        <option value="9:00 AM">9:00 AM</option>
+                        <option value="9:15 AM">9:15 AM</option>
+                        <option value="9:30 AM">9:30 AM</option>
+                        <option value="9:45 AM">9:45 AM</option>
+                       
+                        <option value="10:00 AM">10:00 AM</option>
+                        <option value="10:15 AM">10:15 AM</option>
+                        <option value="10:30 AM">10:30 AM</option>
+                        <option value="10:45 AM">10:45 AM</option>
+                       
+                        <option value="11:00 AM">11:00 AM</option>
+                        <option value="11:15 AM">11:15 AM</option>
+                        <option value="11:30 AM">11:30 AM</option>
+                        <option value="11:45 AM">11:45 AM</option>
+                       
+                        <option value="12:00 PM">12:00 PM</option>
+                        <option value="12:15 PM">12:15 PM</option>
+                        <option value="12:30 PM">12:30 PM</option>
+                        <option value="12:45 PM">12:45 PM</option>
+                       
+                        <option value="1:00 PM">1:00 PM</option>
+                        <option value="1:15 PM">1:15 PM</option>
+                        <option value="1:30 PM">1:30 PM</option>
+                        <option value="1:45 PM">1:45 PM</option>
+                       
+                        <option value="2:00 PM">2:00 PM</option>
+                        <option value="2:15 PM">2:15 PM</option>
+                        <option value="2:30 PM">2:30 PM</option>
+                        <option value="2:45 PM">2:45 PM</option>
+                       
+                        <option value="3:00 PM">3:00 PM</option>
+                        <option value="3:15 PM">3:15 PM</option>
+                        <option value="3:30 PM">3:30 PM</option>
+                        <option value="3:45 PM">3:45 PM</option>
+                       
+                        <option value="4:00 PM">4:00 PM</option>
+                        <option value="4:15 PM">4:15 PM</option>
+                        <option value="4:30 PM">4:30 PM</option>
+                        <option value="4:45 PM">4:45 PM</option>
+                       
+                        <option value="5:00 PM">5:00 PM</option>
+                        <option value="5:15 PM">5:15 PM</option>
+                        <option value="5:30 PM">5:30 PM</option>
+                        <option value="5:45 PM">5:45 PM</option>
+                       
+                        <option value="6:00 PM">6:00 PM</option>
+                        <option value="6:15 PM">6:15 PM</option>
+                        <option value="6:30 PM">6:30 PM</option>
+                        <option value="6:45 PM">6:45 PM</option>
+                       
+                        <option value="7:00 PM">7:00 PM</option>
+                        <option value="7:15 PM">7:15 PM</option>
+                        <option value="7:30 PM">7:30 PM</option>
+                        <option value="7:45 PM">7:45 PM</option>
+                       
+                        <option value="8:00 PM">8:00 PM</option>
+                        <option value="8:15 PM">8:15 PM</option>
+                        <option value="8:30 PM">8:30 PM</option>
+                        <option value="8:45 PM">8:45 PM</option>
+                       
+                        <option value="9:00 PM">9:00 PM</option>
+                        <option value="9:15 PM">9:15 PM</option>
+                        <option value="9:30 PM">9:30 PM</option>
+                        <option value="9:45 PM">9:45 PM</option>
+                       
+                        <option value="10:00 PM">10:00 PM</option>
+                        <option value="10:15 PM">10:15 PM</option>
+                        <option value="10:30 PM">10:30 PM</option>
+                        <option value="10:45 PM">10:45 PM</option>
+                       
+                        <option value="11:00 PM">11:00 PM</option>
+                        <option value="11:15 PM">11:15 PM</option>
+                        <option value="11:30 PM">11:30 PM</option>
+                        <option value="11:45 PM">11:45 PM</option>
+                      </select><space> </space>            
+          <button onClick={this.addNewTime}> Add time</button><br/><br/>
+          </div>
+
+        <div>
+          <br/><br/><button onClick={this.handleClick}>
+          Submit
+          </button>
+          <text>     </text>
+          <button onClick={this.remove}>
+          Delete</button>
+        </div>
       </div>
 
       );
@@ -793,10 +1074,68 @@ var driveway = React.createClass
 
 var drivewayDAO = 
 {
+  
   mixins: [History, Lifecycle],
-  erase: function(username, address, numCars, zip, state, city)
+  update: function(id, address, numCars, city, zip, state, times, fee)
+  {
+    var url = "/api/users/updateDriveway";
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        _id: id,
+        address: address,
+        numCars: numCars,
+        city: city,
+        zip: zip,
+        state: state,
+        times: times,
+        fee: fee
+      },
+      async: false,
+      success: function(res)
+      {
+
+      }.bind(this),
+      error: function()
+      {
+
+      }.bind(this)
+    });
+  },
+  queryID: function(id)
+  {
+    var url = "/api/users/queryID";
+    var returnValue = {};
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        _id: id
+      },
+      async:false,
+      success: function(res)
+      {
+       // console.log(res.driveway[0]);
+        returnValue = res.driveway[0];
+        
+      }.bind(this),
+      error: function()
+      {
+      }.bind(this)
+    });
+    return returnValue;
+  },
+  erase: function(id)
   {
     var url = "/api/users/deleteDriveway";
+    console.log(id);
     $.ajax
     ({
         url: url,
@@ -804,13 +1143,9 @@ var drivewayDAO =
         type: 'POST',
         data: 
         {
-            username: username,
-            address: address,
-            numCars: numCars,
-            zip: zip,
-            city: city,
-            state: state
+          _id: id
         },
+        async:false,
         success: function(res) 
         { 
         }.bind(this),
@@ -820,7 +1155,7 @@ var drivewayDAO =
 
       });
   },
-  add: function(username, address, numCars, city, zip, state)
+  add: function(username, address, numCars, city, zip, state, times, fee)
   {
 
     var url = "/api/users/addDriveway";
@@ -835,8 +1170,11 @@ var drivewayDAO =
             numCars: numCars,
             zip: zip,
             city: city,
-            state: state
+            state: state,
+            times: times,
+            fee: fee
         },
+        async:false,
         success: function(res) 
         {
           if(res.username == localStorage.username)
@@ -863,14 +1201,16 @@ var drivewayDAO =
         data: {
             username: localStorage.username,
         },
+        async:false,
         success: function(res) 
         { 
           userDriveways = [];
+
           for(var i = 0; i < res.driveway.length; i++)
           {
             var temp = res.driveway[i];
             var tempDriveway = temp.address + ' ' + temp.city + ', ' + temp.state + ' ' + temp.zip + ' - ' + temp.numCars + ' car(s)';
-            var link = '/driveway?address=' + temp.address + '?city=' + temp.city + '?state=' + temp.state + '?zip=' + temp.zip + '?numCars=' + temp.numCars;
+            var link = '/driveway?_id='+ res.driveway[i]._id;
             userDriveways.push(React.createElement(Link, {to: link}, "Edit/Delete ") );
             userDriveways.push(tempDriveway);
             userDriveways.push(React.createElement("br", null));
@@ -893,9 +1233,11 @@ var drivewayDAO =
         type: 'POST',
         data: {
         },
+        async:false,
         success: function(res) 
         { 
           allDriveways = [];
+          console.log(res.driveway);
           for(var i = 0; i < res.driveway.length; i++)
           {
             var temp = res.driveway[i];
@@ -1004,16 +1346,15 @@ var signInAuthorization =
             username: username,
             password: password
         },
+        async: false,
         headers: {'Authorization': localStorage},
         success: function(res) 
         {
           localStorage.email = res.email;
-          console.log("localStorage.email: " + localStorage.email);
           signedIn = true;
         }.bind(this),
         error: function()
         {
-          console.log("failure");
         }.bind(this)
 
     });
@@ -1279,13 +1620,13 @@ var auth =
                 username: username,
                 password: password
             },
+            async: false,
             success: function(res) 
             {
               location.href='/#/signIn';
             }.bind(this),
             error: function()
             {
-              console.log("failure");
             }.bind(this)
 
     });
