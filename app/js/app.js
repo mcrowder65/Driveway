@@ -79,6 +79,7 @@ var App = React.createClass({
               <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
               <Link className="navbar-brand" to="/map">Map</Link>  
               <Link className="navbar-brand" to="/pay">Pay</Link> 
+              <Link className="navbar-brand" to="/confirm">Confirm Page</Link> 
             </div>
             <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
               <li><Link to="signIn">Sign in</Link></li>
@@ -103,6 +104,7 @@ var App = React.createClass({
                 <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
                 <Link className="navbar-brand" to="/map">Map</Link>  
                 <Link className="navbar-brand" to="/pay">Pay</Link> 
+                <Link className="navbar-brand" to="/confirm">Confirm Page</Link> 
               </div>
               <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
                 <li><Link to="profile">Profile</Link></li>
@@ -228,6 +230,8 @@ var MapHolder = React.createClass({
     );
   }
 });
+
+
 
 var profile = React.createClass
 ({
@@ -1077,6 +1081,120 @@ var pay = React.createClass
   }
 });
 
+var jumboStyle = 
+{
+  textAlign: 'center'
+};
+
+var fontStyle =
+{
+  fontSize: '20px'
+};
+var fontStyle2 =
+{
+  fontSize: '25px',
+  fontWeight: 'bold',
+  textAlign: 'center'
+};
+var buttonStyle=
+{
+  width: '10%'
+}
+
+var confirmPage = React.createClass
+({
+  getInitialState: function()
+  {
+    return {email: ''}, {address: ''}, {price: ''};
+
+  },
+
+  handleChange: function(event)
+  {
+
+    if(event.target.name == "email")
+    {
+      this.setState({email: event.target.value});
+        //console.log(event.target.value);
+    }
+
+  },
+
+  render: function() {
+
+    var email = this.state.email;
+    var email2 = "Email: " + localStorage.email;
+    var name = "Name: " + localStorage.Name;
+    var cardType = "Card Type: " + localStorage.cardType;
+    var Last4 = "Last 4 Digits: " + localStorage.Last4;
+    var ReservedAddress = "Reserved Address: " + localStorage.ResAddress;
+    var State = "State: " + localStorage.state;
+    var City = "City: " + localStorage.City;
+    var DOR = "Date of Reservation: " + localStorage.ResDate;
+    var ResTime = "Email: " + localStorage.ResTime;
+    var resDur = "Reservation Duration: " + localStorage.ResDuration + " hours";
+    var price2 = localStorage.price/100;
+    console.log(price2);
+    var price = "Total Price: $" + price2;
+    var ZIP = "Zip Code: " + localStorage.zip;
+    
+    
+    return (
+      <div>
+        <div className="well">
+          <div style={formStyle}>
+           <h1>Thank you for your order!</h1>
+           <p>Plese save the following order confirmation and leave it in your windshield when you arrive at your destination</p>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Order Information</div>
+              <div className="panel-body">
+                <p>{ReservedAddress}</p>
+                <p>{State}</p>
+                <p>{ZIP}</p>
+                <p>{DOR}</p>
+                <p>{ResTime}</p>
+                <p>{resDur}</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Personal Information</div>
+              <div className="panel-body">
+                <p>{name}</p>
+                <p>{email2}</p>
+                <p>{cardType}</p>
+                <p>{Last4}</p>
+                <p>{price}</p>
+                <p>Total Amount due: $0.00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Email Me!</div>
+              <div className="panel-body">
+                <p style={jumboStyle}>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </p>
+                <div style={jumboStyle}>
+                  Email: <input type="text" name="email" value={email} onChange={this.handleChange}/>
+                  <a className="btn btn-primary btn-sm" href="#" role="button">Learn more</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      );
+  }
+});
+
 var signUp = React.createClass
 ({
   getInitialState: function() 
@@ -1186,6 +1304,7 @@ var routes = (
           <Route name="signIn" path="/signIn" component={signIn}/>
           <Route name="logOut" path="/logOut" component={logOut}/>
           <Route name="profile" path="/profile" component={profile}/>
+          <Route name="confirm" path="/confirm" component={confirmPage} /> 
         </Route>
       </Router>
 );

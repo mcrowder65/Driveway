@@ -131,7 +131,8 @@
 	              React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/allDriveways"}, "All driveways"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/map"}, "Map"), 
-	              React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay")
+	              React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay"), 
+	              React.createElement(Link, {className: "navbar-brand", to: "/confirm"}, "Confirm Page")
 	            ), 
 	            React.createElement("div", {className: "nav navbar-nav navbar-right", id: "bs-example-navbar-collapse-1"}, 
 	              React.createElement("li", null, React.createElement(Link, {to: "signIn"}, "Sign in")), 
@@ -155,7 +156,8 @@
 	                React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/allDriveways"}, "All driveways"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/map"}, "Map"), 
-	                React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay")
+	                React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay"), 
+	                React.createElement(Link, {className: "navbar-brand", to: "/confirm"}, "Confirm Page")
 	              ), 
 	              React.createElement("div", {className: "nav navbar-nav navbar-right", id: "bs-example-navbar-collapse-1"}, 
 	                React.createElement("li", null, React.createElement(Link, {to: "profile"}, "Profile")), 
@@ -281,6 +283,8 @@
 	    );
 	  }
 	});
+
+
 
 	var profile = React.createClass
 	({displayName: "profile",
@@ -1130,6 +1134,120 @@
 	  }
 	});
 
+	var jumboStyle = 
+	{
+	  textAlign: 'center'
+	};
+
+	var fontStyle =
+	{
+	  fontSize: '20px'
+	};
+	var fontStyle2 =
+	{
+	  fontSize: '25px',
+	  fontWeight: 'bold',
+	  textAlign: 'center'
+	};
+	var buttonStyle=
+	{
+	  width: '10%'
+	}
+
+	var confirmPage = React.createClass
+	({displayName: "confirmPage",
+	  getInitialState: function()
+	  {
+	    return {email: ''}, {address: ''}, {price: ''};
+
+	  },
+
+	  handleChange: function(event)
+	  {
+
+	    if(event.target.name == "email")
+	    {
+	      this.setState({email: event.target.value});
+	        //console.log(event.target.value);
+	    }
+
+	  },
+
+	  render: function() {
+
+	    var email = this.state.email;
+	    var email2 = "Email: " + localStorage.email;
+	    var name = "Name: " + localStorage.Name;
+	    var cardType = "Card Type: " + localStorage.cardType;
+	    var Last4 = "Last 4 Digits: " + localStorage.Last4;
+	    var ReservedAddress = "Reserved Address: " + localStorage.ResAddress;
+	    var State = "State: " + localStorage.state;
+	    var City = "City: " + localStorage.City;
+	    var DOR = "Date of Reservation: " + localStorage.ResDate;
+	    var ResTime = "Email: " + localStorage.ResTime;
+	    var resDur = "Reservation Duration: " + localStorage.ResDuration + " hours";
+	    var price2 = localStorage.price/100;
+	    console.log(price2);
+	    var price = "Total Price: $" + price2;
+	    var ZIP = "Zip Code: " + localStorage.zip;
+	    
+	    
+	    return (
+	      React.createElement("div", null, 
+	        React.createElement("div", {className: "well"}, 
+	          React.createElement("div", {style: formStyle}, 
+	           React.createElement("h1", null, "Thank you for your order!"), 
+	           React.createElement("p", null, "Plese save the following order confirmation and leave it in your windshield when you arrive at your destination")
+	          )
+	        ), 
+	        React.createElement("div", {className: "row"}, 
+	          React.createElement("div", {className: "col-md-6"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Order Information"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", null, ReservedAddress), 
+	                React.createElement("p", null, State), 
+	                React.createElement("p", null, ZIP), 
+	                React.createElement("p", null, DOR), 
+	                React.createElement("p", null, ResTime), 
+	                React.createElement("p", null, resDur)
+	              )
+	            )
+	          ), 
+	          React.createElement("div", {className: "col-md-6"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Personal Information"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", null, name), 
+	                React.createElement("p", null, email2), 
+	                React.createElement("p", null, cardType), 
+	                React.createElement("p", null, Last4), 
+	                React.createElement("p", null, price), 
+	                React.createElement("p", null, "Total Amount due: $0.00")
+	              )
+	            )
+	          )
+	        ), 
+	        React.createElement("div", {className: "row"}, 
+	          React.createElement("div", {className: "col-md-12"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", {style: jumboStyle}, "If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. "), 
+	                React.createElement("div", {style: jumboStyle}, 
+	                  "Email: ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
+	                  React.createElement("a", {className: "btn btn-primary btn-sm", href: "#", role: "button"}, "Learn more")
+	                )
+	              )
+	            )
+	          )
+	        )
+	      )
+
+	      );
+	  }
+	});
+
 	var signUp = React.createClass
 	({displayName: "signUp",
 	  getInitialState: function() 
@@ -1238,7 +1356,8 @@
 	          React.createElement(Route, {name: "signUp", path: "/signUp", component: signUp}), 
 	          React.createElement(Route, {name: "signIn", path: "/signIn", component: signIn}), 
 	          React.createElement(Route, {name: "logOut", path: "/logOut", component: logOut}), 
-	          React.createElement(Route, {name: "profile", path: "/profile", component: profile})
+	          React.createElement(Route, {name: "profile", path: "/profile", component: profile}), 
+	          React.createElement(Route, {name: "confirm", path: "/confirm", component: confirmPage})
 	        )
 	      )
 	);
