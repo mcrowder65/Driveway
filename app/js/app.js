@@ -1063,7 +1063,10 @@ var pay = React.createClass
     var rTime = "6:00 PM";
     var city = "orem"
 
-    var data = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city}, parking: []};
+    var drivewayId = 12345;
+    var owner = "John David";
+
+    var data = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city, drivewayId: drivewayId, owner: owner}, parking: []};
     return (
 
          <div style={formStyle}>
