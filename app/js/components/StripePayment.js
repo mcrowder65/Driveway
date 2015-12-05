@@ -107,8 +107,12 @@ var StripeButton = React.createClass({
                         localStorage.Name = Name;
                         localStorage.ResAddress = streetAddress;
                         localStorage.State = state;
+                        console.log("#####");
+                        console.log(zip);
+                        console.log("&&&&&");
                         localStorage.City = city;
                         localStorage.Zip = zip;
+                        console.log(localStorage.Zip);
                         localStorage.ResDate = reservationDate;
                         localStorage.ResDuration = reservationDuration;
                         localStorage.ResTime = reservationTime;
@@ -137,6 +141,7 @@ var StripeButton = React.createClass({
         streetAddress = this.props.data.event.street;
         state = this.props.data.event.state;
         zip = this.props.data.event.zip1;
+        console.log(zip);
         reservationDate = this.props.data.event.resDate;
         reservationDuration = this.props.data.event.duration;
         reservationTime = this.props.data.event.resTime;

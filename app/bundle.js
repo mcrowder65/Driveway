@@ -1181,7 +1181,7 @@
 	    var cardType = "Card Type: " + localStorage.cardType;
 	    var Last4 = "Last 4 Digits: " + localStorage.Last4;
 	    var ReservedAddress = "Reserved Address: " + localStorage.ResAddress;
-	    var State = "State: " + localStorage.state;
+	    var State = "State: " + localStorage.State;
 	    var City = "City: " + localStorage.City;
 	    var DOR = "Date of Reservation: " + localStorage.ResDate;
 	    var ResTime = "Email: " + localStorage.ResTime;
@@ -1189,7 +1189,7 @@
 	    var price2 = localStorage.price/100;
 	    console.log(price2);
 	    var price = "Total Price: $" + price2;
-	    var ZIP = "Zip Code: " + localStorage.zip;
+	    var ZIP = "Zip Code: " + localStorage.Zip;
 	    
 	    
 	    return (
@@ -25965,8 +25965,12 @@
 	                        localStorage.Name = Name;
 	                        localStorage.ResAddress = streetAddress;
 	                        localStorage.State = state;
+	                        console.log("#####");
+	                        console.log(zip);
+	                        console.log("&&&&&");
 	                        localStorage.City = city;
 	                        localStorage.Zip = zip;
+	                        console.log(localStorage.Zip);
 	                        localStorage.ResDate = reservationDate;
 	                        localStorage.ResDuration = reservationDuration;
 	                        localStorage.ResTime = reservationTime;
@@ -25995,6 +25999,7 @@
 	        streetAddress = this.props.data.event.street;
 	        state = this.props.data.event.state;
 	        zip = this.props.data.event.zip1;
+	        console.log(zip);
 	        reservationDate = this.props.data.event.resDate;
 	        reservationDuration = this.props.data.event.duration;
 	        reservationTime = this.props.data.event.resTime;

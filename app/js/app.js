@@ -1128,7 +1128,7 @@ var confirmPage = React.createClass
     var cardType = "Card Type: " + localStorage.cardType;
     var Last4 = "Last 4 Digits: " + localStorage.Last4;
     var ReservedAddress = "Reserved Address: " + localStorage.ResAddress;
-    var State = "State: " + localStorage.state;
+    var State = "State: " + localStorage.State;
     var City = "City: " + localStorage.City;
     var DOR = "Date of Reservation: " + localStorage.ResDate;
     var ResTime = "Email: " + localStorage.ResTime;
@@ -1136,7 +1136,7 @@ var confirmPage = React.createClass
     var price2 = localStorage.price/100;
     console.log(price2);
     var price = "Total Price: $" + price2;
-    var ZIP = "Zip Code: " + localStorage.zip;
+    var ZIP = "Zip Code: " + localStorage.Zip;
     
     
     return (

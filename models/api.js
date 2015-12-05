@@ -7,6 +7,7 @@ app.use(bodyParser.urlencoded({
 
 
 var User = require('./user.js');
+var order = require('./order.js');
 var url = 'mongodb://localhost:27017/list';
 var driveway = require('./driveway.js');
 var mongodb = require('mongodb');
@@ -149,6 +150,72 @@ app.post('/api/users/login', function (req, res)
             res.sendStatus(403);
         }
     });
+});
+
+app.post('/api/payment/chargeToken', function (req, res) 
+{
+	console.log("entered api! charge");
+    // find the user with the given username
+    var stripe = require("stripe")("sk_test_AYUBJ4KoeKWRDh0mGGScSTvh");
+    stripe.setApiVersion('2015-10-16');
+
+	// (Assuming you're using express - expressjs.com)
+	// Get the credit card details submitted by the form
+	var stripeToken = req.body.stripeToken;
+	var tPrice = req.body.tPrice;
+	console.log(tPrice);
+	console.log("----------");
+	console.log(stripeToken);
+
+	var charge = stripe.charges.create({
+	  amount: 1000, // amount in cents, again
+	  currency: "usd",
+	  source: stripeToken.id,
+	  description: "Example charge"
+	}, function(err, charge) {
+	  if (err && err.type === 'StripeCardError') {
+	    console.log("error");
+	  }
+	  else{
+	  	console.log("in here");
+	  	console.log(stripeToken.id);
+	  	order.findOrCreate({email: stripeToken.email, last4: stripeToken.card.last4, tokenid: stripeToken.id},
+	  	function(err, order, created)
+	  	{
+	  		if(created)
+	  		{
+	  			order.email = stripeToken.email;
+	  			order.last4 = stripeToken.card.last4;
+	  			order.name1 = stripeToken.card.name;
+	  			order.address = req.body.streetAddress;
+	  			order.city = req.body.city;
+	  			order.state = req.body.state;
+	  			order.zip = req.body.zip;
+	  			order.price = req.body.price;
+	  			order.reservationDate = req.body.reservationDate;
+	  			order.reservationDuration = req.body.reservationDuration;
+	  			order.reservationTime = req.body.reservationTime;
+	  			order.stripeTokenId = stripeToken.id;
+	  			order.cardType = stripeToken.card.brand;
+	  			order.save
+	  			(
+	  				function(err)
+	  				{
+	  					if(err)
+	  					{
+	  						res.sendStatus("403");
+	  						return;
+	  					}
+	  				}
+	  			);
+	  		}
+	  		else
+	  			res.sendStatus("403");
+
+	  	});
+	  	
+	  }
+	});
 });
 
 
