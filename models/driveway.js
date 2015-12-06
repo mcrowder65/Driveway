@@ -10,6 +10,7 @@ var drivewaySchema = new Schema({
 	state: String,
 	numCars: Number,
 	times: [],
+	fee: Number
 });
 
 drivewaySchema.plugin(findOrCreate);

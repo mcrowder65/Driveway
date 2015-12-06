@@ -1,4 +1,5 @@
 var React   = require('react');
+
 var ReactDOM = require('react-dom');
 var Router = require('react-router').Router;
 var Route = require('react-router').Route;
@@ -35,6 +36,16 @@ function contains(array, json)
       return true;
   }
   return false;
+}
+function stripChar(string, character)
+{
+  var charIndex = string.indexOf(character);
+  var firstHalf = string.substring(0, charIndex);
+  var secondHalf = string.substring(charIndex+1, string.length);
+
+  if(character == ':' && firstHalf == '12')
+    firstHalf = '0';
+  return firstHalf + secondHalf;
 }
 function stripCharacter(string, character)
 {
@@ -79,7 +90,8 @@ var App = React.createClass({
               <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
               <Link className="navbar-brand" to="/reserveparking">Reserve Parking</Link>  
               <Link className="navbar-brand" to="/pay">Pay</Link> 
-              <Link className="navbar-brand" to="/confirm">Confirm Page</Link> 
+
+              <Link className="navbar-brand" to="/lookup">Order Lookup</Link> 
             </div>
             <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
               <li><Link to="signIn">Sign in</Link></li>
@@ -144,21 +156,34 @@ var center =
 var Home = React.createClass
 ({
   mixins: [History, Lifecycle],
+  getInitialState: function() 
+  {
+    return {address:''};
+  },
+  goToMap: function()
+  {
+    location.href='/#/map?' + this.state.address;
+  },
+  handleChange: function(event)
+  {
+    this.setState({address: event.target.value});
+  },
   goToLearn: function()
   {
     this.history.pushState(null, '/learn');
   },
   render: function() {
+    var address = this.state.address;
     return (
     <div>
 
-      <div className="center jumbotron" style={homeStyle}>
+      <div className="jumbotron" style={homeStyle}>
         <p> Better parking is just a few clicks away </p>
         <div className="row">
           <div className="input-group">
-            <input type="text" className="form-control" placeholder="Search the address of an event"/>
+            <input type="text" className="form-control" value={address} onChange={this.handleChange} placeholder="Search the address of an event"/>
             <span className="input-group-btn">
-              <button className="btn btn-default" type="button">Go!</button>
+              <button className="btn btn-default" type="button" onClick={this.goToMap}>Go!</button>
             </span>
           </div>
         </div>
@@ -230,16 +255,13 @@ var ReserveParking = React.createClass({
   }
 });
 
-
-
 var profile = React.createClass
 ({
   render: function() 
   {
-    console.log("email: " + localStorage.email);
-    //this.forceUpdate();
       return (
        <div>
+        <h1 style={center}> {localStorage.username.toUpperCase()} </h1>
         <p>username: <br/>{localStorage.username}</p>
         <p>email: <br/>{localStorage.email}</p>
         <p>Addresses: <br/>{userDriveways}</p>
@@ -253,20 +275,41 @@ var driveway = React.createClass
   mixins: [History, Lifecycle],
   getInitialState: function() 
   {
-    var tempAddress = get('address');
+    var id = get('_id');
     var allowNewTimes = false;
-    if(tempAddress)
+    if(id)
     {
-      var address = tempAddress;
-      var numCars = get('numCars');
-      var zip = get('zip');
-      var state = get('state');
-      var city = get('city');
-      drivewayDAO.erase(localStorage.username, address, numCars, zip, state, city);
-      return {address: address, numCars: numCars, zip: zip, city: city, state: state, editing: true};
+      var obj = drivewayDAO.queryID(id);
+      var address = obj.address;
+      var username = obj.username;
+      var zip = obj.zip;
+      var city = obj.city;
+      var times = obj.times;
+      var numCars = obj.numCars;
+      var state = obj.state;
+      var fee = obj.fee;
+      var displayTimes = [];
+
+      for(var i = 0; i < times.length; i++)
+      {
+        displayTimes.push(React.createElement("br", null));
+        var time = times[i];
+        var startTime = time.startTime;
+        var endTime = time.endTime;
+        var stateDay = upperCaseFirstLetter(time.stateDay);
+        var value = stateDay + 's from ' + startTime + ' to ' + endTime;
+        
+        var htmlID = stateDay+ ' ' + startTime + ' ' + endTime;
+        displayTimes.push(value);
+        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: htmlID}, 'Delete'));
+      }
+      return{ address: address, zip: zip, city: city, times: times, 
+              numCars: numCars, state: state, startTime: '', endTime: '', 
+              day: '', editing: true,  displayTimes: displayTimes, id: id, fee: fee};
     }
     else
-        return {address: '', numCars: '1', zip:'', city: '', state:'', editing: false, startTime: '', endTime: '', day: '', times: [], displayTimes: []};
+        return {address: '', numCars: '1', zip:'', city: '', state:'', editing: false, 
+                startTime: '', endTime: '', day: '', times: [], displayTimes: [], fee: fee};
   },
   handleChange: function(event) 
   {
@@ -283,6 +326,8 @@ var driveway = React.createClass
       this.setState({state: event.target.value});
     else if(event.target.name =='city')
       this.setState({city: event.target.value});
+    else if(event.target.name =='fee')
+      this.setState({fee: event.target.value});
     else if(event.target.name == 'startTime')
     {
       this.setState({startTime: event.target.value});
@@ -317,16 +362,52 @@ var driveway = React.createClass
   {
     if(this.state.state == '')
       alert('You must pick a state');
+
+    if(this.state.editing)
+      drivewayDAO.update(this.state.id, this.state.address, this.state.numCars, this.state.city, 
+                         this.state.zip, this.state.state, this.state.times, this.state.fee);
     else
-      drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, this.state.zip, this.state.state);
+      drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, 
+                      this.state.zip, this.state.state, this.state.times, this.state.fee);
+    this.history.pushState(null, '/profile');  
   },
-  deleteTime: function(index)
-  {
-    console.log("trying to delete time");
-    // var times = this.state.times;
-    // times.splice(index, 1);
-    // this.state.times = times;
-    // this.forceUpdate();
+  deleteTime: function(event)
+  {//{stateDay, start, end};
+    var currentID = event.currentTarget.id;
+
+
+    var times = this.state.times;
+    for(var i = 0; i < times.length; i++)
+    {
+      var time = times[i];
+      var timeID = upperCaseFirstLetter(time.stateDay) + ' ' + time.startTime + ' ' + time.endTime;
+      if(timeID == currentID)
+      {
+        times.splice(i, 1);
+        break;
+      }
+    }
+
+    this.setState({times: times});
+    var displayTimes = this.state.displayTimes;
+    displayTimes = [];
+
+    for(var i = 0; i < times.length; i++)
+    {
+
+      displayTimes.push(React.createElement("br", null));
+      var time = times[i];
+      var startTime = time.startTime;
+      var endTime = time.endTime;
+      var stateDay = upperCaseFirstLetter(time.stateDay);
+      var value = stateDay + 's from ' + startTime + ' to ' + endTime;
+      
+      var id = stateDay+ ' ' + startTime + ' ' + endTime;
+      displayTimes.push(value);
+      displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id}, 'Delete'));
+    }
+    this.setState({displayTimes: displayTimes});
+    this.forceUpdate();
   },
   endAfterStart: function()
   {
@@ -350,15 +431,8 @@ var driveway = React.createClass
     startTime = parseInt(stripCharacter(startTime, ':'));
     endTime = parseInt(stripCharacter(endTime, ':'));
     
-
-    console.log('startPM: ' + startPM + ' endPM: ' + endPM);
-    console.log("startTime: " + startTime + " endTime: " + endTime);
     if(endTime <= startTime)
-    {
-      console.log("false");
       return false;
-    }
-    console.log("true");
     return true;
   },
   addNewTime: function()
@@ -396,10 +470,13 @@ var driveway = React.createClass
       {
         displayTimes.push(React.createElement("br", null));
         
-        var upperCaseDay = upperCaseFirstLetter(times[i].stateDay);
-        var value = upperCaseDay + 's from ' + times[i].startTime + ' to ' + times[i].endTime;
+        stateDay = upperCaseFirstLetter(times[i].stateDay);
+        var value = stateDay + 's from ' + times[i].startTime + ' to ' + times[i].endTime;
+        var start = times[i].startTime;
+        var end = times[i].endTime;
+        var id = stateDay+ ' ' + start + ' ' + end;
         displayTimes.push(value);
-        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, innerHTML: 'hello'}));
+        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id}, 'Delete'));
       }
 
       this.state.displayTimes = displayTimes;
@@ -410,6 +487,7 @@ var driveway = React.createClass
   },
   remove: function()
   {
+    drivewayDAO.erase(this.state.id);
     this.history.pushState(null, '/profile');
   },
   render: function() 
@@ -423,6 +501,7 @@ var driveway = React.createClass
     var startTime = this.state.startTime;
     var endTime = this.state.endTime;
     var displayTimes = this.state.displayTimes;
+    var fee = this.state.fee;
     if(!this.state.editing)
     {
       return (
@@ -490,6 +569,7 @@ var driveway = React.createClass
                         <option value='2'>2</option>
                         <option value='3'>3</option>
                       </select><br/><br/>
+          Fee: <br/><input type="text" name="fee" value={fee} onChange={this.handleChange}/><br/><br/>
           <p id='chosenTimes'> Chosen times: {displayTimes}</p>            
           Day: <space> </space> <select name="day" id="day" value={day} onChange={this.handleChange}>
                                   <option value=""> </option>
@@ -698,7 +778,7 @@ var driveway = React.createClass
                         <option value="11:30 PM">11:30 PM</option>
                         <option value="11:45 PM">11:45 PM</option>
                       </select><space> </space>            
-          <button onClick={this.addNewTime}> Add another time</button><br/><br/>
+          <button onClick={this.addNewTime}> Add time</button><br/><br/>
           </div>
           <div>
             <button id='submit' onClick={this.handleClick}> Submit </button>  
@@ -712,6 +792,7 @@ var driveway = React.createClass
     {
       return (
       <div>
+        <div>
           <p>You must follow through with this edit, if you do not want to edit anything,
         just click submit again; otherwise, your address will be deleted.</p>
           Street address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
@@ -774,13 +855,226 @@ var driveway = React.createClass
                         <option value='1'>1</option>
                         <option value='2'>2</option>
                         <option value='3'>3</option>
-                      </select>
-        <br/><br/><button onClick={this.handleClick}>
-        Submit
-        </button>
-        <text>     </text>
-        <button onClick={this.remove}>
-        Delete</button>
+                      </select><br/><br/>
+          Fee: <br/><input type="text" name="fee" value={fee} onChange={this.handleChange}/><br/><br/>
+          <p id='chosenTimes'> Chosen times: {displayTimes}</p>            
+          Day: <space> </space> <select name="day" id="day" value={day} onChange={this.handleChange}>
+                                  <option value=""> </option>
+                                  <option value="monday"> Monday</option>
+                                  <option value="tuesday"> Tuesday</option>
+                                  <option value="wednesday"> Wednesday</option>
+                                  <option value="thursday"> Thursday</option>
+                                  <option value="friday"> Friday</option>
+                                  <option value="saturday"> Saturday</option>
+                                  <option value="sunday"> Sunday</option>
+                                  </select> <space></space>
+          Start time: <space> </space>
+                      <select name="startTime" id="time" value={startTime} onChange={this.handleChange}>
+                        <option value=""></option>
+                        <option value="5:00 AM">5:00 AM</option>
+                        <option value="5:15 AM">5:15 AM</option>
+                        <option value="5:30 AM">5:30 AM</option>
+                        <option value="5:45 AM">5:45 AM</option>
+                       
+                        <option value="6:00 AM">6:00 AM</option>
+                        <option value="6:15 AM">6:15 AM</option>
+                        <option value="6:30 AM">6:30 AM</option>
+                        <option value="6:45 AM">6:45 AM</option>
+                       
+                        <option value="7:00 AM">7:00 AM</option>
+                        <option value="7:15 AM">7:15 AM</option>
+                        <option value="7:30 AM">7:30 AM</option>
+                        <option value="7:45 AM">7:45 AM</option>
+                       
+                        <option value="8:00 AM">8:00 AM</option>
+                        <option value="8:15 AM">8:15 AM</option>
+                        <option value="8:30 AM">8:30 AM</option>
+                        <option value="8:45 AM">8:45 AM</option>
+                       
+                        <option value="9:00 AM">9:00 AM</option>
+                        <option value="9:15 AM">9:15 AM</option>
+                        <option value="9:30 AM">9:30 AM</option>
+                        <option value="9:45 AM">9:45 AM</option>
+                       
+                        <option value="10:00 AM">10:00 AM</option>
+                        <option value="10:15 AM">10:15 AM</option>
+                        <option value="10:30 AM">10:30 AM</option>
+                        <option value="10:45 AM">10:45 AM</option>
+                       
+                        <option value="11:00 AM">11:00 AM</option>
+                        <option value="11:15 AM">11:15 AM</option>
+                        <option value="11:30 AM">11:30 AM</option>
+                        <option value="11:45 AM">11:45 AM</option>
+                       
+                        <option value="12:00 PM">12:00 PM</option>
+                        <option value="12:15 PM">12:15 PM</option>
+                        <option value="12:30 PM">12:30 PM</option>
+                        <option value="12:45 PM">12:45 PM</option>
+                       
+                        <option value="1:00 PM">1:00 PM</option>
+                        <option value="1:15 PM">1:15 PM</option>
+                        <option value="1:30 PM">1:30 PM</option>
+                        <option value="1:45 PM">1:45 PM</option>
+                       
+                        <option value="2:00 PM">2:00 PM</option>
+                        <option value="2:15 PM">2:15 PM</option>
+                        <option value="2:30 PM">2:30 PM</option>
+                        <option value="2:45 PM">2:45 PM</option>
+                       
+                        <option value="3:00 PM">3:00 PM</option>
+                        <option value="3:15 PM">3:15 PM</option>
+                        <option value="3:30 PM">3:30 PM</option>
+                        <option value="3:45 PM">3:45 PM</option>
+                       
+                        <option value="4:00 PM">4:00 PM</option>
+                        <option value="4:15 PM">4:15 PM</option>
+                        <option value="4:30 PM">4:30 PM</option>
+                        <option value="4:45 PM">4:45 PM</option>
+                       
+                        <option value="5:00 PM">5:00 PM</option>
+                        <option value="5:15 PM">5:15 PM</option>
+                        <option value="5:30 PM">5:30 PM</option>
+                        <option value="5:45 PM">5:45 PM</option>
+                       
+                        <option value="6:00 PM">6:00 PM</option>
+                        <option value="6:15 PM">6:15 PM</option>
+                        <option value="6:30 PM">6:30 PM</option>
+                        <option value="6:45 PM">6:45 PM</option>
+                       
+                        <option value="7:00 PM">7:00 PM</option>
+                        <option value="7:15 PM">7:15 PM</option>
+                        <option value="7:30 PM">7:30 PM</option>
+                        <option value="7:45 PM">7:45 PM</option>
+                       
+                        <option value="8:00 PM">8:00 PM</option>
+                        <option value="8:15 PM">8:15 PM</option>
+                        <option value="8:30 PM">8:30 PM</option>
+                        <option value="8:45 PM">8:45 PM</option>
+                       
+                        <option value="9:00 PM">9:00 PM</option>
+                        <option value="9:15 PM">9:15 PM</option>
+                        <option value="9:30 PM">9:30 PM</option>
+                        <option value="9:45 PM">9:45 PM</option>
+                       
+                        <option value="10:00 PM">10:00 PM</option>
+                        <option value="10:15 PM">10:15 PM</option>
+                        <option value="10:30 PM">10:30 PM</option>
+                        <option value="10:45 PM">10:45 PM</option>
+                       
+                        <option value="11:00 PM">11:00 PM</option>
+                        <option value="11:15 PM">11:15 PM</option>
+                        <option value="11:30 PM">11:30 PM</option>
+                        <option value="11:45 PM">11:45 PM</option>
+                      </select><space> </space>
+          End time: <space> </space>
+                      <select name="endTime" id="endTime" value={endTime} onChange={this.handleChange}>
+                        <option value=""></option>
+                        <option value="5:00 AM">5:00 AM</option>
+                        <option value="5:15 AM">5:15 AM</option>
+                        <option value="5:30 AM">5:30 AM</option>
+                        <option value="5:45 AM">5:45 AM</option>
+                       
+                        <option value="6:00 AM">6:00 AM</option>
+                        <option value="6:15 AM">6:15 AM</option>
+                        <option value="6:30 AM">6:30 AM</option>
+                        <option value="6:45 AM">6:45 AM</option>
+                       
+                        <option value="7:00 AM">7:00 AM</option>
+                        <option value="7:15 AM">7:15 AM</option>
+                        <option value="7:30 AM">7:30 AM</option>
+                        <option value="7:45 AM">7:45 AM</option>
+                       
+                        <option value="8:00 AM">8:00 AM</option>
+                        <option value="8:15 AM">8:15 AM</option>
+                        <option value="8:30 AM">8:30 AM</option>
+                        <option value="8:45 AM">8:45 AM</option>
+                       
+                        <option value="9:00 AM">9:00 AM</option>
+                        <option value="9:15 AM">9:15 AM</option>
+                        <option value="9:30 AM">9:30 AM</option>
+                        <option value="9:45 AM">9:45 AM</option>
+                       
+                        <option value="10:00 AM">10:00 AM</option>
+                        <option value="10:15 AM">10:15 AM</option>
+                        <option value="10:30 AM">10:30 AM</option>
+                        <option value="10:45 AM">10:45 AM</option>
+                       
+                        <option value="11:00 AM">11:00 AM</option>
+                        <option value="11:15 AM">11:15 AM</option>
+                        <option value="11:30 AM">11:30 AM</option>
+                        <option value="11:45 AM">11:45 AM</option>
+                       
+                        <option value="12:00 PM">12:00 PM</option>
+                        <option value="12:15 PM">12:15 PM</option>
+                        <option value="12:30 PM">12:30 PM</option>
+                        <option value="12:45 PM">12:45 PM</option>
+                       
+                        <option value="1:00 PM">1:00 PM</option>
+                        <option value="1:15 PM">1:15 PM</option>
+                        <option value="1:30 PM">1:30 PM</option>
+                        <option value="1:45 PM">1:45 PM</option>
+                       
+                        <option value="2:00 PM">2:00 PM</option>
+                        <option value="2:15 PM">2:15 PM</option>
+                        <option value="2:30 PM">2:30 PM</option>
+                        <option value="2:45 PM">2:45 PM</option>
+                       
+                        <option value="3:00 PM">3:00 PM</option>
+                        <option value="3:15 PM">3:15 PM</option>
+                        <option value="3:30 PM">3:30 PM</option>
+                        <option value="3:45 PM">3:45 PM</option>
+                       
+                        <option value="4:00 PM">4:00 PM</option>
+                        <option value="4:15 PM">4:15 PM</option>
+                        <option value="4:30 PM">4:30 PM</option>
+                        <option value="4:45 PM">4:45 PM</option>
+                       
+                        <option value="5:00 PM">5:00 PM</option>
+                        <option value="5:15 PM">5:15 PM</option>
+                        <option value="5:30 PM">5:30 PM</option>
+                        <option value="5:45 PM">5:45 PM</option>
+                       
+                        <option value="6:00 PM">6:00 PM</option>
+                        <option value="6:15 PM">6:15 PM</option>
+                        <option value="6:30 PM">6:30 PM</option>
+                        <option value="6:45 PM">6:45 PM</option>
+                       
+                        <option value="7:00 PM">7:00 PM</option>
+                        <option value="7:15 PM">7:15 PM</option>
+                        <option value="7:30 PM">7:30 PM</option>
+                        <option value="7:45 PM">7:45 PM</option>
+                       
+                        <option value="8:00 PM">8:00 PM</option>
+                        <option value="8:15 PM">8:15 PM</option>
+                        <option value="8:30 PM">8:30 PM</option>
+                        <option value="8:45 PM">8:45 PM</option>
+                       
+                        <option value="9:00 PM">9:00 PM</option>
+                        <option value="9:15 PM">9:15 PM</option>
+                        <option value="9:30 PM">9:30 PM</option>
+                        <option value="9:45 PM">9:45 PM</option>
+                       
+                        <option value="10:00 PM">10:00 PM</option>
+                        <option value="10:15 PM">10:15 PM</option>
+                        <option value="10:30 PM">10:30 PM</option>
+                        <option value="10:45 PM">10:45 PM</option>
+                       
+                        <option value="11:00 PM">11:00 PM</option>
+                        <option value="11:15 PM">11:15 PM</option>
+                        <option value="11:30 PM">11:30 PM</option>
+                        <option value="11:45 PM">11:45 PM</option>
+                      </select><space> </space>            
+          <button onClick={this.addNewTime}> Add time</button><br/><br/>
+          </div>
+
+        <div>
+          <br/><br/><button onClick={this.handleClick}>
+          Submit
+          </button>
+          <text>     </text>
+          <button onClick={this.remove}>
+          Delete</button>
+        </div>
       </div>
 
       );
@@ -792,8 +1086,63 @@ var driveway = React.createClass
 
 var drivewayDAO = 
 {
+  
   mixins: [History, Lifecycle],
-  erase: function(username, address, numCars, zip, state, city)
+  update: function(id, address, numCars, city, zip, state, times, fee)
+  {
+    var url = "/api/users/updateDriveway";
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        _id: id,
+        address: address,
+        numCars: numCars,
+        city: city,
+        zip: zip,
+        state: state,
+        times: times,
+        fee: fee
+      },
+      async: false,
+      success: function(res)
+      {
+
+      }.bind(this),
+      error: function()
+      {
+
+      }.bind(this)
+    });
+  },
+  queryID: function(id)
+  {
+    var url = "/api/users/queryID";
+    var returnValue = {};
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        _id: id
+      },
+      async:false,
+      success: function(res)
+      {
+        returnValue = res.driveway[0];
+      }.bind(this),
+      error: function()
+      {
+      }.bind(this)
+    });
+    return returnValue;
+  },
+  erase: function(id)
   {
     var url = "/api/users/deleteDriveway";
     $.ajax
@@ -803,13 +1152,9 @@ var drivewayDAO =
         type: 'POST',
         data: 
         {
-            username: username,
-            address: address,
-            numCars: numCars,
-            zip: zip,
-            city: city,
-            state: state
+          _id: id
         },
+        async:false,
         success: function(res) 
         { 
         }.bind(this),
@@ -819,7 +1164,7 @@ var drivewayDAO =
 
       });
   },
-  add: function(username, address, numCars, city, zip, state)
+  add: function(username, address, numCars, city, zip, state, times, fee)
   {
 
     var url = "/api/users/addDriveway";
@@ -834,8 +1179,11 @@ var drivewayDAO =
             numCars: numCars,
             zip: zip,
             city: city,
-            state: state
+            state: state,
+            times: times,
+            fee: fee
         },
+        async:false,
         success: function(res) 
         {
           if(res.username == localStorage.username)
@@ -862,14 +1210,16 @@ var drivewayDAO =
         data: {
             username: localStorage.username,
         },
+        async:false,
         success: function(res) 
         { 
           userDriveways = [];
+
           for(var i = 0; i < res.driveway.length; i++)
           {
             var temp = res.driveway[i];
             var tempDriveway = temp.address + ' ' + temp.city + ', ' + temp.state + ' ' + temp.zip + ' - ' + temp.numCars + ' car(s)';
-            var link = '/driveway?address=' + temp.address + '?city=' + temp.city + '?state=' + temp.state + '?zip=' + temp.zip + '?numCars=' + temp.numCars;
+            var link = '/driveway?_id='+ res.driveway[i]._id;
             userDriveways.push(React.createElement(Link, {to: link}, "Edit/Delete ") );
             userDriveways.push(tempDriveway);
             userDriveways.push(React.createElement("br", null));
@@ -892,6 +1242,7 @@ var drivewayDAO =
         type: 'POST',
         data: {
         },
+        async:false,
         success: function(res) 
         { 
           allDriveways = [];
@@ -908,7 +1259,6 @@ var drivewayDAO =
         }.bind(this),
         error: function()
         {
-          console.log("failure");
         }.bind(this)
     });
   }
@@ -945,6 +1295,12 @@ var formStyle =
 {
   textAlign: 'center'
 };
+var errorStyle =
+{
+  width: '50%',
+  marginLeft: '25%',
+  visibility: 'hidden'
+};
 var signIn = React.createClass
 ({
   mixins: [History, Lifecycle],
@@ -967,7 +1323,10 @@ var signIn = React.createClass
       localStorage.username = this.state.username;
       this.history.pushState(null, '/profile');
       this.forceUpdate();
+      return;
     }
+
+    document.getElementById('errorMessage').style.visibility = 'visible'
           
   },
   render: function() {
@@ -975,12 +1334,20 @@ var signIn = React.createClass
     var password = this.state.password;
     return (
        <div style={formStyle}>
+        <div className='jumbotron' style={signUpJumbo}>
           Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
           Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
           <br/><a href='/randomHTMLFiles/forgottenPassword.html'>Forgot your password? </a> <br/>
           <br/><button onClick={this.handleClick}>
             SIGN IN
             </button>
+        </div>
+        <div id='errorMessage' className="alert alert-danger" role="alert" style={errorStyle}>
+          <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+          <span className="sr-only">Error:</span>
+          Woops! It looks like this username/password combo is not in our system. Try again, or 
+          request a password change.
+        </div>
       </div>
 
 
@@ -1003,21 +1370,263 @@ var signInAuthorization =
             username: username,
             password: password
         },
+        async: false,
         headers: {'Authorization': localStorage},
         success: function(res) 
         {
           localStorage.email = res.email;
-          console.log("localStorage.email: " + localStorage.email);
+          console.log("signed in");
           signedIn = true;
         }.bind(this),
         error: function()
         {
-          console.log("failure");
+          signedIn = false;
+          
         }.bind(this)
 
     });
     },
 };
+
+var orderDAO =
+{
+ 
+  getAll: function(last4, email)
+  {
+    var url = "/apu/orders/getAllOrders";
+    var Last4 = last4;
+    var Email = email;
+    console.log(Last4);
+    var self = this;
+
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          last4: Last4,
+          email: Email
+        },
+        async:false,
+        success: function(res)
+        {
+          allOrders = [];
+          temp2 = res.order[res.order.length-1];
+  
+        }.bind(this),
+        error: function()
+        {
+          console.log("failure in orderDAQ");
+        }.bind(this)
+
+    });
+    
+  }
+};
+
+var findOrderStyle =
+{
+  fontSize: '25px',
+  fontWeight: 'bold',
+  textAlign: 'center'
+};
+
+var findOrderStyle2=
+{
+  textAlign: 'center'
+}
+
+var findOrders = React.createClass
+({
+  mixins: [History, Lifecycle],
+  getInitialState: function()
+  {
+    return {email: ''}, {Last4: ''};
+  },
+
+  register: function()
+  {
+
+    if(!this.state.email){
+      alert("Please enter an email address");
+    }
+    else if(this.state.email.length < 4){
+      alert("INVALID EMAIL ADDRESS");
+    }
+    else if(!this.state.Last4){
+      console.log("0");
+      alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
+    }
+    else if(this.state.Last4.length !==4){
+      console.log("<4");
+      alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
+    }
+    else{
+      orderDAO.getAll(this.state.Last4, this.state.email);
+      if(temp2){
+        this.history.pushState(null, '/pastOrders');
+      }
+      else{
+       alert("Your Email and/or credit card is invalid");
+
+      }
+    }
+    
+   
+  },
+
+  handleChange: function(event)
+  {
+
+    if(event.target.name == "email")
+    {
+      this.setState({email: event.target.value});
+        //console.log(event.target.value);
+    }
+    else if(event.target.name == "Last4")
+    {
+      this.setState({Last4: event.target.value});
+      //orderDAO.getAll(this.state.address, this.state.email);
+        //console.log(event.target.value);
+    }
+
+  },
+
+  render: function() {
+    var email = this.state.email;
+    var Last4 = this.state.Last4;
+    var price = this.state.price;
+    var streetA = "297 S 760 W";
+    var zip = "84058";
+    var state1 = "UT";
+    var rDate = "12/12/16";
+    var duration1 = "4";
+    var rTime = "6:00 PM";
+    var city = "orem"
+
+    return (
+      <div>
+        <div className="row"></div>
+         <div className="row">
+         <div className="col-md-4"></div>
+            <div className="col-md-4">
+              <div className="panel panel-primary">
+                <div className="panel-heading" style={findOrderStyle}>Order Lookup!</div>
+                  <div className="panel-body">
+                    <div className="form-group" style={findOrderStyle2}>
+                    <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+                      <input type="text" name="email" className="form-control" id="inputEmail3" placeholder="Email" value={email} onChange={this.handleChange}/><br/><br/>
+                    <label for="inputLast4" class="col-sm-2 control-label">Last 4 CC Digits</label>
+                      
+                      <input type="text" name="Last4" className="form-control" id="inputEmail3" placeholder="Last 4 Digits" value ={Last4} onChange={this.handleChange}/><br/><br/>
+                    <button type="button" className="btn btn-primary btn-lg" onClick={this.register}>GO!</button> 
+                   </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <div className="col-md-4"></div>
+        </div>
+      
+
+      );
+  }
+});
+
+var pastOrders = React.createClass
+({
+  getInitialState: function()
+  {
+    return {email: ''}, {address: ''}, {price: ''};
+
+  },
+
+  handleChange: function(event)
+  {
+
+    if(event.target.name == "email")
+    {
+      this.setState({email: event.target.value});
+        //console.log(event.target.value);
+    }
+
+  },
+
+  render: function() {
+
+    var email = this.state.email;
+    var email2 = "Email: " + temp2.email;
+    var name = "Name: " + temp2.name1;
+    var cardType = "Card Type: " + temp2.cardType;
+    var Last4 = "Last 4 Digits: " + temp2.last4;
+    var ReservedAddress = "Reserved Address: " + temp2.address;
+    var State = "State: " + temp2.state;
+    var City = "City: " + temp2.city;
+    var DOR = "Date of Reservation: " + temp2.reservationDate;
+    var ResTime = "Email: " + temp2.reservationTime;
+    var resDur = "Reservation Duration: " + temp2.reservationDuration+ " hours";
+    var price2 = temp2.price/100;
+    console.log(price2);
+    var price = "Total Price: $" + price2;
+    var ZIP = "Zip Code: " + temp2.zip;
+    
+    
+    return (
+      <div>
+        <div className="well">
+          <div style={formStyle}>
+           <h1>Thank you for your order!</h1>
+           <p>Plese save the following order confirmation and leave it in your windshield when you arrive at your destination</p>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Order Information</div>
+              <div className="panel-body">
+                <p>{ReservedAddress}</p>
+                <p>{State}</p>
+                <p>{ZIP}</p>
+                <p>{DOR}</p>
+                <p>{ResTime}</p>
+                <p>{resDur}</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Personal Information</div>
+              <div className="panel-body">
+                <p>{name}</p>
+                <p>{email2}</p>
+                <p>{cardType}</p>
+                <p>{Last4}</p>
+                <p>{price}</p>
+                <p>Total Amount due: $0.00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Email Me!</div>
+              <div className="panel-body">
+                <p style={jumboStyle}>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </p>
+                <div style={jumboStyle}>
+                  Email: <input type="text" name="email" value={email} onChange={this.handleChange}/>
+                  <a className="btn btn-primary btn-sm" href="#" role="button">Learn more</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      );
+  }
+});
 
 var pay = React.createClass
 ({
@@ -1035,17 +1644,14 @@ var pay = React.createClass
     if(event.target.name == "email")
     {
       this.setState({email: event.target.value});
-        //console.log(event.target.value);
     }
     else if(event.target.name == "address")
     {
       this.setState({address: event.target.value});
-        //console.log(event.target.value);
     }
     else if(event.target.name == "price")
     {
     this.setState({price: event.target.value});
-        //console.log(event.target.value);
     }
 
   },
@@ -1117,7 +1723,6 @@ var confirmPage = React.createClass
     if(event.target.name == "email")
     {
       this.setState({email: event.target.value});
-        //console.log(event.target.value);
     }
 
   },
@@ -1136,7 +1741,6 @@ var confirmPage = React.createClass
     var ResTime = "Email: " + localStorage.ResTime;
     var resDur = "Reservation Duration: " + localStorage.ResDuration + " hours";
     var price2 = localStorage.price/100;
-    console.log(price2);
     var price = "Total Price: $" + price2;
     var ZIP = "Zip Code: " + localStorage.Zip;
     
@@ -1196,6 +1800,20 @@ var confirmPage = React.createClass
       );
   }
 });
+var signUpForm =
+{
+  textAlign: 'center'
+};
+var signUpJumbo =
+{
+  width: '50%',
+  marginLeft: '25%',
+  position: 'center'
+};
+var redBorder =
+{
+  border: '2px solid red'
+};
 
 var signUp = React.createClass
 ({
@@ -1213,13 +1831,14 @@ var signUp = React.createClass
       this.setState({password: event.target.value});
     else if(event.target.name == "confirmPassword")
       this.setState({confirmPassword: event.target.value});
+
+
+    this.forceUpdate();
   },
   register: function()
   {
     if(this.state.password !== this.state.confirmPassword)
-    {
-        alert("PASSWORDS ARE DIFFERENT");
-    }
+        return;
     else if(this.state.password.length < 8)
     {
       alert("Your password must be greater than 7 characters");
@@ -1227,7 +1846,10 @@ var signUp = React.createClass
     else if(!this.terms)
       alert("You need to accept the terms and conditions");
     else
+    {
         auth.register(this.state.email, this.state.username, this.state.password);
+        
+    }
   },
   handleTerms: function()
   {
@@ -1242,17 +1864,49 @@ var signUp = React.createClass
     var username = this.state.username;
     var password = this.state.password;
     var confirmPassword = this.state.confirmPassword;
-    return (
+    //<div className="glyphicon glyphicon-ok" display='none'></div>  <br/>
+    if(document.getElementById('password'))
+    {
+      if(password == '' || confirmPassword == '')
+      {
 
-         <div style={formStyle}>
-            Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
-            Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
-            Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
-            Confirm Password: <br/><input type="password" name="confirmPassword" value ={confirmPassword} onChange={this.handleChange}/><br/><br/>
-           <input type="radio" onClick={this.handleTerms} id="terms"> 
-              I agree to the <a href="randomHTMLFiles/terms.html">terms and conditions</a>
-            </input><br/><br/>
-            <input type="submit" value="SIGN UP" onClick={this.register}/> 
+      }
+      else if(password != confirmPassword)
+      {
+        document.getElementById('password').style.border ='2px solid red';
+        document.getElementById('confirmPassword').style.border = '2px solid red';
+      }
+      else
+      {
+        document.getElementById('password').style.border ='2px solid #00FF00';
+        document.getElementById('confirmPassword').style.border = '2px solid #00FF00';
+      }
+
+    }
+    return (
+        <div>
+          <div style={center}>
+            <h1> Sign up for Driveway! </h1>
+          </div>
+          <div style={signUpForm}>
+           <div className="jumbotron" style={signUpJumbo}>
+           
+                Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
+                Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
+                <div className='password'>
+                  Password: <br/><input id='password' type="password" name="password" value ={password} onChange={this.handleChange}/>
+                </div>
+
+                <div className='confirmPassword'>
+                  Confirm Password: <br/><input id='confirmPassword' type="password" name="confirmPassword" value ={confirmPassword} onChange={this.handleChange}/><br/><br/>
+                </div>
+                <input type="radio" onClick={this.handleTerms} id="terms"> 
+                  I agree to the <a href="randomHTMLFiles/terms.html">terms and conditions</a>
+                </input><br/><br/>
+                <input type="submit" value="SIGN UP" onClick={this.register}/> 
+            
+           </div>
+          </div>
         </div>
 
 
@@ -1265,8 +1919,6 @@ var auth =
   mixins: [History, Lifecycle],
   register: function(email, username, password)
   {
-    console.log("email: " + email);
-    console.log("username: " + username);
     var url = "/api/users/register";
         $.ajax
         ({
@@ -1278,13 +1930,15 @@ var auth =
                 username: username,
                 password: password
             },
+            async: false,
             success: function(res) 
             {
-              location.href='/#/signIn';
+              signInAuthorization.login(username, password);
+              localStorage.username = username;
+              location.href ='/#/profile';
             }.bind(this),
             error: function()
             {
-              console.log("failure");
             }.bind(this)
 
     });
@@ -1307,6 +1961,8 @@ var routes = (
           <Route name="logOut" path="/logOut" component={logOut}/>
           <Route name="profile" path="/profile" component={profile}/>
           <Route name="confirm" path="/confirm" component={confirmPage} /> 
+          <Route name="lookup" path="/lookup" component={findOrders}/>
+          <Route name="pastOrders" path="/pastOrders" component={pastOrders}/>
         </Route>
       </Router>
 );
