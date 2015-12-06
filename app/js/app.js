@@ -162,11 +162,10 @@ var Home = React.createClass
   },
   goToMap: function()
   {
-    location.href='/#/map';
+    location.href='/#/map?' + this.state.address;
   },
   handleChange: function(event)
   {
-    console.log(event.target.value);
     this.setState({address: event.target.value});
   },
   goToLearn: function()
@@ -252,7 +251,7 @@ var data = {event: {lat: 40.4122994, lon: -111.75418}, parking: []}
 var MapHolder = React.createClass({
   render: function() {
     return (
-      <ParkingMap data={data}/>
+        <ParkingMap data={data}/>
     );
   }
 });

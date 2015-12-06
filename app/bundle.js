@@ -215,11 +215,10 @@
 	  },
 	  goToMap: function()
 	  {
-	    location.href='/#/map';
+	    location.href='/#/map?' + this.state.address;
 	  },
 	  handleChange: function(event)
 	  {
-	    console.log(event.target.value);
 	    this.setState({address: event.target.value});
 	  },
 	  goToLearn: function()
@@ -305,7 +304,7 @@
 	var MapHolder = React.createClass({displayName: "MapHolder",
 	  render: function() {
 	    return (
-	      React.createElement(ParkingMap, {data: data})
+	        React.createElement(ParkingMap, {data: data})
 	    );
 	  }
 	});
