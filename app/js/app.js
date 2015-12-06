@@ -90,6 +90,7 @@ var App = React.createClass({
               <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
               <Link className="navbar-brand" to="/map">Map</Link>  
               <Link className="navbar-brand" to="/pay">Pay</Link> 
+
               <Link className="navbar-brand" to="/lookup">Order Lookup</Link> 
             </div>
             <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
@@ -1499,7 +1500,7 @@ var findOrders = React.createClass
          <div>
             Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
             Last4: <br/><input type="text" name="Last4" value ={Last4} onChange={this.handleChange}/><br/><br/>
-            <input type="submit" value="SIGN UP" onClick={this.register}/> 
+            <button type="button" className="btn btn-primary" onClick={this.register}>GO!</button> 
         </div>
 
 

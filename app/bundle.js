@@ -143,6 +143,7 @@
 	              React.createElement(Link, {className: "navbar-brand", to: "/allDriveways"}, "All driveways"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/map"}, "Map"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay"), 
+
 	              React.createElement(Link, {className: "navbar-brand", to: "/lookup"}, "Order Lookup")
 	            ), 
 	            React.createElement("div", {className: "nav navbar-nav navbar-right", id: "bs-example-navbar-collapse-1"}, 
@@ -1552,7 +1553,7 @@
 	         React.createElement("div", null, 
 	            "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
 	            "Last4: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "Last4", value: Last4, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-	            React.createElement("input", {type: "submit", value: "SIGN UP", onClick: this.register})
+	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.register}, "GO!")
 	        )
 
 
