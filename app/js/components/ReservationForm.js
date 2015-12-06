@@ -1,8 +1,12 @@
 var React = require('react');
+ReactDOM = require('react-dom');
 var ParkingMap = require('./ParkingMap.js');
 var CheckoutStrip = require('./StripePayment.js');
 
 var ReservationForm = React.createClass({
+  contextTypes: {
+        router: React.PropTypes.func
+  },
 
   getInitialState: function() {
     return {
@@ -116,19 +120,50 @@ var ReservationForm = React.createClass({
 
   renderInfoWindow: function(address, driveway){
     var content = (
-      <div>
-        <label>Category: {address}</label>
-        <p>open</p>
+      <div style={{fontSize: '14px'}}>
+        <label style={{fontSize: '16px'}}>Address: {address}</label>
+        <ul>
+          <li><div style={{display: 'inline-block'}}>Owner:</div><div style={{display: 'inline-block', marginLeft: '10px'}}>{driveway.username}</div></li>
+          <li><div style={{display: 'inline-block'}}>Price:</div><div style={{display: 'inline-block', marginLeft: '10px'}}>{"$10.00"}</div></li>
+        </ul>
+        <div id='pay'></div>
       </div>
     );
 
     return React.renderToStaticMarkup(content);
   },
 
+  renderPayment: function(){
+    alert("hello");
+    // var content = (
+    //   <CheckoutStrip data={payData}/>
+    // );
+
+    // return React.renderToStaticMarkup(content);
+  },
+
   markerClicked: function(marker, mapMarker, map){
     console.log(marker);
 
     marker.infoWindow.open(map, mapMarker);
+    
+    //var payData = {event: {Email: this.state.email, Address: address, Price: driveway.cost, street: driveway.address, zip1: driveway.zip, state: driveway.state, resDate: this.state.date, duration: "4", resTime: this.state.time, city: driveway.city, drivewayId: driveway._id, owner: driveway.username}, parking: []};
+    var email = this.state.email;
+    var address = marker.address;
+    var price = "";
+    var streetA = "297 S 760 W";
+    var zip = "84058";
+    var state1 = "UT";
+    var rDate = "12/12/16";
+    var duration1 = "4";
+    var rTime = "6:00 PM";
+    var city = "orem"
+    var drivewayId = 12345;
+    var owner = "John David";
+    var payData = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city, drivewayId: drivewayId, owner: owner}, parking: []};
+    //console.log(payData);
+
+    ReactDOM.render(<CheckoutStrip data={payData}/>, document.getElementById('pay'));
   },
 
   render: function () {
@@ -137,6 +172,20 @@ var ReservationForm = React.createClass({
       height: $(window).width() < 500 ? 300 : 500,
       maxHeight: $(window).height() / 1.5
     }
+
+    var email = this.state.email;
+    var address = address;
+    var price = "";
+    var streetA = "297 S 760 W";
+    var zip = "84058";
+    var state1 = "UT";
+    var rDate = "12/12/16";
+    var duration1 = "4";
+    var rTime = "6:00 PM";
+    var city = "orem"
+    var drivewayId = 12345;
+    var owner = "John David";
+    var payData = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city, drivewayId: drivewayId, owner: owner}, parking: []};
 
     return(
       <div>
@@ -150,9 +199,7 @@ var ReservationForm = React.createClass({
         <div>
           <ParkingMap data={this.state.mapData} markerClicked={this.markerClicked} />
         </div>
-        <div>
-          <CheckoutStrip data={this.state.payData}/>
-        </div>
+        <CheckoutStrip data={payData}/>        
       </div>
     );        
   }

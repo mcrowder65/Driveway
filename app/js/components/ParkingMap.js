@@ -1,6 +1,7 @@
 var React = require('react');
 var Marker = google.maps.Marker;
 var geocoder = new google.maps.Geocoder();
+var CheckoutStrip = require('./StripePayment.js');
 
 function geocodeAddress(address, component, cb, marker) {
   geocoder.geocode({'address': address}, function(results, status) {

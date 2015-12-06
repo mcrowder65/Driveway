@@ -25772,6 +25772,9 @@
 	var CheckoutStrip = __webpack_require__(213);
 
 	var ReservationForm = React.createClass({displayName: "ReservationForm",
+	  contextTypes: {
+	        router: React.PropTypes.func
+	  },
 
 	  getInitialState: function() {
 	    return {
@@ -25884,14 +25887,42 @@
 	  },
 
 	  renderInfoWindow: function(address, driveway){
+	    //var payData = {event: {Email: this.state.email, Address: address, Price: driveway.cost, street: driveway.address, zip1: driveway.zip, state: driveway.state, resDate: this.state.date, duration: "4", resTime: this.state.time, city: driveway.city, drivewayId: driveway._id, owner: driveway.username}, parking: []};
+	    var email = this.state.email;
+	    var address = address;
+	    var price = "";
+	    var streetA = "297 S 760 W";
+	    var zip = "84058";
+	    var state1 = "UT";
+	    var rDate = "12/12/16";
+	    var duration1 = "4";
+	    var rTime = "6:00 PM";
+	    var city = "orem"
+	    var drivewayId = 12345;
+	    var owner = "John David";
+	    var payData = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city, drivewayId: drivewayId, owner: owner}, parking: []};
+	    //console.log(payData);
 	    var content = (
-	      React.createElement("div", null, 
-	        React.createElement("label", null, "Category: ", address), 
-	        React.createElement("p", null, "open")
+	      React.createElement("div", {style: {fontSize: '14px'}}, 
+	        React.createElement("label", {style: {fontSize: '16px'}}, "Address: ", address), 
+	        React.createElement("ul", null, 
+	          React.createElement("li", null, React.createElement("div", {style: {display: 'inline-block'}}, "Owner:"), React.createElement("div", {style: {display: 'inline-block', marginLeft: '10px'}}, driveway.username)), 
+	          React.createElement("li", null, React.createElement("div", {style: {display: 'inline-block'}}, "Price:"), React.createElement("div", {style: {display: 'inline-block', marginLeft: '10px'}}, "$10.00"))
+	        ), 
+	        React.createElement(CheckoutStrip, {data: payData})
 	      )
 	    );
 
-	    return React.renderToStaticMarkup(content);
+	    return React.render(content);
+	  },
+
+	  renderPayment: function(){
+	    alert("hello");
+	    // var content = (
+	    //   <CheckoutStrip data={payData}/>
+	    // );
+
+	    // return React.renderToStaticMarkup(content);
 	  },
 
 	  markerClicked: function(marker, mapMarker, map){
@@ -25907,6 +25938,20 @@
 	      maxHeight: $(window).height() / 1.5
 	    }
 
+	    var email = this.state.email;
+	    var address = address;
+	    var price = "";
+	    var streetA = "297 S 760 W";
+	    var zip = "84058";
+	    var state1 = "UT";
+	    var rDate = "12/12/16";
+	    var duration1 = "4";
+	    var rTime = "6:00 PM";
+	    var city = "orem"
+	    var drivewayId = 12345;
+	    var owner = "John David";
+	    var payData = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city, drivewayId: drivewayId, owner: owner}, parking: []};
+
 	    return(
 	      React.createElement("div", null, 
 	        React.createElement("div", null, 
@@ -25919,9 +25964,7 @@
 	        React.createElement("div", null, 
 	          React.createElement(ParkingMap, {data: this.state.mapData, markerClicked: this.markerClicked})
 	        ), 
-	        React.createElement("div", null, 
-	          React.createElement(CheckoutStrip, {data: this.state.payData})
-	        )
+	        React.createElement(CheckoutStrip, {data: payData})
 	      )
 	    );        
 	  }
@@ -25936,6 +25979,7 @@
 	/** @jsx React.DOM */var React = __webpack_require__(2);
 	var Marker = google.maps.Marker;
 	var geocoder = new google.maps.Geocoder();
+	var CheckoutStrip = __webpack_require__(213);
 
 	function geocodeAddress(address, component, cb, marker) {
 	  geocoder.geocode({'address': address}, function(results, status) {
