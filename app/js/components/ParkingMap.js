@@ -2,12 +2,12 @@ var React = require('react');
 var Marker = google.maps.Marker;
 var geocoder = new google.maps.Geocoder();
 
-function geocodeAddress(address, cb) {
+function geocodeAddress(address, component, cb) {
   geocoder.geocode({'address': address}, function(results, status) {
     if (status === google.maps.GeocoderStatus.OK) {
-      cb(results[0].geometry.location);
+      cb(results[0].geometry.location, component);
     } else {
-      cb(null);
+      cb(null, component);
     }
   });
 }
@@ -22,27 +22,27 @@ var ParkingMap = React.createClass({
     }
   },
 
-  geocodeAddress: function(address) {
-    var location;
-    geocoder.geocode({'address': address}, function(results, status) {
-      if (status === google.maps.GeocoderStatus.OK) {
-        location = results[0].geometry.location;
-      } else {
-        location = undefined;
-      }
-    });
-    return location;
-  },
+  // geocodeAddress: function(address) {
+  //   var location;
+  //   geocoder.geocode({'address': address}, function(results, status) {
+  //     if (status === google.maps.GeocoderStatus.OK) {
+  //       location = results[0].geometry.location;
+  //     } else {
+  //       location = undefined;
+  //     }
+  //   });
+  //   return location;
+  // },
 
   initializeMap: function() {
     //Parking Map
     var event = this.props.data.event;
-    geocodeAddress(event.address, function(location){
+    geocodeAddress(event.address, this, function(location, component){
       var mapOptions = {
         center: location,
         draggableCursor: 'crosshair',
         zoom:            14,
-        mapTypeId:       google.maps.MapTypeId.HYBRID,
+        mapTypeId:       google.maps.MapTypeId.ROADMAP,
         streetViewControl:  false,
         panControl:         true,
         zoomControl:        true,
@@ -53,19 +53,22 @@ var ParkingMap = React.createClass({
       var map = new google.maps.Map($('.map-canvas')[0], mapOptions);
 
       // Parking Spots
-      markers = this.props.data.markers;
-      for(marker in markers){
-        markerOptions = { //Optimize this later
-          map: map,
-          animation: google.maps.Animation.DROP,
-          draggable: false,
-          position:  this.geocodeAddress(marker.address),
-          title:     'Parking Location',
-          icon: marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
-        }
+      markers = component.props.data.markers;
+      for(var i = 0; i < markers.length; i++){
+        var marker = markers[i];
+        geocodeAddress(marker.address, component, function(location, component){
+          markerOptions = { //Optimize this later
+            map: map,
+            animation: google.maps.Animation.DROP,
+            draggable: false,
+            position:  location,
+            title:     'Parking Location',
+            icon: '../images/marker-green.png'//marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
+          }
 
-        var mapMarker = new Marker(markerOptions);
-        google.maps.event.addListener(mapMarker, 'click', this.markerClicked(marker));
+          var mapMarker = new Marker(markerOptions);
+          //google.maps.event.addListener(mapMarker, 'click', component.props.markerClicked(marker));
+        });
       }
 
       //Set State

@@ -25780,6 +25780,7 @@
 	        dataType: 'json',
 	        type: 'POST',
 	        data: {},
+	        async: false,
 	        success: function(res) 
 	        { 
 	          reservations = res.reservations;
@@ -25801,6 +25802,7 @@
 	        dataType: 'json',
 	        type: 'POST',
 	        data: {},
+	        async: false,
 	        success: function(res) 
 	        { 
 
@@ -25816,16 +25818,16 @@
 
 	  function filterDriveways(driveways, reservations){
 	    var filteredDriveways = [];
-	    for(driveway in driveways){
+	    for(var i = 0; i < driveways.length; i++){
 	      var reserved = false;
-	      for(reservation in reservations){
-	        if(reservation.drivewayId == driveway._id){
+	      for(var j = 0; j < reservations.length; j++){
+	        if(reservations[j].drivewayId == driveways[i]._id){
 	          reserved = true;
 	          break;
 	        }
 	      }      
 	      if(!reserved){
-	        filteredDriveways.push(driveway);
+	        filteredDriveways.push(driveways[i]);
 	      }
 	    }
 	    return filteredDriveways;
@@ -25840,7 +25842,8 @@
 
 	    //Build Map Markers
 	    var markers = [];
-	    for(driveway in filteredDriveways){
+	    for(var i = 0; i < filteredDriveways.length; i++){
+	      var driveway = driveways[i];
 	      var address = driveway.address + ', ' + driveway.city + ', ' + driveway.state + ' ' + driveway.zip + ', USA';
 	      var isPartiallyFull = false; //Change this when matt gets done
 	      markers.push({address: address, partiallyFull: isPartiallyFull, driveway: driveway})
@@ -25903,8 +25906,7 @@
 	            React.createElement("label", null, "Email"), React.createElement("input", {type: "email", name: "email", value: this.state.email, onChange: this.handleChange}), 
 	            React.createElement("label", null, "Event Address"), React.createElement("input", {type: "text", name: "address", value: this.state.address, onChange: this.handleChange}), 
 	            React.createElement("label", null, "Event Date"), React.createElement("input", {type: "text", name: "date", value: this.state.date, onChange: this.handleChange}), 
-	            React.createElement("label", null, "Event Time"), React.createElement("input", {type: "text", name: "time", value: this.state.time, onChange: this.handleChange}), 
-	            React.createElement("button", {className: "btn btn-default", onClick: this.handleFormSubmit}, "Submit")
+	            React.createElement("label", null, "Event Time"), React.createElement("input", {type: "text", name: "time", value: this.state.time, onChange: this.handleChange})
 	        ), 
 
 	        React.createElement("div", null, 
@@ -25928,12 +25930,12 @@
 	var Marker = google.maps.Marker;
 	var geocoder = new google.maps.Geocoder();
 
-	function geocodeAddress(address, cb) {
+	function geocodeAddress(address, component, cb) {
 	  geocoder.geocode({'address': address}, function(results, status) {
 	    if (status === google.maps.GeocoderStatus.OK) {
-	      cb(results[0].geometry.location);
+	      cb(results[0].geometry.location, component);
 	    } else {
-	      cb(null);
+	      cb(null, component);
 	    }
 	  });
 	}
@@ -25948,27 +25950,27 @@
 	    }
 	  },
 
-	  geocodeAddress: function(address) {
-	    var location;
-	    geocoder.geocode({'address': address}, function(results, status) {
-	      if (status === google.maps.GeocoderStatus.OK) {
-	        location = results[0].geometry.location;
-	      } else {
-	        location = undefined;
-	      }
-	    });
-	    return location;
-	  },
+	  // geocodeAddress: function(address) {
+	  //   var location;
+	  //   geocoder.geocode({'address': address}, function(results, status) {
+	  //     if (status === google.maps.GeocoderStatus.OK) {
+	  //       location = results[0].geometry.location;
+	  //     } else {
+	  //       location = undefined;
+	  //     }
+	  //   });
+	  //   return location;
+	  // },
 
 	  initializeMap: function() {
 	    //Parking Map
 	    var event = this.props.data.event;
-	    geocodeAddress(event.address, function(location){
+	    geocodeAddress(event.address, this, function(location, component){
 	      var mapOptions = {
 	        center: location,
 	        draggableCursor: 'crosshair',
 	        zoom:            14,
-	        mapTypeId:       google.maps.MapTypeId.HYBRID,
+	        mapTypeId:       google.maps.MapTypeId.ROADMAP,
 	        streetViewControl:  false,
 	        panControl:         true,
 	        zoomControl:        true,
@@ -25979,19 +25981,22 @@
 	      var map = new google.maps.Map($('.map-canvas')[0], mapOptions);
 
 	      // Parking Spots
-	      markers = this.props.data.markers;
-	      for(marker in markers){
-	        markerOptions = { //Optimize this later
-	          map: map,
-	          animation: google.maps.Animation.DROP,
-	          draggable: false,
-	          position:  this.geocodeAddress(marker.address),
-	          title:     'Parking Location',
-	          icon: marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
-	        }
+	      markers = component.props.data.markers;
+	      for(var i = 0; i < markers.length; i++){
+	        var marker = markers[i];
+	        geocodeAddress(marker.address, component, function(location, component){
+	          markerOptions = { //Optimize this later
+	            map: map,
+	            animation: google.maps.Animation.DROP,
+	            draggable: false,
+	            position:  location,
+	            title:     'Parking Location',
+	            icon: '../images/marker-green.png'//marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
+	          }
 
-	        var mapMarker = new Marker(markerOptions);
-	        google.maps.event.addListener(mapMarker, 'click', this.markerClicked(marker));
+	          var mapMarker = new Marker(markerOptions);
+	          //google.maps.event.addListener(mapMarker, 'click', component.props.markerClicked(marker));
+	        });
 	      }
 
 	      //Set State

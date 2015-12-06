@@ -11,6 +11,7 @@ function getReservations(){
         dataType: 'json',
         type: 'POST',
         data: {},
+        async: false,
         success: function(res) 
         { 
           reservations = res.reservations;
@@ -32,6 +33,7 @@ function getReservations(){
         dataType: 'json',
         type: 'POST',
         data: {},
+        async: false,
         success: function(res) 
         { 
 
@@ -47,16 +49,16 @@ function getReservations(){
 
   function filterDriveways(driveways, reservations){
     var filteredDriveways = [];
-    for(driveway in driveways){
+    for(var i = 0; i < driveways.length; i++){
       var reserved = false;
-      for(reservation in reservations){
-        if(reservation.drivewayId == driveway._id){
+      for(var j = 0; j < reservations.length; j++){
+        if(reservations[j].drivewayId == driveways[i]._id){
           reserved = true;
           break;
         }
       }      
       if(!reserved){
-        filteredDriveways.push(driveway);
+        filteredDriveways.push(driveways[i]);
       }
     }
     return filteredDriveways;
@@ -71,7 +73,8 @@ function getReservations(){
 
     //Build Map Markers
     var markers = [];
-    for(driveway in filteredDriveways){
+    for(var i = 0; i < filteredDriveways.length; i++){
+      var driveway = driveways[i];
       var address = driveway.address + ', ' + driveway.city + ', ' + driveway.state + ' ' + driveway.zip + ', USA';
       var isPartiallyFull = false; //Change this when matt gets done
       markers.push({address: address, partiallyFull: isPartiallyFull, driveway: driveway})
