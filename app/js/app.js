@@ -155,21 +155,35 @@ var center =
 var Home = React.createClass
 ({
   mixins: [History, Lifecycle],
+  getInitialState: function() 
+  {
+    return {address:''};
+  },
+  goToMap: function()
+  {
+    location.href='/#/map';
+  },
+  handleChange: function(event)
+  {
+    console.log(event.target.value);
+    this.setState({address: event.target.value});
+  },
   goToLearn: function()
   {
     this.history.pushState(null, '/learn');
   },
   render: function() {
+    var address = this.state.address;
     return (
     <div>
 
-      <div className="center jumbotron" style={homeStyle}>
+      <div className="jumbotron" style={homeStyle}>
         <p> Better parking is just a few clicks away </p>
         <div className="row">
           <div className="input-group">
-            <input type="text" className="form-control" placeholder="Search the address of an event"/>
+            <input type="text" className="form-control" value={address} onChange={this.handleChange} placeholder="Search the address of an event"/>
             <span className="input-group-btn">
-              <button className="btn btn-default" type="button">Go!</button>
+              <button className="btn btn-default" type="button" onClick={this.goToMap}>Go!</button>
             </span>
           </div>
         </div>
@@ -246,8 +260,6 @@ var profile = React.createClass
 ({
   render: function() 
   {
-    console.log("email: " + localStorage.email);
-    //this.forceUpdate();
       return (
        <div>
         <h1 style={center}> {localStorage.username.toUpperCase()} </h1>
@@ -269,7 +281,6 @@ var driveway = React.createClass
     if(id)
     {
       var obj = drivewayDAO.queryID(id);
-      console.log(obj);
       var address = obj.address;
       var username = obj.username;
       var zip = obj.zip;
@@ -1124,9 +1135,7 @@ var drivewayDAO =
       async:false,
       success: function(res)
       {
-       // console.log(res.driveway[0]);
         returnValue = res.driveway[0];
-        
       }.bind(this),
       error: function()
       {
@@ -1137,7 +1146,6 @@ var drivewayDAO =
   erase: function(id)
   {
     var url = "/api/users/deleteDriveway";
-    console.log(id);
     $.ajax
     ({
         url: url,
@@ -1239,7 +1247,6 @@ var drivewayDAO =
         success: function(res) 
         { 
           allDriveways = [];
-          console.log(res.driveway);
           for(var i = 0; i < res.driveway.length; i++)
           {
             var temp = res.driveway[i];
@@ -1253,7 +1260,6 @@ var drivewayDAO =
         }.bind(this),
         error: function()
         {
-          console.log("failure");
         }.bind(this)
     });
   }
@@ -1290,6 +1296,12 @@ var formStyle =
 {
   textAlign: 'center'
 };
+var errorStyle =
+{
+  width: '50%',
+  marginLeft: '25%',
+  visibility: 'hidden'
+};
 var signIn = React.createClass
 ({
   mixins: [History, Lifecycle],
@@ -1312,7 +1324,10 @@ var signIn = React.createClass
       localStorage.username = this.state.username;
       this.history.pushState(null, '/profile');
       this.forceUpdate();
+      return;
     }
+
+    document.getElementById('errorMessage').style.visibility = 'visible'
           
   },
   render: function() {
@@ -1320,12 +1335,20 @@ var signIn = React.createClass
     var password = this.state.password;
     return (
        <div style={formStyle}>
+        <div className='jumbotron' style={signUpJumbo}>
           Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
           Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
           <br/><a href='/randomHTMLFiles/forgottenPassword.html'>Forgot your password? </a> <br/>
           <br/><button onClick={this.handleClick}>
             SIGN IN
             </button>
+        </div>
+        <div id='errorMessage' className="alert alert-danger" role="alert" style={errorStyle}>
+          <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+          <span className="sr-only">Error:</span>
+          Woops! It looks like this username/password combo is not in our system. Try again, or 
+          request a password change.
+        </div>
       </div>
 
 
@@ -1353,10 +1376,13 @@ var signInAuthorization =
         success: function(res) 
         {
           localStorage.email = res.email;
+          console.log("signed in");
           signedIn = true;
         }.bind(this),
         error: function()
         {
+          signedIn = false;
+          
         }.bind(this)
 
     });
@@ -1379,17 +1405,14 @@ var pay = React.createClass
     if(event.target.name == "email")
     {
       this.setState({email: event.target.value});
-        //console.log(event.target.value);
     }
     else if(event.target.name == "address")
     {
       this.setState({address: event.target.value});
-        //console.log(event.target.value);
     }
     else if(event.target.name == "price")
     {
     this.setState({price: event.target.value});
-        //console.log(event.target.value);
     }
 
   },
@@ -1461,7 +1484,6 @@ var confirmPage = React.createClass
     if(event.target.name == "email")
     {
       this.setState({email: event.target.value});
-        //console.log(event.target.value);
     }
 
   },
@@ -1480,7 +1502,6 @@ var confirmPage = React.createClass
     var ResTime = "Email: " + localStorage.ResTime;
     var resDur = "Reservation Duration: " + localStorage.ResDuration + " hours";
     var price2 = localStorage.price/100;
-    console.log(price2);
     var price = "Total Price: $" + price2;
     var ZIP = "Zip Code: " + localStorage.Zip;
     
@@ -1659,8 +1680,6 @@ var auth =
   mixins: [History, Lifecycle],
   register: function(email, username, password)
   {
-    console.log("email: " + email);
-    console.log("username: " + username);
     var url = "/api/users/register";
         $.ajax
         ({

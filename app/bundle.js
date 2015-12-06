@@ -208,21 +208,35 @@
 	var Home = React.createClass
 	({displayName: "Home",
 	  mixins: [History, Lifecycle],
+	  getInitialState: function() 
+	  {
+	    return {address:''};
+	  },
+	  goToMap: function()
+	  {
+	    location.href='/#/map';
+	  },
+	  handleChange: function(event)
+	  {
+	    console.log(event.target.value);
+	    this.setState({address: event.target.value});
+	  },
 	  goToLearn: function()
 	  {
 	    this.history.pushState(null, '/learn');
 	  },
 	  render: function() {
+	    var address = this.state.address;
 	    return (
 	    React.createElement("div", null, 
 
-	      React.createElement("div", {className: "center jumbotron", style: homeStyle}, 
+	      React.createElement("div", {className: "jumbotron", style: homeStyle}, 
 	        React.createElement("p", null, " Better parking is just a few clicks away "), 
 	        React.createElement("div", {className: "row"}, 
 	          React.createElement("div", {className: "input-group"}, 
-	            React.createElement("input", {type: "text", className: "form-control", placeholder: "Search the address of an event"}), 
+	            React.createElement("input", {type: "text", className: "form-control", value: address, onChange: this.handleChange, placeholder: "Search the address of an event"}), 
 	            React.createElement("span", {className: "input-group-btn"}, 
-	              React.createElement("button", {className: "btn btn-default", type: "button"}, "Go!")
+	              React.createElement("button", {className: "btn btn-default", type: "button", onClick: this.goToMap}, "Go!")
 	            )
 	          )
 	        )
@@ -299,8 +313,6 @@
 	({displayName: "profile",
 	  render: function() 
 	  {
-	    console.log("email: " + localStorage.email);
-	    //this.forceUpdate();
 	      return (
 	       React.createElement("div", null, 
 	        React.createElement("h1", {style: center}, " ", localStorage.username.toUpperCase(), " "), 
@@ -322,7 +334,6 @@
 	    if(id)
 	    {
 	      var obj = drivewayDAO.queryID(id);
-	      console.log(obj);
 	      var address = obj.address;
 	      var username = obj.username;
 	      var zip = obj.zip;
@@ -1177,9 +1188,7 @@
 	      async:false,
 	      success: function(res)
 	      {
-	       // console.log(res.driveway[0]);
 	        returnValue = res.driveway[0];
-	        
 	      }.bind(this),
 	      error: function()
 	      {
@@ -1190,7 +1199,6 @@
 	  erase: function(id)
 	  {
 	    var url = "/api/users/deleteDriveway";
-	    console.log(id);
 	    $.ajax
 	    ({
 	        url: url,
@@ -1292,7 +1300,6 @@
 	        success: function(res) 
 	        { 
 	          allDriveways = [];
-	          console.log(res.driveway);
 	          for(var i = 0; i < res.driveway.length; i++)
 	          {
 	            var temp = res.driveway[i];
@@ -1306,7 +1313,6 @@
 	        }.bind(this),
 	        error: function()
 	        {
-	          console.log("failure");
 	        }.bind(this)
 	    });
 	  }
@@ -1343,6 +1349,12 @@
 	{
 	  textAlign: 'center'
 	};
+	var errorStyle =
+	{
+	  width: '50%',
+	  marginLeft: '25%',
+	  visibility: 'hidden'
+	};
 	var signIn = React.createClass
 	({displayName: "signIn",
 	  mixins: [History, Lifecycle],
@@ -1365,7 +1377,10 @@
 	      localStorage.username = this.state.username;
 	      this.history.pushState(null, '/profile');
 	      this.forceUpdate();
+	      return;
 	    }
+
+	    document.getElementById('errorMessage').style.visibility = 'visible'
 	          
 	  },
 	  render: function() {
@@ -1373,12 +1388,20 @@
 	    var password = this.state.password;
 	    return (
 	       React.createElement("div", {style: formStyle}, 
+	        React.createElement("div", {className: "jumbotron", style: signUpJumbo}, 
 	          "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
 	          "Password: ", React.createElement("br", null), React.createElement("input", {type: "password", name: "password", value: password, onChange: this.handleChange}), React.createElement("br", null), 
 	          React.createElement("br", null), React.createElement("a", {href: "/randomHTMLFiles/forgottenPassword.html"}, "Forgot your password? "), " ", React.createElement("br", null), 
 	          React.createElement("br", null), React.createElement("button", {onClick: this.handleClick}, 
 	            "SIGN IN"
 	            )
+	        ), 
+	        React.createElement("div", {id: "errorMessage", className: "alert alert-danger", role: "alert", style: errorStyle}, 
+	          React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
+	          React.createElement("span", {className: "sr-only"}, "Error:"), 
+	          "Woops! It looks like this username/password combo is not in our system. Try again, or" + " " + 
+	          "request a password change."
+	        )
 	      )
 
 
@@ -1406,10 +1429,13 @@
 	        success: function(res) 
 	        {
 	          localStorage.email = res.email;
+	          console.log("signed in");
 	          signedIn = true;
 	        }.bind(this),
 	        error: function()
 	        {
+	          signedIn = false;
+	          
 	        }.bind(this)
 
 	    });
@@ -1432,17 +1458,14 @@
 	    if(event.target.name == "email")
 	    {
 	      this.setState({email: event.target.value});
-	        //console.log(event.target.value);
 	    }
 	    else if(event.target.name == "address")
 	    {
 	      this.setState({address: event.target.value});
-	        //console.log(event.target.value);
 	    }
 	    else if(event.target.name == "price")
 	    {
 	    this.setState({price: event.target.value});
-	        //console.log(event.target.value);
 	    }
 
 	  },
@@ -1514,7 +1537,6 @@
 	    if(event.target.name == "email")
 	    {
 	      this.setState({email: event.target.value});
-	        //console.log(event.target.value);
 	    }
 
 	  },
@@ -1533,7 +1555,6 @@
 	    var ResTime = "Email: " + localStorage.ResTime;
 	    var resDur = "Reservation Duration: " + localStorage.ResDuration + " hours";
 	    var price2 = localStorage.price/100;
-	    console.log(price2);
 	    var price = "Total Price: $" + price2;
 	    var ZIP = "Zip Code: " + localStorage.Zip;
 	    
@@ -1712,8 +1733,6 @@
 	  mixins: [History, Lifecycle],
 	  register: function(email, username, password)
 	  {
-	    console.log("email: " + email);
-	    console.log("username: " + username);
 	    var url = "/api/users/register";
 	        $.ajax
 	        ({
