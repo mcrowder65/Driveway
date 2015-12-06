@@ -90,7 +90,7 @@ var App = React.createClass({
               <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
               <Link className="navbar-brand" to="/map">Map</Link>  
               <Link className="navbar-brand" to="/pay">Pay</Link> 
-              <Link className="navbar-brand" to="/confirm">Confirm Page</Link> 
+              <Link className="navbar-brand" to="/lookup">Order Lookup</Link> 
             </div>
             <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
               <li><Link to="signIn">Sign in</Link></li>
@@ -1389,6 +1389,218 @@ var signInAuthorization =
     },
 };
 
+var orderDAO =
+{
+ 
+  getAll: function(last4, email)
+  {
+    var url = "/apu/orders/getAllOrders";
+    var Last4 = last4;
+    var Email = email;
+    console.log(Last4);
+    var self = this;
+
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          last4: Last4,
+          email: Email
+        },
+        async:false,
+        success: function(res)
+        {
+          allOrders = [];
+          temp2 = res.order[res.order.length-1];
+  
+        }.bind(this),
+        error: function()
+        {
+          console.log("failure in orderDAQ");
+        }.bind(this)
+
+    });
+    
+  }
+};
+
+var findOrders = React.createClass
+({
+  mixins: [History, Lifecycle],
+  getInitialState: function()
+  {
+    return {email: ''}, {Last4: ''};
+  },
+
+  register: function()
+  {
+
+    if(!this.state.email){
+      alert("Please enter an email address");
+    }
+    else if(this.state.email.length < 4){
+      alert("INVALID EMAIL ADDRESS");
+    }
+    else if(!this.state.Last4){
+      console.log("0");
+      alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
+    }
+    else if(this.state.Last4.length !==4){
+      console.log("<4");
+      alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
+    }
+    else{
+      orderDAO.getAll(this.state.Last4, this.state.email);
+      if(temp2){
+        this.history.pushState(null, '/pastOrders');
+      }
+      else{
+       alert("Your Email and/or credit card is invalid");
+
+      }
+    }
+    
+   
+  },
+
+  handleChange: function(event)
+  {
+
+    if(event.target.name == "email")
+    {
+      this.setState({email: event.target.value});
+        //console.log(event.target.value);
+    }
+    else if(event.target.name == "Last4")
+    {
+      this.setState({Last4: event.target.value});
+      //orderDAO.getAll(this.state.address, this.state.email);
+        //console.log(event.target.value);
+    }
+
+  },
+
+  render: function() {
+    var email = this.state.email;
+    var Last4 = this.state.Last4;
+    var price = this.state.price;
+    var streetA = "297 S 760 W";
+    var zip = "84058";
+    var state1 = "UT";
+    var rDate = "12/12/16";
+    var duration1 = "4";
+    var rTime = "6:00 PM";
+    var city = "orem"
+
+    return (
+
+         <div>
+            Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
+            Last4: <br/><input type="text" name="Last4" value ={Last4} onChange={this.handleChange}/><br/><br/>
+            <input type="submit" value="SIGN UP" onClick={this.register}/> 
+        </div>
+
+
+      );
+  }
+});
+
+var pastOrders = React.createClass
+({
+  getInitialState: function()
+  {
+    return {email: ''}, {address: ''}, {price: ''};
+
+  },
+
+  handleChange: function(event)
+  {
+
+    if(event.target.name == "email")
+    {
+      this.setState({email: event.target.value});
+        //console.log(event.target.value);
+    }
+
+  },
+
+  render: function() {
+
+    var email = this.state.email;
+    var email2 = "Email: " + temp2.email;
+    var name = "Name: " + temp2.name1;
+    var cardType = "Card Type: " + temp2.cardType;
+    var Last4 = "Last 4 Digits: " + temp2.last4;
+    var ReservedAddress = "Reserved Address: " + temp2.address;
+    var State = "State: " + temp2.state;
+    var City = "City: " + temp2.city;
+    var DOR = "Date of Reservation: " + temp2.reservationDate;
+    var ResTime = "Email: " + temp2.reservationTime;
+    var resDur = "Reservation Duration: " + temp2.reservationDuration+ " hours";
+    var price2 = temp2.price/100;
+    console.log(price2);
+    var price = "Total Price: $" + price2;
+    var ZIP = "Zip Code: " + temp2.zip;
+    
+    
+    return (
+      <div>
+        <div className="well">
+          <div style={formStyle}>
+           <h1>Thank you for your order!</h1>
+           <p>Plese save the following order confirmation and leave it in your windshield when you arrive at your destination</p>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Order Information</div>
+              <div className="panel-body">
+                <p>{ReservedAddress}</p>
+                <p>{State}</p>
+                <p>{ZIP}</p>
+                <p>{DOR}</p>
+                <p>{ResTime}</p>
+                <p>{resDur}</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Personal Information</div>
+              <div className="panel-body">
+                <p>{name}</p>
+                <p>{email2}</p>
+                <p>{cardType}</p>
+                <p>{Last4}</p>
+                <p>{price}</p>
+                <p>Total Amount due: $0.00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Email Me!</div>
+              <div className="panel-body">
+                <p style={jumboStyle}>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </p>
+                <div style={jumboStyle}>
+                  Email: <input type="text" name="email" value={email} onChange={this.handleChange}/>
+                  <a className="btn btn-primary btn-sm" href="#" role="button">Learn more</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      );
+  }
+});
+
 var pay = React.createClass
 ({
   contextTypes: {
@@ -1722,6 +1934,8 @@ var routes = (
           <Route name="logOut" path="/logOut" component={logOut}/>
           <Route name="profile" path="/profile" component={profile}/>
           <Route name="confirm" path="/confirm" component={confirmPage} /> 
+          <Route name="lookup" path="/lookup" component={findOrders}/>
+          <Route name="pastOrders" path="/pastOrders" component={pastOrders}/>
         </Route>
       </Router>
 );

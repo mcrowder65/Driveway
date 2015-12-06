@@ -222,6 +222,21 @@ app.post('/api/users/login', function (req, res)
     });
 });
 
+app.post
+('/apu/orders/getAllOrders',
+	function (req, res)
+	{
+		order.find({last4: req.body.last4, email: req.body.email},
+		function(err, order)
+		{
+			if (order)
+				res.json({order: order});
+			else
+				res.sendStatus("403");
+		});
+	}
+);
+
 app.post('/api/payment/chargeToken', function (req, res) 
 {
 	console.log("entered api! charge");

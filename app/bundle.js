@@ -143,7 +143,7 @@
 	              React.createElement(Link, {className: "navbar-brand", to: "/allDriveways"}, "All driveways"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/map"}, "Map"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay"), 
-	              React.createElement(Link, {className: "navbar-brand", to: "/confirm"}, "Confirm Page")
+	              React.createElement(Link, {className: "navbar-brand", to: "/lookup"}, "Order Lookup")
 	            ), 
 	            React.createElement("div", {className: "nav navbar-nav navbar-right", id: "bs-example-navbar-collapse-1"}, 
 	              React.createElement("li", null, React.createElement(Link, {to: "signIn"}, "Sign in")), 
@@ -1442,6 +1442,218 @@
 	    },
 	};
 
+	var orderDAO =
+	{
+	 
+	  getAll: function(last4, email)
+	  {
+	    var url = "/apu/orders/getAllOrders";
+	    var Last4 = last4;
+	    var Email = email;
+	    console.log(Last4);
+	    var self = this;
+
+	    $.ajax
+	    ({
+	        url: url,
+	        dataType: 'json',
+	        type: 'POST',
+	        data: {
+	          last4: Last4,
+	          email: Email
+	        },
+	        async:false,
+	        success: function(res)
+	        {
+	          allOrders = [];
+	          temp2 = res.order[res.order.length-1];
+	  
+	        }.bind(this),
+	        error: function()
+	        {
+	          console.log("failure in orderDAQ");
+	        }.bind(this)
+
+	    });
+	    
+	  }
+	};
+
+	var findOrders = React.createClass
+	({displayName: "findOrders",
+	  mixins: [History, Lifecycle],
+	  getInitialState: function()
+	  {
+	    return {email: ''}, {Last4: ''};
+	  },
+
+	  register: function()
+	  {
+
+	    if(!this.state.email){
+	      alert("Please enter an email address");
+	    }
+	    else if(this.state.email.length < 4){
+	      alert("INVALID EMAIL ADDRESS");
+	    }
+	    else if(!this.state.Last4){
+	      console.log("0");
+	      alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
+	    }
+	    else if(this.state.Last4.length !==4){
+	      console.log("<4");
+	      alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
+	    }
+	    else{
+	      orderDAO.getAll(this.state.Last4, this.state.email);
+	      if(temp2){
+	        this.history.pushState(null, '/pastOrders');
+	      }
+	      else{
+	       alert("Your Email and/or credit card is invalid");
+
+	      }
+	    }
+	    
+	   
+	  },
+
+	  handleChange: function(event)
+	  {
+
+	    if(event.target.name == "email")
+	    {
+	      this.setState({email: event.target.value});
+	        //console.log(event.target.value);
+	    }
+	    else if(event.target.name == "Last4")
+	    {
+	      this.setState({Last4: event.target.value});
+	      //orderDAO.getAll(this.state.address, this.state.email);
+	        //console.log(event.target.value);
+	    }
+
+	  },
+
+	  render: function() {
+	    var email = this.state.email;
+	    var Last4 = this.state.Last4;
+	    var price = this.state.price;
+	    var streetA = "297 S 760 W";
+	    var zip = "84058";
+	    var state1 = "UT";
+	    var rDate = "12/12/16";
+	    var duration1 = "4";
+	    var rTime = "6:00 PM";
+	    var city = "orem"
+
+	    return (
+
+	         React.createElement("div", null, 
+	            "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	            "Last4: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "Last4", value: Last4, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	            React.createElement("input", {type: "submit", value: "SIGN UP", onClick: this.register})
+	        )
+
+
+	      );
+	  }
+	});
+
+	var pastOrders = React.createClass
+	({displayName: "pastOrders",
+	  getInitialState: function()
+	  {
+	    return {email: ''}, {address: ''}, {price: ''};
+
+	  },
+
+	  handleChange: function(event)
+	  {
+
+	    if(event.target.name == "email")
+	    {
+	      this.setState({email: event.target.value});
+	        //console.log(event.target.value);
+	    }
+
+	  },
+
+	  render: function() {
+
+	    var email = this.state.email;
+	    var email2 = "Email: " + temp2.email;
+	    var name = "Name: " + temp2.name1;
+	    var cardType = "Card Type: " + temp2.cardType;
+	    var Last4 = "Last 4 Digits: " + temp2.last4;
+	    var ReservedAddress = "Reserved Address: " + temp2.address;
+	    var State = "State: " + temp2.state;
+	    var City = "City: " + temp2.city;
+	    var DOR = "Date of Reservation: " + temp2.reservationDate;
+	    var ResTime = "Email: " + temp2.reservationTime;
+	    var resDur = "Reservation Duration: " + temp2.reservationDuration+ " hours";
+	    var price2 = temp2.price/100;
+	    console.log(price2);
+	    var price = "Total Price: $" + price2;
+	    var ZIP = "Zip Code: " + temp2.zip;
+	    
+	    
+	    return (
+	      React.createElement("div", null, 
+	        React.createElement("div", {className: "well"}, 
+	          React.createElement("div", {style: formStyle}, 
+	           React.createElement("h1", null, "Thank you for your order!"), 
+	           React.createElement("p", null, "Plese save the following order confirmation and leave it in your windshield when you arrive at your destination")
+	          )
+	        ), 
+	        React.createElement("div", {className: "row"}, 
+	          React.createElement("div", {className: "col-md-6"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Order Information"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", null, ReservedAddress), 
+	                React.createElement("p", null, State), 
+	                React.createElement("p", null, ZIP), 
+	                React.createElement("p", null, DOR), 
+	                React.createElement("p", null, ResTime), 
+	                React.createElement("p", null, resDur)
+	              )
+	            )
+	          ), 
+	          React.createElement("div", {className: "col-md-6"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Personal Information"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", null, name), 
+	                React.createElement("p", null, email2), 
+	                React.createElement("p", null, cardType), 
+	                React.createElement("p", null, Last4), 
+	                React.createElement("p", null, price), 
+	                React.createElement("p", null, "Total Amount due: $0.00")
+	              )
+	            )
+	          )
+	        ), 
+	        React.createElement("div", {className: "row"}, 
+	          React.createElement("div", {className: "col-md-12"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", {style: jumboStyle}, "If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. "), 
+	                React.createElement("div", {style: jumboStyle}, 
+	                  "Email: ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
+	                  React.createElement("a", {className: "btn btn-primary btn-sm", href: "#", role: "button"}, "Learn more")
+	                )
+	              )
+	            )
+	          )
+	        )
+	      )
+
+	      );
+	  }
+	});
+
 	var pay = React.createClass
 	({displayName: "pay",
 	  contextTypes: {
@@ -1774,7 +1986,9 @@
 	          React.createElement(Route, {name: "signIn", path: "/signIn", component: signIn}), 
 	          React.createElement(Route, {name: "logOut", path: "/logOut", component: logOut}), 
 	          React.createElement(Route, {name: "profile", path: "/profile", component: profile}), 
-	          React.createElement(Route, {name: "confirm", path: "/confirm", component: confirmPage})
+	          React.createElement(Route, {name: "confirm", path: "/confirm", component: confirmPage}), 
+	          React.createElement(Route, {name: "lookup", path: "/lookup", component: findOrders}), 
+	          React.createElement(Route, {name: "pastOrders", path: "/pastOrders", component: pastOrders})
 	        )
 	      )
 	);
