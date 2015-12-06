@@ -25867,11 +25867,14 @@
 	    if(event.target.name == "email"){
 	      this.setState({email: event.target.value});
 	    }else if(event.target.name == "address"){
-	      this.setState({address: event.target.value});
+	      mapMarkers = generateMapMarkers(this.state.date, this.state.time);
+	      this.setState({address: event.target.value, mapData: {event: {address: event.target.value, date: this.state.date, time: this.state.time}, markers: mapMarkers}});
 	    }else if(event.target.name == "date"){
-	      this.setState({date: event.target.value});
+	      mapMarkers = generateMapMarkers(this.state.date, this.state.time);
+	      this.setState({date: event.target.value, mapData: {event: {address: this.state.address, date: event.target.value, time: this.state.time}, markers: mapMarkers}});
 	    }else if(event.target.name == "time"){
-	      this.setState({time: event.target.value}); 
+	      mapMarkers = generateMapMarkers(this.state.date, this.state.time);
+	      this.setState({time: event.target.value, mapData: {event: {address: this.state.address, date: this.state.date, time: event.target.value}, markers: mapMarkers}});
 	    }
 	  },
 
@@ -25879,8 +25882,6 @@
 	    //Perform Validation on Input
 
 	    mapMarkers = generateMapMarkers(this.state.date, this.state.time);
-
-	    alert(this.state.address);
 	    this.setState({mapData: {event: {address: this.state.address, date: this.state.date, time: this.state.time}, markers: mapMarkers}});
 	  },
 
