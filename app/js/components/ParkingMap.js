@@ -67,6 +67,7 @@ var ParkingMap = React.createClass({
           }
 
           var mapMarker = new Marker(markerOptions);
+          mapMarker.addListener('click', function() {component.props.markerClicked(marker)});
           //google.maps.event.addListener(mapMarker, 'click', component.props.markerClicked(marker));
         });
       }
@@ -78,6 +79,10 @@ var ParkingMap = React.createClass({
     });
   },
   
+  markerClicked: function(marker){
+    console.log(marker);
+  },
+
   componentDidMount: function () {
     this.initializeMap();
   },

@@ -121,7 +121,25 @@ var ReservationForm = React.createClass({
 
   markerClicked: function(marker){
     //this.setState({selectedMarker: marker, showPay: true})
-    this.setState({payData: {event: {}, parking: []}});
+    //var imageStyle = styles.hiddenIf((isUndefined(request.media_url) || !request.media_url));
+
+    // _.extend(imageStyle, {
+    //   maxWidth:     150,
+    //   maxHeight:    150,
+    //   marginBottom: 10
+    // });
+    //this.setState({payData: {event: {}, parking: []}});
+    
+    console.log(marker);
+
+    var content = (
+      <div>
+        <label>Category: {marker.address}</label>
+        <p>open</p>
+      </div>
+    );
+
+    return React.renderToStaticMarkup(content);
   },
 
   render: function () {

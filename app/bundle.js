@@ -25890,7 +25890,25 @@
 
 	  markerClicked: function(marker){
 	    //this.setState({selectedMarker: marker, showPay: true})
-	    this.setState({payData: {event: {}, parking: []}});
+	    //var imageStyle = styles.hiddenIf((isUndefined(request.media_url) || !request.media_url));
+
+	    // _.extend(imageStyle, {
+	    //   maxWidth:     150,
+	    //   maxHeight:    150,
+	    //   marginBottom: 10
+	    // });
+	    //this.setState({payData: {event: {}, parking: []}});
+	    
+	    console.log(marker);
+
+	    var content = (
+	      React.createElement("div", null, 
+	        React.createElement("label", null, "Category: ", marker.address), 
+	        React.createElement("p", null, "open")
+	      )
+	    );
+
+	    return React.renderToStaticMarkup(content);
 	  },
 
 	  render: function () {
@@ -25910,7 +25928,7 @@
 	        ), 
 
 	        React.createElement("div", null, 
-	          React.createElement(ParkingMap, {data: this.state.mapData, markerClicked: this.markerClicked})
+	          React.createElement(ParkingMap, {data: this.state.mapData, markerClicked: this.markerClicked.bind(this)})
 	        ), 
 	        React.createElement("div", null, 
 	          React.createElement(CheckoutStrip, {data: this.state.payData})
@@ -25995,6 +26013,7 @@
 	          }
 
 	          var mapMarker = new Marker(markerOptions);
+	          mapMarker.addListener('click', function() {component.props.markerClicked(this)});
 	          //google.maps.event.addListener(mapMarker, 'click', component.props.markerClicked(marker));
 	        });
 	      }
@@ -26006,6 +26025,10 @@
 	    });
 	  },
 	  
+	  markerClicked: function(marker){
+	    console.log(marker);
+	  },
+
 	  componentDidMount: function () {
 	    this.initializeMap();
 	  },
