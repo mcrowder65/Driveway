@@ -2,7 +2,21 @@ var React = require('react');
 var ParkingMap = require('./ParkingMap.js');
 var CheckoutStrip = require('./StripePayment.js');
 
-function getReservations(){
+var ReservationForm = React.createClass({
+
+  getInitialState: function() {
+    return {
+      email: '',
+      address: '',
+      date: '',
+      time: '',
+      mapData: {event: {address: "156 East 200 North, Provo, UT 84606, USA", date: "", time: ""}, markers: []},
+      payData: {event: {Email: "", Address: "", Price: "", street: "", zip1: "", state: "", resDate: "", duration: "", resTime: "", city: "", drivewayId: "", owner: ""}, parking: []},
+      showPay: false
+    }      
+  },
+
+  getReservations: function(){
     var url = "/api/users/getAllReservations";
     var reservations;
     $.ajax
@@ -22,9 +36,9 @@ function getReservations(){
         }
     });
     return reservations;
-  }
+  },
 
-  function getDriveways(){
+  getDriveways: function(){
     var url = "/api/users/getAllDriveways";
     var driveways;
     $.ajax
@@ -36,7 +50,6 @@ function getReservations(){
         async: false,
         success: function(res) 
         { 
-
           driveways = res.driveway;
         },
         error: function()
@@ -45,9 +58,9 @@ function getReservations(){
         }
     });
     return driveways;
-  }
+  },
 
-  function filterDriveways(driveways, reservations){
+  filterDriveways: function(driveways, reservations){
     var filteredDriveways = [];
     for(var i = 0; i < driveways.length; i++){
       var reserved = false;
@@ -62,14 +75,14 @@ function getReservations(){
       }
     }
     return filteredDriveways;
-  }
+  },
 
-  function generateMapMarkers(date, time){    
-    driveways = getDriveways();
-    reservations = getReservations();
+  generateMapMarkers: function(){    
+    driveways = this.getDriveways();
+    reservations = this.getReservations();
 
     //Filter driveways
-    filteredDriveways = filterDriveways(driveways, reservations);
+    filteredDriveways = this.filterDriveways(driveways, reservations);
 
     //Build Map Markers
     var markers = [];
@@ -77,69 +90,45 @@ function getReservations(){
       var driveway = driveways[i];
       var address = driveway.address + ', ' + driveway.city + ', ' + driveway.state + ' ' + driveway.zip + ', USA';
       var isPartiallyFull = false; //Change this when matt gets done
-      markers.push({address: address, partiallyFull: isPartiallyFull, driveway: driveway})
+      var infoWindow = new google.maps.InfoWindow({
+        content: this.renderInfoWindow(address, driveway)
+      });
+      markers.push({address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow})
     }
 
     return markers;
-  }
-
-var ReservationForm = React.createClass({
-
-  getInitialState: function() {
-    return {
-      email: '',
-      address: '',
-      date: '',
-      time: '',
-      mapData: {event: {address: "156 East 200 North, Provo, UT 84606, USA", date: "", time: ""}, markers: []},
-      payData: {event: {Email: "", Address: "", Price: "", street: "", zip1: "", state: "", resDate: "", duration: "", resTime: "", city: "", drivewayId: "", owner: ""}, parking: []},
-      showPay: false
-    }      
   },
 
   handleChange: function(event) {
     if(event.target.name == "email"){
       this.setState({email: event.target.value});
     }else if(event.target.name == "address"){
-      mapMarkers = generateMapMarkers(this.state.date, this.state.time);
+      mapMarkers = this.generateMapMarkers();
       this.setState({address: event.target.value, mapData: {event: {address: event.target.value, date: this.state.date, time: this.state.time}, markers: mapMarkers}});
     }else if(event.target.name == "date"){
-      mapMarkers = generateMapMarkers(this.state.date, this.state.time);
+      mapMarkers = this.generateMapMarkers();//generateMapMarkers(this.state.date, this.state.time);
       this.setState({date: event.target.value, mapData: {event: {address: this.state.address, date: event.target.value, time: this.state.time}, markers: mapMarkers}});
     }else if(event.target.name == "time"){
-      mapMarkers = generateMapMarkers(this.state.date, this.state.time);
+      mapMarkers = this.generateMapMarkers();//generateMapMarkers(this.state.date, this.state.time);
       this.setState({time: event.target.value, mapData: {event: {address: this.state.address, date: this.state.date, time: event.target.value}, markers: mapMarkers}});
     }
   },
 
-  handleFormSubmit: function() {
-    //Perform Validation on Input
-
-    mapMarkers = generateMapMarkers(this.state.date, this.state.time);
-    this.setState({mapData: {event: {address: this.state.address, date: this.state.date, time: this.state.time}, markers: mapMarkers}});
-  },
-
-  markerClicked: function(marker){
-    //this.setState({selectedMarker: marker, showPay: true})
-    //var imageStyle = styles.hiddenIf((isUndefined(request.media_url) || !request.media_url));
-
-    // _.extend(imageStyle, {
-    //   maxWidth:     150,
-    //   maxHeight:    150,
-    //   marginBottom: 10
-    // });
-    //this.setState({payData: {event: {}, parking: []}});
-    
-    console.log(marker);
-
+  renderInfoWindow: function(address, driveway){
     var content = (
       <div>
-        <label>Category: {marker.address}</label>
+        <label>Category: {address}</label>
         <p>open</p>
       </div>
     );
 
     return React.renderToStaticMarkup(content);
+  },
+
+  markerClicked: function(marker, mapMarker, map){
+    console.log(marker);
+
+    marker.infoWindow.open(map, mapMarker);
   },
 
   render: function () {
