@@ -1427,6 +1427,18 @@ var orderDAO =
   }
 };
 
+var findOrderStyle =
+{
+  fontSize: '25px',
+  fontWeight: 'bold',
+  textAlign: 'center'
+};
+
+var findOrderStyle2=
+{
+  textAlign: 'center'
+}
+
 var findOrders = React.createClass
 ({
   mixins: [History, Lifecycle],
@@ -1496,13 +1508,29 @@ var findOrders = React.createClass
     var city = "orem"
 
     return (
-
-         <div>
-            Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
-            Last4: <br/><input type="text" name="Last4" value ={Last4} onChange={this.handleChange}/><br/><br/>
-            <button type="button" className="btn btn-primary" onClick={this.register}>GO!</button> 
+      <div>
+        <div className="row"></div>
+         <div className="row">
+         <div className="col-md-4"></div>
+            <div className="col-md-4">
+              <div className="panel panel-primary">
+                <div className="panel-heading" style={findOrderStyle}>Order Lookup!</div>
+                  <div className="panel-body">
+                    <div className="form-group" style={findOrderStyle2}>
+                    <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+                      <input type="text" name="email" className="form-control" id="inputEmail3" placeholder="Email" value={email} onChange={this.handleChange}/><br/><br/>
+                    <label for="inputLast4" class="col-sm-2 control-label">Last 4 CC Digits</label>
+                      
+                      <input type="text" name="Last4" className="form-control" id="inputEmail3" placeholder="Last 4 Digits" value ={Last4} onChange={this.handleChange}/><br/><br/>
+                    <button type="button" className="btn btn-primary btn-lg" onClick={this.register}>GO!</button> 
+                   </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <div className="col-md-4"></div>
         </div>
-
+      
 
       );
   }

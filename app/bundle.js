@@ -1480,6 +1480,18 @@
 	  }
 	};
 
+	var findOrderStyle =
+	{
+	  fontSize: '25px',
+	  fontWeight: 'bold',
+	  textAlign: 'center'
+	};
+
+	var findOrderStyle2=
+	{
+	  textAlign: 'center'
+	}
+
 	var findOrders = React.createClass
 	({displayName: "findOrders",
 	  mixins: [History, Lifecycle],
@@ -1549,13 +1561,29 @@
 	    var city = "orem"
 
 	    return (
-
-	         React.createElement("div", null, 
-	            "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-	            "Last4: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "Last4", value: Last4, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.register}, "GO!")
+	      React.createElement("div", null, 
+	        React.createElement("div", {className: "row"}), 
+	         React.createElement("div", {className: "row"}, 
+	         React.createElement("div", {className: "col-md-4"}), 
+	            React.createElement("div", {className: "col-md-4"}, 
+	              React.createElement("div", {className: "panel panel-primary"}, 
+	                React.createElement("div", {className: "panel-heading", style: findOrderStyle}, "Order Lookup!"), 
+	                  React.createElement("div", {className: "panel-body"}, 
+	                    React.createElement("div", {className: "form-group", style: findOrderStyle2}, 
+	                    React.createElement("label", {for: "inputEmail3", class: "col-sm-2 control-label"}, "Email"), 
+	                      React.createElement("input", {type: "text", name: "email", className: "form-control", id: "inputEmail3", placeholder: "Email", value: email, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	                    React.createElement("label", {for: "inputLast4", class: "col-sm-2 control-label"}, "Last 4 CC Digits"), 
+	                      
+	                      React.createElement("input", {type: "text", name: "Last4", className: "form-control", id: "inputEmail3", placeholder: "Last 4 Digits", value: Last4, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	                    React.createElement("button", {type: "button", className: "btn btn-primary btn-lg", onClick: this.register}, "GO!")
+	                   )
+	                  )
+	                )
+	              )
+	            ), 
+	          React.createElement("div", {className: "col-md-4"})
 	        )
-
+	      
 
 	      );
 	  }
