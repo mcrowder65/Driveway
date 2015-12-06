@@ -25768,6 +25768,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */var React = __webpack_require__(2);
+	ReactDOM = __webpack_require__(159);
 	var ParkingMap = __webpack_require__(212);
 	var CheckoutStrip = __webpack_require__(213);
 
@@ -25878,30 +25879,15 @@
 	      mapMarkers = this.generateMapMarkers();
 	      this.setState({address: event.target.value, mapData: {event: {address: event.target.value, date: this.state.date, time: this.state.time}, markers: mapMarkers}});
 	    }else if(event.target.name == "date"){
-	      mapMarkers = this.generateMapMarkers();//generateMapMarkers(this.state.date, this.state.time);
+	      mapMarkers = this.generateMapMarkers();
 	      this.setState({date: event.target.value, mapData: {event: {address: this.state.address, date: event.target.value, time: this.state.time}, markers: mapMarkers}});
 	    }else if(event.target.name == "time"){
-	      mapMarkers = this.generateMapMarkers();//generateMapMarkers(this.state.date, this.state.time);
+	      mapMarkers = this.generateMapMarkers();
 	      this.setState({time: event.target.value, mapData: {event: {address: this.state.address, date: this.state.date, time: event.target.value}, markers: mapMarkers}});
 	    }
 	  },
 
 	  renderInfoWindow: function(address, driveway){
-	    //var payData = {event: {Email: this.state.email, Address: address, Price: driveway.cost, street: driveway.address, zip1: driveway.zip, state: driveway.state, resDate: this.state.date, duration: "4", resTime: this.state.time, city: driveway.city, drivewayId: driveway._id, owner: driveway.username}, parking: []};
-	    var email = this.state.email;
-	    var address = address;
-	    var price = "";
-	    var streetA = "297 S 760 W";
-	    var zip = "84058";
-	    var state1 = "UT";
-	    var rDate = "12/12/16";
-	    var duration1 = "4";
-	    var rTime = "6:00 PM";
-	    var city = "orem"
-	    var drivewayId = 12345;
-	    var owner = "John David";
-	    var payData = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city, drivewayId: drivewayId, owner: owner}, parking: []};
-	    //console.log(payData);
 	    var content = (
 	      React.createElement("div", {style: {fontSize: '14px'}}, 
 	        React.createElement("label", {style: {fontSize: '16px'}}, "Address: ", address), 
@@ -25909,26 +25895,18 @@
 	          React.createElement("li", null, React.createElement("div", {style: {display: 'inline-block'}}, "Owner:"), React.createElement("div", {style: {display: 'inline-block', marginLeft: '10px'}}, driveway.username)), 
 	          React.createElement("li", null, React.createElement("div", {style: {display: 'inline-block'}}, "Price:"), React.createElement("div", {style: {display: 'inline-block', marginLeft: '10px'}}, "$10.00"))
 	        ), 
-	        React.createElement(CheckoutStrip, {data: payData})
+	        React.createElement("div", {id: "pay"})
 	      )
 	    );
 
-	    return React.render(content);
-	  },
-
-	  renderPayment: function(){
-	    alert("hello");
-	    // var content = (
-	    //   <CheckoutStrip data={payData}/>
-	    // );
-
-	    // return React.renderToStaticMarkup(content);
+	    return React.renderToStaticMarkup(content);
 	  },
 
 	  markerClicked: function(marker, mapMarker, map){
-	    console.log(marker);
-
 	    marker.infoWindow.open(map, mapMarker);
+	    
+	    var payData = {event: {Email: this.state.email, Address: marker.address, Price: marker.driveway.cost, street: marker.driveway.address, zip1: marker.driveway.zip, state: marker.driveway.state, resDate: this.state.date, duration: "4", resTime: this.state.time, city: marker.driveway.city, drivewayId: marker.driveway._id, owner: marker.driveway.username}, parking: []};
+	    ReactDOM.render(React.createElement(CheckoutStrip, {data: payData}), document.getElementById('pay'));
 	  },
 
 	  render: function () {
@@ -25938,33 +25916,18 @@
 	      maxHeight: $(window).height() / 1.5
 	    }
 
-	    var email = this.state.email;
-	    var address = address;
-	    var price = "";
-	    var streetA = "297 S 760 W";
-	    var zip = "84058";
-	    var state1 = "UT";
-	    var rDate = "12/12/16";
-	    var duration1 = "4";
-	    var rTime = "6:00 PM";
-	    var city = "orem"
-	    var drivewayId = 12345;
-	    var owner = "John David";
-	    var payData = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city, drivewayId: drivewayId, owner: owner}, parking: []};
-
 	    return(
 	      React.createElement("div", null, 
-	        React.createElement("div", null, 
-	            React.createElement("label", null, "Email"), React.createElement("input", {type: "email", name: "email", value: this.state.email, onChange: this.handleChange}), 
-	            React.createElement("label", null, "Event Address"), React.createElement("input", {type: "text", name: "address", value: this.state.address, onChange: this.handleChange}), 
-	            React.createElement("label", null, "Event Date"), React.createElement("input", {type: "text", name: "date", value: this.state.date, onChange: this.handleChange}), 
-	            React.createElement("label", null, "Event Time"), React.createElement("input", {type: "text", name: "time", value: this.state.time, onChange: this.handleChange})
+	        React.createElement("div", {style: {textAlign: 'center', backgroundColor: 'black', paddingTop: '10px', paddingBottom: '10px'}}, 
+	            React.createElement("label", {style: {marginRight: '2px', color: 'slateblue'}}, "Email:"), React.createElement("input", {type: "email", name: "email", value: this.state.email, onChange: this.handleChange}), 
+	            React.createElement("label", {style: {marginRight: '2px', marginLeft: '10px', color: 'slateblue'}}, "Event Address:"), React.createElement("input", {type: "text", name: "address", value: this.state.address, onChange: this.handleChange}), 
+	            React.createElement("label", {style: {marginRight: '2px', marginLeft: '10px', color: 'slateblue'}}, "Event Date:"), React.createElement("input", {type: "text", name: "date", value: this.state.date, onChange: this.handleChange}), 
+	            React.createElement("label", {style: {marginRight: '2px', marginLeft: '10px', color: 'slateblue'}}, "Event Time:"), React.createElement("input", {type: "text", name: "time", value: this.state.time, onChange: this.handleChange})
 	        ), 
 
 	        React.createElement("div", null, 
 	          React.createElement(ParkingMap, {data: this.state.mapData, markerClicked: this.markerClicked})
-	        ), 
-	        React.createElement(CheckoutStrip, {data: payData})
+	        )
 	      )
 	    );        
 	  }
