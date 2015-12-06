@@ -4,7 +4,7 @@ var Router = require('react-router').Router;
 var Route = require('react-router').Route;
 var Link = require('react-router').Link;
 var IndexRoute = require('react-router').IndexRoute;
-var ParkingMap = require('./components/parkingMap.js');
+var ReservationForm = require('./components/ReservationForm.js');
 var RouteHandler = Router.RouteHandler;
 var Redirect = Router.Redirect;
 var CheckoutStrip = require('./components/StripePayment.js');
@@ -77,7 +77,7 @@ var App = React.createClass({
               <Link className="navbar-brand" to="/home">Home</Link>                  
               <Link className="navbar-brand" to="/learn">Learn</Link>              
               <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
-              <Link className="navbar-brand" to="/map">Map</Link>  
+              <Link className="navbar-brand" to="/reserveparking">Reserve Parking</Link>  
               <Link className="navbar-brand" to="/pay">Pay</Link> 
               <Link className="navbar-brand" to="/confirm">Confirm Page</Link> 
             </div>
@@ -102,7 +102,7 @@ var App = React.createClass({
                 <Link className="navbar-brand" to="">Home</Link>                  
                 <Link className="navbar-brand" to="/learn">Learn</Link>              
                 <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
-                <Link className="navbar-brand" to="/map">Map</Link>  
+                <Link className="navbar-brand" to="/reserveparking">Reserve Parking</Link>  
                 <Link className="navbar-brand" to="/pay">Pay</Link> 
                 <Link className="navbar-brand" to="/confirm">Confirm Page</Link> 
               </div>
@@ -222,11 +222,10 @@ var allDriveways = React.createClass
   }
 });
 
-var data = {event: {lat: 40.4122994, lon: -111.75418}, parking: []}
-var MapHolder = React.createClass({
+var ReserveParking = React.createClass({
   render: function() {
     return (
-      <ParkingMap data={data}/>
+      <ReservationForm/>
     );
   }
 });
@@ -1301,7 +1300,7 @@ var routes = (
           <Route name="learn" path="/learn" component={learn} /> 
           <Route name="allDriveways" path="/allDriveways" component={allDriveways} /> 
           <Route name="pay" path="/pay" component={pay} />
-          <Route name="map" path="/map" component={MapHolder} /> 
+          <Route name="reserveParking" path="/reserveparking" component={ReserveParking} /> 
           <Route name="driveway" path="/driveway" component={driveway} />
           <Route name="signUp" path="/signUp" component={signUp} />
           <Route name="signIn" path="/signIn" component={signIn}/>

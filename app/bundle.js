@@ -57,20 +57,20 @@
 	var Route = __webpack_require__(160).Route;
 	var Link = __webpack_require__(160).Link;
 	var IndexRoute = __webpack_require__(160).IndexRoute;
-	var ParkingMap = __webpack_require__(211);
+	var ReservationForm = __webpack_require__(211);
 	var RouteHandler = Router.RouteHandler;
 	var Redirect = Router.Redirect;
-	var CheckoutStrip = __webpack_require__(212);
+	var CheckoutStrip = __webpack_require__(213);
 	var signedIn = true;
 	var transitionTo = Router.transitionTo;
 	var History = __webpack_require__(160).History;
-	var $__0=     __webpack_require__(213),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
-	var ReactScriptLoaderMixin = __webpack_require__(218).ReactScriptLoaderMixin;
+	var $__0=     __webpack_require__(214),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
+	var ReactScriptLoaderMixin = __webpack_require__(219).ReactScriptLoaderMixin;
 	var $__1=  __webpack_require__(160),Lifecycle=$__1.Lifecycle;
 	var history = useBasename(createHistory)({
 	    basename: '/transitions'
 	})
-	var Button = __webpack_require__(219);
+	var Button = __webpack_require__(220);
 	var profileDriveways = '';
 	var allDriveways = [];
 	var userDriveways = [];
@@ -130,7 +130,7 @@
 	              React.createElement(Link, {className: "navbar-brand", to: "/home"}, "Home"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/allDriveways"}, "All driveways"), 
-	              React.createElement(Link, {className: "navbar-brand", to: "/map"}, "Map"), 
+	              React.createElement(Link, {className: "navbar-brand", to: "/reserveparking"}, "Reserve Parking"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/confirm"}, "Confirm Page")
 	            ), 
@@ -155,7 +155,7 @@
 	                React.createElement(Link, {className: "navbar-brand", to: ""}, "Home"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/allDriveways"}, "All driveways"), 
-	                React.createElement(Link, {className: "navbar-brand", to: "/map"}, "Map"), 
+	                React.createElement(Link, {className: "navbar-brand", to: "/reserveparking"}, "Reserve Parking"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/confirm"}, "Confirm Page")
 	              ), 
@@ -275,11 +275,10 @@
 	  }
 	});
 
-	var data = {event: {lat: 40.4122994, lon: -111.75418}, parking: []}
-	var MapHolder = React.createClass({displayName: "MapHolder",
+	var ReserveParking = React.createClass({displayName: "ReserveParking",
 	  render: function() {
 	    return (
-	      React.createElement(ParkingMap, {data: data})
+	      React.createElement(ReservationForm, null)
 	    );
 	  }
 	});
@@ -1354,7 +1353,7 @@
 	          React.createElement(Route, {name: "learn", path: "/learn", component: learn}), 
 	          React.createElement(Route, {name: "allDriveways", path: "/allDriveways", component: allDriveways}), 
 	          React.createElement(Route, {name: "pay", path: "/pay", component: pay}), 
-	          React.createElement(Route, {name: "map", path: "/map", component: MapHolder}), 
+	          React.createElement(Route, {name: "reserveParking", path: "/reserveparking", component: ReserveParking}), 
 	          React.createElement(Route, {name: "driveway", path: "/driveway", component: driveway}), 
 	          React.createElement(Route, {name: "signUp", path: "/signUp", component: signUp}), 
 	          React.createElement(Route, {name: "signIn", path: "/signIn", component: signIn}), 
@@ -25769,76 +25768,125 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */var React = __webpack_require__(2);
+	var ParkingMap = __webpack_require__(212);
+	var CheckoutStrip = __webpack_require__(213);
 
-	var geocoder = new google.maps.Geocoder();
-
-	var ParkingMap = React.createClass({displayName: "ParkingMap",
-
-	  getInitialState: function () {
-	    return {
-	      map:    undefined,
-	      marker: undefined,
-	      requests: []
-	    }
-	  },
-
-	  initializeMap: function () {
-	    //Map code
-	    var mapOptions = {
-	      center: {
-	        lat: this.props.data.event.lat,//40.4122994,
-	        lng: this.props.data.event.lon//-111.75418
-	      },
-	      draggableCursor: 'crosshair',
-	      zoom:            14,
-	      mapTypeId:       google.maps.MapTypeId.HYBRID,
-
-	      streetViewControl:  false,
-	      panControl:         true,
-	      zoomControl:        true,
-	      mapTypeControl:     true,
-	      scaleControl:       true,
-	      overviewMapControl: true
-	    }
-
-	    var cityCenter = new google.maps.LatLng(40.4122994, -111.75418)
-
-	    var markerOptions = {
-	      animation: google.maps.Animation.DROP,
-	      draggable: true,
-	      position:  cityCenter,
-	      title:     'Issue location',
-	      icon: '/images/marker-red-2.png'
-	    }
-
-	    var map = new google.maps.Map($('.map-canvas')[0], mapOptions);
-	    google.maps.event.addListener(map, 'click', this.mapClicked);
-	    
-	    var marker = new Marker(markerOptions);
-	    marker.setMap(map);
-	    google.maps.event.addListener(marker, 'dragend', this.markerDragged);
-
-	    this.setState({
-	      map:    map,
-	      marker: marker
+	function getReservations(){
+	    var url = "/api/users/getAllReservations";
+	    var reservations;
+	    $.ajax
+	    ({
+	        url: url,
+	        dataType: 'json',
+	        type: 'POST',
+	        data: {},
+	        success: function(res) 
+	        { 
+	          reservations = res.reservations;
+	        },
+	        error: function()
+	        {
+	          console.log("failure");
+	        }
 	    });
+	    return reservations;
+	  }
 
-	    this.state.map = map;
-	    this.state.marker = marker;
+	  function getDriveways(){
+	    var url = "/api/users/getAllDriveways";
+	    var driveways;
+	    $.ajax
+	    ({
+	        url: url,
+	        dataType: 'json',
+	        type: 'POST',
+	        data: {},
+	        success: function(res) 
+	        { 
+
+	          driveways = res.driveway;
+	        },
+	        error: function()
+	        {
+	          console.log("failure");
+	        }
+	    });
+	    return driveways;
+	  }
+
+	  function filterDriveways(driveways, reservations){
+	    var filteredDriveways = [];
+	    for(driveway in driveways){
+	      var reserved = false;
+	      for(reservation in reservations){
+	        if(reservation.drivewayId == driveway._id){
+	          reserved = true;
+	          break;
+	        }
+	      }      
+	      if(!reserved){
+	        filteredDriveways.push(driveway);
+	      }
+	    }
+	    return filteredDriveways;
+	  }
+
+	  function generateMapMarkers(date, time){    
+	    driveways = getDriveways();
+	    reservations = getReservations();
+
+	    //Filter driveways
+	    filteredDriveways = filterDriveways(driveways, reservations);
+
+	    //Build Map Markers
+	    var markers = [];
+	    for(driveway in filteredDriveways){
+	      var address = driveway.address + ', ' + driveway.city + ', ' + driveway.state + ' ' + driveway.zip + ', USA';
+	      var isPartiallyFull = false; //Change this when matt gets done
+	      markers.push({address: address, partiallyFull: isPartiallyFull, driveway: driveway})
+	    }
+
+	    return markers;
+	  }
+
+	var ReservationForm = React.createClass({displayName: "ReservationForm",
+
+	  getInitialState: function() {
+	    return {
+	      email: '',
+	      address: '',
+	      date: '',
+	      time: '',
+	      mapData: {event: {address: "156 East 200 North, Provo, UT 84606, USA", date: "", time: ""}, markers: []},
+	      payData: {event: {Email: "", Address: "", Price: "", street: "", zip1: "", state: "", resDate: "", duration: "", resTime: "", city: "", drivewayId: "", owner: ""}, parking: []},
+	      showPay: false
+	    }      
 	  },
-	  
-	  componentDidMount: function () {
-	    this.initializeMap();
 
-	    // api.getRequests({
-	    //   status: 'open'
-	    // }, this.loadRequests);
+	  handleChange: function(event) {
+	    if(event.target.name == "email"){
+	      this.setState({email: event.target.value});
+	    }else if(event.target.name == "address"){
+	      this.setState({address: event.target.value});
+	    }else if(event.target.name == "date"){
+	      this.setState({date: event.target.value});
+	    }else if(event.target.name == "time"){
+	      this.setState({time: event.target.value}); 
+	    }
+	  },
 
-	    // api.getServices((services) => {
-	    //         this.setState({
-	    //             services: services
-	    //         });
-	    //     });
+	  handleFormSubmit: function() {
+	    //Perform Validation on Input
+
+	    mapMarkers = generateMapMarkers(this.state.date, this.state.time);
+
+	    alert(this.state.address);
+	    this.setState({mapData: {event: {address: this.state.address, date: this.state.date, time: this.state.time}, markers: mapMarkers}});
+	  },
+
+	  markerClicked: function(marker){
+	    //this.setState({selectedMarker: marker, showPay: true})
+	    this.setState({payData: {event: {}, parking: []}});
 	  },
 
 	  render: function () {
@@ -25847,8 +25895,128 @@
 	      height: $(window).width() < 500 ? 300 : 500,
 	      maxHeight: $(window).height() / 1.5
 	    }
+
+	    return(
+	      React.createElement("div", null, 
+	        React.createElement("div", null, 
+	            React.createElement("label", null, "Email"), React.createElement("input", {type: "email", name: "email", value: this.state.email, onChange: this.handleChange}), 
+	            React.createElement("label", null, "Event Address"), React.createElement("input", {type: "text", name: "address", value: this.state.address, onChange: this.handleChange}), 
+	            React.createElement("label", null, "Event Date"), React.createElement("input", {type: "text", name: "date", value: this.state.date, onChange: this.handleChange}), 
+	            React.createElement("label", null, "Event Time"), React.createElement("input", {type: "text", name: "time", value: this.state.time, onChange: this.handleChange}), 
+	            React.createElement("button", {className: "btn btn-default", onClick: this.handleFormSubmit}, "Submit")
+	        ), 
+
+	        React.createElement("div", null, 
+	          React.createElement(ParkingMap, {data: this.state.mapData, markerClicked: this.markerClicked})
+	        ), 
+	        React.createElement("div", null, 
+	          React.createElement(CheckoutStrip, {data: this.state.payData})
+	        )
+	      )
+	    );        
+	  }
+	});
+
+	module.exports = ReservationForm;
+
+/***/ },
+/* 212 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */var React = __webpack_require__(2);
+	var Marker = google.maps.Marker;
+	var geocoder = new google.maps.Geocoder();
+
+	function geocodeAddress(address, cb) {
+	  geocoder.geocode({'address': address}, function(results, status) {
+	    if (status === google.maps.GeocoderStatus.OK) {
+	      cb(results[0].geometry.location);
+	    } else {
+	      cb(null);
+	    }
+	  });
+	}
+
+	var ParkingMap = React.createClass({displayName: "ParkingMap",
+
+	  getInitialState: function () {
+	    return {
+	      event: undefined,
+	      map: undefined,
+	      markers: []
+	    }
+	  },
+
+	  geocodeAddress: function(address) {
+	    var location;
+	    geocoder.geocode({'address': address}, function(results, status) {
+	      if (status === google.maps.GeocoderStatus.OK) {
+	        location = results[0].geometry.location;
+	      } else {
+	        location = undefined;
+	      }
+	    });
+	    return location;
+	  },
+
+	  initializeMap: function() {
+	    //Parking Map
+	    var event = this.props.data.event;
+	    geocodeAddress(event.address, function(location){
+	      var mapOptions = {
+	        center: location,
+	        draggableCursor: 'crosshair',
+	        zoom:            14,
+	        mapTypeId:       google.maps.MapTypeId.HYBRID,
+	        streetViewControl:  false,
+	        panControl:         true,
+	        zoomControl:        true,
+	        mapTypeControl:     true,
+	        scaleControl:       true,
+	        overviewMapControl: true
+	      }
+	      var map = new google.maps.Map($('.map-canvas')[0], mapOptions);
+
+	      // Parking Spots
+	      markers = this.props.data.markers;
+	      for(marker in markers){
+	        markerOptions = { //Optimize this later
+	          map: map,
+	          animation: google.maps.Animation.DROP,
+	          draggable: false,
+	          position:  this.geocodeAddress(marker.address),
+	          title:     'Parking Location',
+	          icon: marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
+	        }
+
+	        var mapMarker = new Marker(markerOptions);
+	        google.maps.event.addListener(mapMarker, 'click', this.markerClicked(marker));
+	      }
+
+	      //Set State
+	      //this.state.map = map;
+	      //this.state.event = event;
+	      //this.state.markers = markers;
+	    });
+	  },
+	  
+	  componentDidMount: function () {
+	    this.initializeMap();
+	  },
+
+	  markerClicked: function(marker){
+	    //Render payment component
+	  },
+
+	  render: function () {
+	    var style = {
+	      width:     '100%',
+	      height: $(window).width() < 500 ? 300 : 500,
+	      maxHeight: $(window).height() / 1.5
+	    }
+	    this.initializeMap();
 	    return (
-	      React.createElement("div", {onBlur: this.props.onBlur, style: style, className: "map-canvas"})
+	      React.createElement("div", {style: style, className: "map-canvas"})
 	    );
 	  }
 	});
@@ -25856,15 +26024,15 @@
 	module.exports = ParkingMap;
 
 /***/ },
-/* 212 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM *//** @jsx React.DOM */
 
 	var React = __webpack_require__(2);
 	var History = __webpack_require__(160).History;
-	var $__0=     __webpack_require__(213),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
-	var ReactScriptLoaderMixin = __webpack_require__(218).ReactScriptLoaderMixin;
+	var $__0=     __webpack_require__(214),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
+	var ReactScriptLoaderMixin = __webpack_require__(219).ReactScriptLoaderMixin;
 	var $__1=  __webpack_require__(160),Lifecycle=$__1.Lifecycle;
 
 	var history = useBasename(createHistory)({
@@ -26079,7 +26247,7 @@
 
 
 /***/ },
-/* 213 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -26088,7 +26256,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _createBrowserHistory = __webpack_require__(214);
+	var _createBrowserHistory = __webpack_require__(215);
 
 	var _createBrowserHistory2 = _interopRequireDefault(_createBrowserHistory);
 
@@ -26118,7 +26286,7 @@
 
 	exports.useBasename = _useBasename3['default'];
 
-	var _useBeforeUnload2 = __webpack_require__(215);
+	var _useBeforeUnload2 = __webpack_require__(216);
 
 	var _useBeforeUnload3 = _interopRequireDefault(_useBeforeUnload2);
 
@@ -26138,20 +26306,20 @@
 
 	// deprecated
 
-	var _enableBeforeUnload2 = __webpack_require__(216);
+	var _enableBeforeUnload2 = __webpack_require__(217);
 
 	var _enableBeforeUnload3 = _interopRequireDefault(_enableBeforeUnload2);
 
 	exports.enableBeforeUnload = _enableBeforeUnload3['default'];
 
-	var _enableQueries2 = __webpack_require__(217);
+	var _enableQueries2 = __webpack_require__(218);
 
 	var _enableQueries3 = _interopRequireDefault(_enableQueries2);
 
 	exports.enableQueries = _enableQueries3['default'];
 
 /***/ },
-/* 214 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/** @jsx React.DOM */'use strict';
@@ -26329,7 +26497,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 215 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/** @jsx React.DOM */'use strict';
@@ -26446,7 +26614,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 216 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -26459,7 +26627,7 @@
 
 	var _deprecate2 = _interopRequireDefault(_deprecate);
 
-	var _useBeforeUnload = __webpack_require__(215);
+	var _useBeforeUnload = __webpack_require__(216);
 
 	var _useBeforeUnload2 = _interopRequireDefault(_useBeforeUnload);
 
@@ -26467,7 +26635,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 217 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -26488,7 +26656,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 218 */
+/* 219 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */
@@ -26612,14 +26780,14 @@
 
 
 /***/ },
-/* 219 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict'
 
 	var React     = __webpack_require__(2)
-	var assign    = __webpack_require__(220)
-	var normalize = __webpack_require__(221)
+	var assign    = __webpack_require__(221)
+	var normalize = __webpack_require__(222)
 
 	function emptyFn(){}
 
@@ -27153,7 +27321,7 @@
 	module.exports = ReactButton
 
 /***/ },
-/* 220 */
+/* 221 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -27185,16 +27353,16 @@
 
 
 /***/ },
-/* 221 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var hasOwn      = __webpack_require__(222)
-	var getPrefixed = __webpack_require__(223)
+	var hasOwn      = __webpack_require__(223)
+	var getPrefixed = __webpack_require__(224)
 
-	var map      = __webpack_require__(229)
-	var plugable = __webpack_require__(230)
+	var map      = __webpack_require__(230)
+	var plugable = __webpack_require__(231)
 
 	function plugins(key, value){
 
@@ -27255,7 +27423,7 @@
 	module.exports = plugable(RESULT)
 
 /***/ },
-/* 222 */
+/* 223 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -27266,13 +27434,13 @@
 
 
 /***/ },
-/* 223 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var getStylePrefixed = __webpack_require__(224)
-	var properties       = __webpack_require__(228)
+	var getStylePrefixed = __webpack_require__(225)
+	var properties       = __webpack_require__(229)
 
 	module.exports = function(key, value){
 
@@ -27284,14 +27452,14 @@
 	}
 
 /***/ },
-/* 224 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var toUpperFirst = __webpack_require__(225)
-	var getPrefix    = __webpack_require__(226)
-	var el           = __webpack_require__(227)
+	var toUpperFirst = __webpack_require__(226)
+	var getPrefix    = __webpack_require__(227)
+	var el           = __webpack_require__(228)
 
 	var MEMORY = {}
 	var STYLE
@@ -27340,7 +27508,7 @@
 	}
 
 /***/ },
-/* 225 */
+/* 226 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -27352,15 +27520,15 @@
 	}
 
 /***/ },
-/* 226 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var toUpperFirst = __webpack_require__(225)
+	var toUpperFirst = __webpack_require__(226)
 	var prefixes     = ["ms", "Moz", "Webkit", "O"]
 
-	var el = __webpack_require__(227)
+	var el = __webpack_require__(228)
 
 	var ELEMENT
 	var PREFIX
@@ -27391,7 +27559,7 @@
 	}
 
 /***/ },
-/* 227 */
+/* 228 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/** @jsx React.DOM */'use strict';
@@ -27413,7 +27581,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 228 */
+/* 229 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -27461,7 +27629,7 @@
 
 
 /***/ },
-/* 229 */
+/* 230 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -27482,12 +27650,12 @@
 	}
 
 /***/ },
-/* 230 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var getCssPrefixedValue = __webpack_require__(231)
+	var getCssPrefixedValue = __webpack_require__(232)
 
 	module.exports = function(target){
 		target.plugins = target.plugins || [
@@ -27518,14 +27686,14 @@
 	}
 
 /***/ },
-/* 231 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var getPrefix     = __webpack_require__(226)
-	var forcePrefixed = __webpack_require__(232)
-	var el            = __webpack_require__(227)
+	var getPrefix     = __webpack_require__(227)
+	var forcePrefixed = __webpack_require__(233)
+	var el            = __webpack_require__(228)
 
 	var MEMORY = {}
 	var STYLE
@@ -27572,14 +27740,14 @@
 	}
 
 /***/ },
-/* 232 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var toUpperFirst = __webpack_require__(225)
-	var getPrefix    = __webpack_require__(226)
-	var properties   = __webpack_require__(228)
+	var toUpperFirst = __webpack_require__(226)
+	var getPrefix    = __webpack_require__(227)
+	var properties   = __webpack_require__(229)
 
 	/**
 	 * Returns the given key prefixed, if the property is found in the prefixProps map.
