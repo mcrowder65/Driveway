@@ -2,12 +2,12 @@ var React = require('react');
 var Marker = google.maps.Marker;
 var geocoder = new google.maps.Geocoder();
 
-function geocodeAddress(address, component, cb) {
+function geocodeAddress(address, component, cb, marker) {
   geocoder.geocode({'address': address}, function(results, status) {
     if (status === google.maps.GeocoderStatus.OK) {
-      cb(results[0].geometry.location, component);
+      cb(results[0].geometry.location, component, marker);
     } else {
-      cb(null, component);
+      cb(null, component, marker);
     }
   });
 }
@@ -56,7 +56,7 @@ var ParkingMap = React.createClass({
       markers = component.props.data.markers;
       for(var i = 0; i < markers.length; i++){
         var marker = markers[i];
-        geocodeAddress(marker.address, component, function(location, component){
+        geocodeAddress(marker.address, component, function(location, component, marker){
           markerOptions = { //Optimize this later
             map: map,
             animation: google.maps.Animation.DROP,
@@ -69,13 +69,8 @@ var ParkingMap = React.createClass({
           var mapMarker = new Marker(markerOptions);
           mapMarker.addListener('click', function() {component.props.markerClicked(marker, mapMarker, map)});
           //google.maps.event.addListener(mapMarker, 'click', component.props.markerClicked(marker));
-        });
+        }, marker);
       }
-
-      //Set State
-      //this.state.map = map;
-      //this.state.event = event;
-      //this.state.markers = markers;
     });
   },
   
