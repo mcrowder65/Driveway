@@ -1414,7 +1414,7 @@
 	 
 	  getAll: function(last4, email)
 	  {
-	    var url = "/apu/orders/getAllOrders";
+	    var url = "/api/orders/getAllOrders";
 	    var Last4 = last4;
 	    var Email = email;
 	    console.log(Last4);
@@ -1445,6 +1445,8 @@
 	    
 	  }
 	};
+
+
 
 	var findOrderStyle =
 	{
@@ -1555,8 +1557,42 @@
 	  }
 	});
 
+	var orderEmail =
+	{
+	 
+	  sendEmails: function(email)
+	  {
+	    var url = "/api/emailOrder";
+	    var email11 = email;
+	    console.log(temp2.price);
+	    $.ajax
+	    ({
+	        url: url,
+	        dataType: 'json',
+	        type: 'POST',
+	        data: {
+	          email: email11,
+
+	        },
+	        
+	        success: function(res)
+	        {
+	          console.log("success sendEmails");
+	  
+	        }.bind(this),
+	        error: function()
+	        {
+	          console.log("failure in orderDAQ");
+	        }.bind(this)
+
+	    });
+	   
+	  },
+	};
+
 	var pastOrders = React.createClass
 	({displayName: "pastOrders",
+	  mixins: [History, Lifecycle],
 	  getInitialState: function()
 	  {
 	    return {email: ''}, {address: ''}, {price: ''};
@@ -1573,6 +1609,16 @@
 	    }
 
 	  },
+
+	  sendEm: function(event)
+	  {
+
+	    orderEmail.sendEmails(this.state.email);
+	    this.history.pushState(null, '/home');
+
+	  },
+
+	   
 
 	  render: function() {
 
@@ -1591,6 +1637,8 @@
 	    console.log(price2);
 	    var price = "Total Price: $" + price2;
 	    var ZIP = "Zip Code: " + temp2.zip;
+
+	    
 	    
 	    
 	    return (
@@ -1637,7 +1685,7 @@
 	                React.createElement("p", {style: jumboStyle}, "If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. "), 
 	                React.createElement("div", {style: jumboStyle}, 
 	                  "Email: ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
-	                  React.createElement("a", {className: "btn btn-primary btn-sm", href: "#", role: "button"}, "Learn more")
+	                   React.createElement("button", {type: "button", className: "btn btn-primary btn-lg", onClick: this.sendEm}, "SEND!")
 	                )
 	              )
 	            )

@@ -93,6 +93,33 @@ app.post
 	}
 	
 );
+
+app.post
+('/api/emailOrder',
+	function(req, res)
+	{
+		var email = req.body.email;
+		var href = 'http://ec2-52-10-45-219.us-west-2.compute.amazonaws.com:3000/#/updatePassword?id=' + req.body.id;
+		var mailOptions =
+		{
+			from: 'Driveway Team <driveway.matt.c@gmail.com>',
+			to: email,
+			subject: 'Requested password change',
+			html: '<p>cool</p>'
+		};
+		transporter.sendMail(mailOptions, 
+		function(error, info)
+		{
+		    if(error)
+		    {
+		        return console.log(error);
+		    }
+		    console.log('Message sent: ' + info.response);
+		});		
+	}
+	
+);
+
 app.post
 ('/api/users/updateDriveway',
 	function(req, res)
@@ -302,7 +329,7 @@ app.post('/api/users/login', function (req, res)
 });
 
 app.post
-('/apu/orders/getAllOrders',
+('/api/orders/getAllOrders',
 	function (req, res)
 	{
 		order.find({last4: req.body.last4, email: req.body.email},
