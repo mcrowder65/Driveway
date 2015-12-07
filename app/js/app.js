@@ -2271,6 +2271,27 @@ var updatePassword = React.createClass
     );
   }
 });
+var sentEmailStyle = 
+{
+  width: '50%',
+  marginLeft: '25%',
+  textAlign: 'center'
+};
+var sentEmail = React.createClass
+({
+  render: function()
+  {
+    return (
+      <div>
+       <div className="alert alert-success" role="alert" style={sentEmailStyle}>
+          <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+
+          An email has been sent to you containing instructions to reset your password.
+         </div>
+      </div>
+      );
+  }
+});
 // Run the routes
 var routes = (
       <Router>
@@ -2291,6 +2312,7 @@ var routes = (
           <Route name="lookup" path="/lookup" component={findOrders}/>
           <Route name="pastOrders" path="/pastOrders" component={pastOrders}/>
           <Route name="forgottenPassword" path="/forgottenPassword" component={forgottenPassword}/>
+          <Route name="sentEmail" path="/sentEmail" component={sentEmail}/>
         </Route>
       </Router>
 );
