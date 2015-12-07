@@ -131,6 +131,7 @@ app.post
 		        return console.log(error);
 		    }
 		    console.log('Message sent: ' + info.response);
+		    res.json({info: info});
 		});		
 	}
 	

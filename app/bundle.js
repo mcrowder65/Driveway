@@ -1743,7 +1743,7 @@
 	                React.createElement("p", {style: jumboStyle}, "If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. "), 
 	                React.createElement("div", {style: jumboStyle}, 
 	                  "Email: ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
-	                   React.createElement("button", {type: "button", className: "btn btn-primary btn-lg", onClick: this.sendEm}, "SEND!")
+	                   React.createElement("button", {type: "button", className: "btn btn-primary btn-md", onClick: this.sendEm}, "SEND!")
 	                )
 	              )
 	            )
