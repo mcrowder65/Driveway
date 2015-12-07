@@ -87,7 +87,7 @@ var App = React.createClass({
             <div className="nav navbar-nav navbar-left">                
               <Link className="navbar-brand" to="/home">Home</Link>                  
               <Link className="navbar-brand" to="/learn">Learn</Link>              
-              <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
+              <Link className="navbar-brand" to="/map">Map</Link>  
               <Link className="navbar-brand" to="/reserveparking">Reserve Parking</Link>  
               <Link className="navbar-brand" to="/pay">Pay</Link> 
 
@@ -113,10 +113,10 @@ var App = React.createClass({
               <div className="nav navbar-nav navbar-left">                
                 <Link className="navbar-brand" to="">Home</Link>                  
                 <Link className="navbar-brand" to="/learn">Learn</Link>              
-                <Link className="navbar-brand" to="/allDriveways">All driveways</Link>   
                 <Link className="navbar-brand" to="/reserveparking">Reserve Parking</Link>  
                 <Link className="navbar-brand" to="/pay">Pay</Link> 
                 <Link className="navbar-brand" to="/confirm">Confirm Page</Link> 
+                <Link className="navbar-brand" to="/lookup">Order Lookup</Link> 
               </div>
               <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
                 <li><Link to="profile">Profile</Link></li>
@@ -254,6 +254,7 @@ var ReserveParking = React.createClass({
     );
   }
 });
+
 
 var profile = React.createClass
 ({
@@ -793,8 +794,6 @@ var driveway = React.createClass
       return (
       <div>
         <div>
-          <p>You must follow through with this edit, if you do not want to edit anything,
-        just click submit again; otherwise, your address will be deleted.</p>
           Street address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
           City: <br/><input type="text" name="city" value={city} onChange={this.handleChange}/><br/><br/>
           State: <br/><select name="state" value={state} onChange={this.handleChange}>
@@ -1317,7 +1316,7 @@ var signIn = React.createClass
   },
   handleClick: function(event)
   {
-    signInAuthorization.login(this.state.username, this.state.password);
+    userDAO.login(this.state.username, this.state.password);
     if(signedIn == true)
     {
       localStorage.username = this.state.username;
@@ -1337,7 +1336,7 @@ var signIn = React.createClass
         <div className='jumbotron' style={signUpJumbo}>
           Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
           Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
-          <br/><a href='/randomHTMLFiles/forgottenPassword.html'>Forgot your password? </a> <br/>
+          <br/><Link to="/forgottenPassword">Forgot your password?</Link><br/>
           <br/><button onClick={this.handleClick}>
             SIGN IN
             </button>
@@ -1355,38 +1354,7 @@ var signIn = React.createClass
   }
 });
 
-var signInAuthorization =
-{
-  login: function(username, password)
-  {
-    var url = "/api/users/login";
-    $.ajax
-    ({
-        url: url,
-        dataType: 'json',
-        type: 'POST',
-        data: 
-        {
-            username: username,
-            password: password
-        },
-        async: false,
-        headers: {'Authorization': localStorage},
-        success: function(res) 
-        {
-          localStorage.email = res.email;
-          console.log("signed in");
-          signedIn = true;
-        }.bind(this),
-        error: function()
-        {
-          signedIn = false;
-          
-        }.bind(this)
 
-    });
-    },
-};
 
 var orderDAO =
 {
@@ -1846,10 +1814,7 @@ var signUp = React.createClass
     else if(!this.terms)
       alert("You need to accept the terms and conditions");
     else
-    {
-        auth.register(this.state.email, this.state.username, this.state.password);
-        
-    }
+        userDAO.register(this.state.email, this.state.username, this.state.password);
   },
   handleTerms: function()
   {
@@ -1913,44 +1878,358 @@ var signUp = React.createClass
       );
   }
 });
-
-var auth =
+var userDAO = 
 {
   mixins: [History, Lifecycle],
   register: function(email, username, password)
   {
     var url = "/api/users/register";
-        $.ajax
-        ({
-            url: url,
-            dataType: 'json',
-            type: 'POST',
-            data: {
-                email: email,
-                username: username,
-                password: password
-            },
-            async: false,
-            success: function(res) 
-            {
-              signInAuthorization.login(username, password);
-              localStorage.username = username;
-              location.href ='/#/profile';
-            }.bind(this),
-            error: function()
-            {
-            }.bind(this)
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+            email: email,
+            username: username,
+            password: password
+        },
+        async: false,
+        success: function(res) 
+        {
+          userDAO.login(username, password);
+          localStorage.username = username;
+          location.href ='/#/profile';
+        }.bind(this),
+        error: function()
+        {
+        }.bind(this)
+    });
+  },
+  login: function(username, password)
+  {
+    var url = "/api/users/login";
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: 
+        {
+            username: username,
+            password: password
+        },
+        async: false,
+        headers: {'Authorization': localStorage},
+        success: function(res) 
+        {
+          localStorage.email = res.email;
+          console.log("signed in");
+          signedIn = true;
+        }.bind(this),
+        error: function()
+        {
+          signedIn = false;
+          
+        }.bind(this)
 
     });
-    },
+  },
+  getID: function(username)
+  {
+    var url = "/api/users/getID";
+    var id = '';
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        username: username
+      },
+      async: false,
+      success: function(res)
+      {
+        id = res.id;
+      }.bind(this),
+      error: function()
+      {
+        id = 'nope';
+      }.bind(this)
+
+    });
+    return id;
+  },
+  get: function(id)
+  {
+    var url = '/api/users/get';
+    var json = {};
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        _id: id
+      },
+      async: false,
+      success: function(res)
+      {
+        json.username = res.username;
+        json.email = res.email;
+      }.bind(this),
+      failure: function()
+      {
+        console.log('failure');
+      }.bind(this)
+    });
+    return json;
+  },
+  sendEmail: function(email, id)
+  {
+    var url = "/api/users/sendEmail";
+
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          email: email,
+          id: id
+        },
+        async: false,
+        success: function(res) 
+        {
+         console.log('sent email');
+        }.bind(this),
+        error: function()
+        {
+          console.log('failed email');
+        }.bind(this)
+    });
+  },
+  updatePassword: function(id, username, email, password)
+  {
+    var url = '/api/users/updatePassword';
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        _id: id,
+        password: password
+      },
+      async: false,
+      success: function(res)
+      {
+        console.log('changed password');
+        userDAO.login(username, res.password);
+        localStorage.username = username;
+        console.log('username: ' + username);
+        location.href ='/#/profile';
+      }
+    });
+  }
 };
 
+
+var centerPasswordForm =
+{
+  textAlign: 'center'
+};
+var forgottenPasswordJumboTron =
+{
+  width: '50%',
+  marginLeft: '25%',
+  textAlign: 'center'
+};
+var usernameFailStyle =
+{
+  width: '50%',
+  marginLeft: '25%',
+  visibility: 'hidden'
+};
+var forgottenPassword = React.createClass
+({
+  getInitialState: function() 
+  {
+    return {email: '', username: ''};
+  },
+  handleChange: function(event)
+  {
+    if(event.target.name == 'email')
+      this.setState({email: event.target.value});
+    else if(event.target.name =='username')
+      this.setState({username: event.target.value});
+
+  },
+  sendEmail: function()
+  {
+    var id = userDAO.getID(this.state.username);
+    var docUser = document.getElementById('errorUsername');
+    var docEmail = document.getElementById('errorEmail');
+    if(id == 'nope')
+    {
+      docUser.style.visibility = 'visible'
+      docEmail.style.visibility = 'hidden';
+      this.forceUpdate();
+      return;
+    }
+    var user = userDAO.get(id);
+
+    var email = this.state.email;
+    if(user.email != email)
+    {
+      docUser.style.visibility = 'hidden';
+      docEmail.style.visibility = 'visible';
+      this.forceUpdate();
+      return;
+    }
+
+    userDAO.sendEmail(email, id);
+    
+  },
+  render: function()
+  {
+    var email = this.state.email;
+    var username = this.state.username;
+    return(
+      <div>
+        <div className="alert alert-info" role="alert" style={centerPasswordForm}>
+          Enter in your username and email, if your username is actually in the system,
+          an email will be sent to reset your password.
+        </div>
+        <h1 style={centerPasswordForm}> Forgotten Password </h1>
+        <div className="jumbotron" style={forgottenPasswordJumboTron}>
+          Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
+          Username: <br/><input type="text" name="username" value={username} onChange={this.handleChange}/><br/><br/>
+          <button onClick={this.sendEmail}> Submit </button>
+        </div>
+        <div id='errorUsername' className="alert alert-danger" role="alert" style={usernameFailStyle}>
+          <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+          <span className="sr-only">Error:</span>
+          Woops! It looks like this username does not exist!
+        </div>
+        <div id='errorEmail' className="alert alert-danger" role="alert" style={usernameFailStyle}>
+          <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+          <span className="sr-only">Error:</span>
+          Woops! It looks like the email listed under this username is not that one!
+        </div>
+      </div>
+    );
+  }
+});
+
+var updatePasswordStyle =
+{
+  width: '50%',
+  marginLeft: '25%',
+  textAlign: 'center'
+};
+var passwordFailStyle = 
+{
+  width: '50%',
+  marginLeft: '25%',
+  textAlign: 'center',
+  visibility: 'hidden'
+};
+var updatePassword = React.createClass
+({
+  getInitialState: function() 
+  {
+    return {password: '', confirmPassword: ''};
+  },
+  handleChange: function(event)
+  {
+    if(event.target.name == 'password')
+      this.setState({password: event.target.value});
+    else if(event.target.name == 'confirmPassword')
+      this.setState({confirmPassword: event.target.value});
+     document.getElementById('shortPasswords').style.visibility = 'hidden';
+     document.getElementById('differentPasswords').style.visibility = 'hidden';
+  },
+  changePassword: function()
+  {
+    if(this.state.password != this.state.confirmPassword)
+    {
+      document.getElementById('differentPasswords').style.visibility = 'visible';
+      document.getElementById('shortPasswords').style.visibility = 'hidden';
+      return;
+    }
+    else if(this.state.password.length < 8)
+    {
+      document.getElementById('differentPasswords').style.visibility = 'hidden';
+      document.getElementById('shortPasswords').style.visibility = 'visible';
+      return;
+    }
+
+    var id = get('id');
+    var user = userDAO.get(id);
+
+
+    userDAO.updatePassword(id, user.username, user.email, this.state.password);
+
+  },
+  render: function()
+  {
+    
+    var password = this.state.password;
+    var confirmPassword = this.state.confirmPassword;
+
+    if(document.getElementById('password'))
+    {
+      if(password == '' || confirmPassword == '')
+      {
+
+      }
+      else if(password != confirmPassword)
+      {
+        document.getElementById('password').style.border ='2px solid red';
+        document.getElementById('confirmPassword').style.border = '2px solid red';
+      }
+      else
+      {
+        document.getElementById('password').style.border ='2px solid #00FF00';
+        document.getElementById('confirmPassword').style.border = '2px solid #00FF00';
+      }
+
+    }
+    //get by id and return the username if the get works
+    return(
+
+      <div>
+        <h1 style={center}> Update password for</h1>
+        <div className="jumbotron" style={updatePasswordStyle}>
+          Password: <br/><input id="password" type="password" value={password} name="password" onChange={this.handleChange}/><br/><br/>
+          Confirm password: <br/><input id="confirmPassword" type="password" value={confirmPassword} name="confirmPassword" onChange={this.handleChange}/><br/><br/>
+          <button onClick={this.changePassword}> Submit </button>
+        </div>
+         <div id='differentPasswords' className="alert alert-danger" role="alert" style={passwordFailStyle}>
+          <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+          <span className="sr-only">Error:</span>
+          Woops! Those passwords are not the same!
+         </div>
+         <div id='shortPasswords' className="alert alert-danger" role="alert" style={passwordFailStyle}>
+          <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+          <span className="sr-only">Error:</span>
+          Woops! Passwords must be greater than 7 characters!
+         </div>
+      </div>
+    );
+  }
+});
 // Run the routes
 var routes = (
       <Router>
         <Route name="app" path="/" component={App} handler={App}>
           <IndexRoute component={Home} />
           <Route name="home" path="/home" component={Home}/>
+          <Route name="updatePassword" path="/updatePassword" component={updatePassword} />
           <Route name="learn" path="/learn" component={learn} /> 
           <Route name="allDriveways" path="/allDriveways" component={allDriveways} /> 
           <Route name="pay" path="/pay" component={pay} />
@@ -1963,6 +2242,7 @@ var routes = (
           <Route name="confirm" path="/confirm" component={confirmPage} /> 
           <Route name="lookup" path="/lookup" component={findOrders}/>
           <Route name="pastOrders" path="/pastOrders" component={pastOrders}/>
+          <Route name="forgottenPassword" path="/forgottenPassword" component={forgottenPassword}/>
         </Route>
       </Router>
 );

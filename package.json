@@ -31,6 +31,7 @@
     "mongoose": "~4.2.7",
     "mongoose-findorcreate": "^0.1.2",
     "navigation": "^1.1.0",
+    "nodemailer": "^1.10.0",
     "qs": "~6.0.0",
     "react": "*",
     "react-button": "^1.2.1",

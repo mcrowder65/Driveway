@@ -5,6 +5,8 @@ app.use(bodyParser.urlencoded({
         extended: true
 }));
 
+var bcrypt = require('bcrypt');
+var SALT = bcrypt.genSaltSync();
 
 var User = require('./user.js');
 var order = require('./order.js');
@@ -13,7 +15,84 @@ var driveway = require('./driveway.js');
 var reservation = require('./reservation.js');
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
+var nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport({
+	service: 'Gmail',
+	auth: {
+		user: 'driveway.matt.c@gmail.com',
+		pass: 'mattcrowder123'
+	}
+});
 
+app.post
+('/api/users/updatePassword',
+	function(req, res)
+	{
+		var hashedPassword = bcrypt.hashSync(req.body.password, SALT);
+		User.update({_id: req.body._id}, {password_hash: hashedPassword},
+			function(err, User)
+			{
+				if(User)
+					res.json({password: req.body.password});
+				else
+					res.sendStatus('403');
+			});
+	}
+);
+app.post
+('/api/users/get',
+	function(req, res)
+	{
+		User.findOne({_id: req.body._id},
+			function(err, User)
+			{
+				if(User)
+					res.json({username: User.username, email: User.email});
+				else
+					res.sendStatus('403');
+			});
+	}
+);
+app.post
+('/api/users/getID',
+	function(req, res)
+	{
+		User.findOne({username: req.body.username},
+			function(err, User)
+			{
+				if(User)
+					res.json({id: User._id});
+				else
+					res.sendStatus('403');
+			});
+	}
+
+);
+app.post
+('/api/users/sendEmail',
+	function(req, res)
+	{
+		var email = req.body.email;
+		var href = 'http://ec2-52-10-45-219.us-west-2.compute.amazonaws.com:3000/#/updatePassword?id=' + req.body.id;
+		var mailOptions =
+		{
+			from: 'Driveway Team <driveway.matt.c@gmail.com>',
+			to: email,
+			subject: 'Requested password change',
+			html: '<a href='+href+'>Click this link to reset your password</a>'
+		};
+		transporter.sendMail(mailOptions, 
+		function(error, info)
+		{
+		    if(error)
+		    {
+		        return console.log(error);
+		    }
+		    console.log('Message sent: ' + info.response);
+		});		
+	}
+	
+);
 app.post
 ('/api/users/updateDriveway',
 	function(req, res)
@@ -191,21 +270,6 @@ app.post
 					}
 				);
 			}
-			else
-				res.sendStatus("403");
-		});
-	}
-);
-
-app.post
-('/api/users/getAllReservations',
-	function (req, res)
-	{
-		reservation.find({},
-		function(err, reservations)
-		{
-			if (reservation)
-				res.json({reservations: reservations});
 			else
 				res.sendStatus("403");
 		});
