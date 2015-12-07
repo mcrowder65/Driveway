@@ -2317,7 +2317,7 @@
 	    }
 
 	    userDAO.sendEmail(email, id);
-	    
+	    location.href='/#/sentEmail';
 	  },
 	  render: function()
 	  {
@@ -2329,11 +2329,15 @@
 	          "Enter in your username and email, if your username is actually in the system," + " " +
 	          "an email will be sent to reset your password."
 	        ), 
-	        React.createElement("h1", {style: centerPasswordForm}, " Forgotten Password "), 
-	        React.createElement("div", {className: "jumbotron", style: forgottenPasswordJumboTron}, 
-	          "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-	          "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-	          React.createElement("button", {onClick: this.sendEmail}, " Submit ")
+	        React.createElement("div", {className: "panel panel-primary", style: bluePanelStyle}, 
+	          React.createElement("div", {className: "panel-heading", style: bluePanelHeaderStyle}, 
+	            "Forgotten Password" 
+	          ), 
+	          React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
+	            "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange, placeholder: "Email"}), " ", React.createElement("br", null), React.createElement("br", null), 
+	            "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, onChange: this.handleChange, placeholder: "Username"}), React.createElement("br", null), React.createElement("br", null), 
+	            React.createElement("button", {onClick: this.sendEmail}, " Submit ")
+	          )
 	        ), 
 	        React.createElement("div", {id: "errorUsername", className: "alert alert-danger", role: "alert", style: usernameFailStyle}, 
 	          React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
@@ -2428,11 +2432,16 @@
 	    return(
 
 	      React.createElement("div", null, 
-	        React.createElement("h1", {style: center}, " Update password for"), 
-	        React.createElement("div", {className: "jumbotron", style: updatePasswordStyle}, 
-	          "Password: ", React.createElement("br", null), React.createElement("input", {id: "password", type: "password", value: password, name: "password", onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-	          "Confirm password: ", React.createElement("br", null), React.createElement("input", {id: "confirmPassword", type: "password", value: confirmPassword, name: "confirmPassword", onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-	          React.createElement("button", {onClick: this.changePassword}, " Submit ")
+	        React.createElement("div", {className: "panel panel-primary", style: bluePanelStyle}, 
+	          React.createElement("div", {className: "panel-heading", style: bluePanelHeaderStyle}, 
+	            "Update password"
+	          ), 
+	          React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
+	        
+	            "Password: ", React.createElement("br", null), React.createElement("input", {id: "password", type: "password", value: password, name: "password", onChange: this.handleChange, placeholder: "Password"}), React.createElement("br", null), React.createElement("br", null), 
+	            "Confirm password: ", React.createElement("br", null), React.createElement("input", {id: "confirmPassword", type: "password", value: confirmPassword, name: "confirmPassword", onChange: this.handleChange, placeholder: "Confirm password"}), React.createElement("br", null), React.createElement("br", null), 
+	            React.createElement("button", {onClick: this.changePassword}, " Submit ")
+	          )
 	        ), 
 	         React.createElement("div", {id: "differentPasswords", className: "alert alert-danger", role: "alert", style: passwordFailStyle}, 
 	          React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
@@ -2462,8 +2471,7 @@
 	      React.createElement("div", null, 
 	       React.createElement("div", {className: "alert alert-success", role: "alert", style: sentEmailStyle}, 
 	          React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
-
-	          "An email has been sent to you containing instructions to reset your password."
+	            "An email has been sent to you containing instructions to reset your password."
 	         )
 	      )
 	      );

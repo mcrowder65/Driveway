@@ -2264,7 +2264,7 @@ var forgottenPassword = React.createClass
     }
 
     userDAO.sendEmail(email, id);
-    
+    location.href='/#/sentEmail';
   },
   render: function()
   {
@@ -2276,11 +2276,15 @@ var forgottenPassword = React.createClass
           Enter in your username and email, if your username is actually in the system,
           an email will be sent to reset your password.
         </div>
-        <h1 style={centerPasswordForm}> Forgotten Password </h1>
-        <div className="jumbotron" style={forgottenPasswordJumboTron}>
-          Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
-          Username: <br/><input type="text" name="username" value={username} onChange={this.handleChange}/><br/><br/>
-          <button onClick={this.sendEmail}> Submit </button>
+        <div className="panel panel-primary" style={bluePanelStyle}>
+          <div className="panel-heading" style={bluePanelHeaderStyle}>
+            Forgotten Password 
+          </div>
+          <div className="panel-body" style={bluePanelBodyStyle}>
+            Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange} placeholder="Email"/> <br/><br/>
+            Username: <br/><input type="text" name="username" value={username} onChange={this.handleChange} placeholder="Username"/><br/><br/>
+            <button onClick={this.sendEmail}> Submit </button>
+          </div>
         </div>
         <div id='errorUsername' className="alert alert-danger" role="alert" style={usernameFailStyle}>
           <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
@@ -2375,12 +2379,17 @@ var updatePassword = React.createClass
     return(
 
       <div>
-        <h1 style={center}> Update password for</h1>
-        <div className="jumbotron" style={updatePasswordStyle}>
-          Password: <br/><input id="password" type="password" value={password} name="password" onChange={this.handleChange}/><br/><br/>
-          Confirm password: <br/><input id="confirmPassword" type="password" value={confirmPassword} name="confirmPassword" onChange={this.handleChange}/><br/><br/>
-          <button onClick={this.changePassword}> Submit </button>
-        </div>
+        <div className="panel panel-primary" style={bluePanelStyle}>
+          <div className="panel-heading" style={bluePanelHeaderStyle}>
+            Update password
+          </div>
+          <div className="panel-body" style={bluePanelBodyStyle}>
+        
+            Password: <br/><input id="password" type="password" value={password} name="password" onChange={this.handleChange} placeholder="Password"/><br/><br/>
+            Confirm password: <br/><input id="confirmPassword" type="password" value={confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Confirm password" /><br/><br/>
+            <button onClick={this.changePassword}> Submit </button>
+          </div>
+        </div>  
          <div id='differentPasswords' className="alert alert-danger" role="alert" style={passwordFailStyle}>
           <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
           <span className="sr-only">Error:</span>
@@ -2409,8 +2418,7 @@ var sentEmail = React.createClass
       <div>
        <div className="alert alert-success" role="alert" style={sentEmailStyle}>
           <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
-
-          An email has been sent to you containing instructions to reset your password.
+            An email has been sent to you containing instructions to reset your password.
          </div>
       </div>
       );
