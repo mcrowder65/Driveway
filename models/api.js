@@ -24,6 +24,20 @@ var transporter = nodemailer.createTransport({
 	}
 });
 
+app.post('/api/users/findEmail',
+	function(req, res)
+	{
+		User.findOne({email: req.body.email},
+			function(err, User)
+			{
+				if(User)
+					res.json({email: User.email});
+				else
+					res.json({email: 'none'});
+			});
+	}
+
+);
 app.post
 ('/api/users/updatePassword',
 	function(req, res)

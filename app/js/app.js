@@ -1300,6 +1300,22 @@ var errorStyle =
   marginLeft: '25%',
   visibility: 'hidden'
 };
+var bluePanelStyle = 
+{
+  marginLeft: '25%',
+  width: '50%'
+};
+var bluePanelBodyStyle =
+{
+  textAlign: 'center',
+  fontWeight: 'bold'
+}
+var bluePanelHeaderStyle =
+{
+  fontSize: '25px',
+  fontWeight: 'bold',
+  textAlign: 'center'
+};
 var signIn = React.createClass
 ({
   mixins: [History, Lifecycle],
@@ -1332,23 +1348,30 @@ var signIn = React.createClass
     var username = this.state.username;
     var password = this.state.password;
     return (
-       <div style={formStyle}>
-        <div className='jumbotron' style={signUpJumbo}>
-          Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
-          Password: <br/><input type="password" name="password" value ={password} onChange={this.handleChange}/><br/>
-          <br/><Link to="/forgottenPassword">Forgot your password?</Link><br/>
-          <br/><button onClick={this.handleClick}>
-            SIGN IN
-            </button>
+      <div>
+         <div className="panel panel-primary" style={bluePanelStyle}>
+            <div className="panel-heading" style={bluePanelHeaderStyle}>
+              Sign In!
+            </div>
+          <div className="panel-body" style={bluePanelBodyStyle}>
+            Username: <br/><input type="text" name="username" value ={username} placeholder="Username" onChange={this.handleChange}/><br/><br/>
+            Password: <br/><input type="password" name="password" value ={password} placeholder="Password" onChange={this.handleChange}/><br/>
+            <br/><Link to="/forgottenPassword">Forgot your password?</Link><br/>
+            <br/><button onClick={this.handleClick}>
+              SIGN IN
+              </button>
+          </div>
+          
+
+          
         </div>
         <div id='errorMessage' className="alert alert-danger" role="alert" style={errorStyle}>
-          <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
-          <span className="sr-only">Error:</span>
-          Woops! It looks like this username/password combo is not in our system. Try again, or 
-          request a password change.
+            <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+            <span className="sr-only">Error:</span>
+            Woops! It looks like this username/password combo is not in our system. Try again, or 
+            request a password change.
         </div>
       </div>
-
 
       );
   }
@@ -1835,7 +1858,7 @@ var signUp = React.createClass
 ({
   getInitialState: function() 
   {
-    return {email: ''}, {username: ''}, {password: ''}, {confirmPassword: ''};
+    return {email: ''}, {username: ''}, {password: ''}, {confirmPassword: ''}, {errorMessage: ''};
   },
   handleChange: function(event) 
   {
@@ -1854,23 +1877,65 @@ var signUp = React.createClass
   register: function()
   {
     if(this.state.password !== this.state.confirmPassword)
-        return;
+    {
+
+      document.getElementById('differentPasswords').style.visibility = 'visible';
+      document.getElementById('shortPasswords').style.visibility = 'hidden';
+      document.getElementById('termsError').style.visibility = 'hidden';
+      document.getElementById('duplicateUsername').style.visibility = 'hidden';
+      document.getElementById('duplicateEmail').style.visibility = 'hidden';
+    }
     else if(this.state.password.length < 8)
     {
-      alert("Your password must be greater than 7 characters");
+      document.getElementById('differentPasswords').style.visibility = 'hidden';
+      document.getElementById('shortPasswords').style.visibility = 'visible';
+      document.getElementById('termsError').style.visibility = 'hidden';
+      document.getElementById('duplicateUsername').style.visibility = 'hidden';
+      document.getElementById('duplicateEmail').style.visibility = 'hidden';
     }
     else if(!this.terms)
-      alert("You need to accept the terms and conditions");
+    {
+      document.getElementById('differentPasswords').style.visibility = 'hidden';
+      document.getElementById('shortPasswords').style.visibility = 'hidden';
+      document.getElementById('termsError').style.visibility = 'visible';
+      document.getElementById('duplicateUsername').style.visibility = 'hidden';
+      document.getElementById('duplicateEmail').style.visibility = 'hidden';
+    }
     else
-        userDAO.register(this.state.email, this.state.username, this.state.password);
+    {
+      var email = userDAO.findEmail(this.state.email);
+      if(email != 'none')
+      {
+        document.getElementById('differentPasswords').style.visibility = 'hidden';
+        document.getElementById('shortPasswords').style.visibility = 'hidden';
+        document.getElementById('termsError').style.visibility = 'hidden';
+        document.getElementById('duplicateUsername').style.visibility = 'hidden';
+        document.getElementById('duplicateEmail').style.visibility = 'visible';
+        return;
+      }
+    }
+    var userMessage = userDAO.register(this.state.email, this.state.username, this.state.password);
+    if(userMessage == "FAILED")
+    {
+      document.getElementById('differentPasswords').style.visibility = 'hidden';
+      document.getElementById('shortPasswords').style.visibility = 'hidden';
+      document.getElementById('termsError').style.visibility = 'hidden';
+      document.getElementById('duplicateUsername').style.visibility = 'visible';
+      document.getElementById('duplicateEmail').style.visibility = 'hidden';
+    }
   },
   handleTerms: function()
   {
     this.terms = !this.terms;
     if(this.terms)
+    {
       document.getElementById('terms').checked = true;
+      document.getElementById('termsError').style.visibility = 'hidden';
+    }
     else
+    {
       document.getElementById('terms').checked = false;
+    }
   },
   render: function() {
     var email = this.state.email;
@@ -1897,12 +1962,12 @@ var signUp = React.createClass
 
     }
     return (
-        <div>
-          <div style={center}>
-            <h1> Sign up for Driveway! </h1>
+      <div>
+        <div className="panel panel-primary" style={bluePanelStyle}>
+          <div className="panel-heading" style={bluePanelHeaderStyle}>
+            Sign up for Driveway! 
           </div>
-          <div style={signUpForm}>
-           <div className="jumbotron" style={signUpJumbo}>
+          <div className="panel-body" style={bluePanelBodyStyle}>
            
                 Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange}/><br/><br/>
                 Username: <br/><input type="text" name="username" value ={username} onChange={this.handleChange}/><br/><br/>
@@ -1920,6 +1985,31 @@ var signUp = React.createClass
             
            </div>
           </div>
+          <div id='duplicateUsername' className="alert alert-danger" role="alert" style={passwordFailStyle}>
+            <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+            <span className="sr-only">Error:</span>
+            Woops! It looks like that username belongs to somebody else.
+          </div>
+          <div id='duplicateEmail' className="alert alert-danger" role="alert" style={passwordFailStyle}>
+            <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+            <span className="sr-only">Error:</span>
+            Woops! Looks like that email belongs to somebody else.
+         </div>
+          <div id='differentPasswords' className="alert alert-danger" role="alert" style={passwordFailStyle}>
+            <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+            <span className="sr-only">Error:</span>
+            Woops! Those passwords are not the same!
+         </div>
+         <div id='shortPasswords' className="alert alert-danger" role="alert" style={passwordFailStyle}>
+          <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+          <span className="sr-only">Error:</span>
+          Woops! Passwords must be greater than 7 characters!
+         </div>
+         <div id='termsError' className="alert alert-danger" role="alert" style={passwordFailStyle}>
+          <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+          <span className="sr-only">Error:</span>
+          Woops! It looks like you need to accept the terms and conditions!
+         </div>
         </div>
 
 
@@ -1928,9 +2018,39 @@ var signUp = React.createClass
 });
 var userDAO = 
 {
+
   mixins: [History, Lifecycle],
+  findEmail: function(email)
+  {
+    var url ="/api/users/findEmail";
+    var returnValue = false;
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data: 
+      {
+        email: email
+      },
+      async: false,
+      success: function(res)
+      {
+        console.log(res.email);
+        returnValue = true;
+        //email found!
+      }.bind(this),
+      error:function(res)
+      {
+        console.log(res.email);
+      }.bind(this)
+
+    });
+    return returnValue;
+  },
   register: function(email, username, password)
   {
+    var returnError = '';
     var url = "/api/users/register";
     $.ajax
     ({
@@ -1948,11 +2068,15 @@ var userDAO =
           userDAO.login(username, password);
           localStorage.username = username;
           location.href ='/#/profile';
+          returnError = 'chicken poop';
         }.bind(this),
         error: function()
         {
+          returnError = 'FAILED';
         }.bind(this)
     });
+    
+    return returnError;
   },
   login: function(username, password)
   {

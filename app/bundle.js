@@ -1353,6 +1353,22 @@
 	  marginLeft: '25%',
 	  visibility: 'hidden'
 	};
+	var bluePanelStyle = 
+	{
+	  marginLeft: '25%',
+	  width: '50%'
+	};
+	var bluePanelBodyStyle =
+	{
+	  textAlign: 'center',
+	  fontWeight: 'bold'
+	}
+	var bluePanelHeaderStyle =
+	{
+	  fontSize: '25px',
+	  fontWeight: 'bold',
+	  textAlign: 'center'
+	};
 	var signIn = React.createClass
 	({displayName: "signIn",
 	  mixins: [History, Lifecycle],
@@ -1385,23 +1401,30 @@
 	    var username = this.state.username;
 	    var password = this.state.password;
 	    return (
-	       React.createElement("div", {style: formStyle}, 
-	        React.createElement("div", {className: "jumbotron", style: signUpJumbo}, 
-	          "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
-	          "Password: ", React.createElement("br", null), React.createElement("input", {type: "password", name: "password", value: password, onChange: this.handleChange}), React.createElement("br", null), 
-	          React.createElement("br", null), React.createElement(Link, {to: "/forgottenPassword"}, "Forgot your password?"), React.createElement("br", null), 
-	          React.createElement("br", null), React.createElement("button", {onClick: this.handleClick}, 
-	            "SIGN IN"
-	            )
+	      React.createElement("div", null, 
+	         React.createElement("div", {className: "panel panel-primary", style: bluePanelStyle}, 
+	            React.createElement("div", {className: "panel-heading", style: bluePanelHeaderStyle}, 
+	              "Sign In!"
+	            ), 
+	          React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
+	            "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, placeholder: "Username", onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
+	            "Password: ", React.createElement("br", null), React.createElement("input", {type: "password", name: "password", value: password, placeholder: "Password", onChange: this.handleChange}), React.createElement("br", null), 
+	            React.createElement("br", null), React.createElement(Link, {to: "/forgottenPassword"}, "Forgot your password?"), React.createElement("br", null), 
+	            React.createElement("br", null), React.createElement("button", {onClick: this.handleClick}, 
+	              "SIGN IN"
+	              )
+	          )
+	          
+
+	          
 	        ), 
 	        React.createElement("div", {id: "errorMessage", className: "alert alert-danger", role: "alert", style: errorStyle}, 
-	          React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
-	          React.createElement("span", {className: "sr-only"}, "Error:"), 
-	          "Woops! It looks like this username/password combo is not in our system. Try again, or" + " " + 
-	          "request a password change."
+	            React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
+	            React.createElement("span", {className: "sr-only"}, "Error:"), 
+	            "Woops! It looks like this username/password combo is not in our system. Try again, or" + " " + 
+	            "request a password change."
 	        )
 	      )
-
 
 	      );
 	  }
@@ -1888,7 +1911,7 @@
 	({displayName: "signUp",
 	  getInitialState: function() 
 	  {
-	    return {email: ''}, {username: ''}, {password: ''}, {confirmPassword: ''};
+	    return {email: ''}, {username: ''}, {password: ''}, {confirmPassword: ''}, {errorMessage: ''};
 	  },
 	  handleChange: function(event) 
 	  {
@@ -1907,23 +1930,65 @@
 	  register: function()
 	  {
 	    if(this.state.password !== this.state.confirmPassword)
-	        return;
+	    {
+
+	      document.getElementById('differentPasswords').style.visibility = 'visible';
+	      document.getElementById('shortPasswords').style.visibility = 'hidden';
+	      document.getElementById('termsError').style.visibility = 'hidden';
+	      document.getElementById('duplicateUsername').style.visibility = 'hidden';
+	      document.getElementById('duplicateEmail').style.visibility = 'hidden';
+	    }
 	    else if(this.state.password.length < 8)
 	    {
-	      alert("Your password must be greater than 7 characters");
+	      document.getElementById('differentPasswords').style.visibility = 'hidden';
+	      document.getElementById('shortPasswords').style.visibility = 'visible';
+	      document.getElementById('termsError').style.visibility = 'hidden';
+	      document.getElementById('duplicateUsername').style.visibility = 'hidden';
+	      document.getElementById('duplicateEmail').style.visibility = 'hidden';
 	    }
 	    else if(!this.terms)
-	      alert("You need to accept the terms and conditions");
+	    {
+	      document.getElementById('differentPasswords').style.visibility = 'hidden';
+	      document.getElementById('shortPasswords').style.visibility = 'hidden';
+	      document.getElementById('termsError').style.visibility = 'visible';
+	      document.getElementById('duplicateUsername').style.visibility = 'hidden';
+	      document.getElementById('duplicateEmail').style.visibility = 'hidden';
+	    }
 	    else
-	        userDAO.register(this.state.email, this.state.username, this.state.password);
+	    {
+	      var email = userDAO.findEmail(this.state.email);
+	      if(email != 'none')
+	      {
+	        document.getElementById('differentPasswords').style.visibility = 'hidden';
+	        document.getElementById('shortPasswords').style.visibility = 'hidden';
+	        document.getElementById('termsError').style.visibility = 'hidden';
+	        document.getElementById('duplicateUsername').style.visibility = 'hidden';
+	        document.getElementById('duplicateEmail').style.visibility = 'visible';
+	        return;
+	      }
+	    }
+	    var userMessage = userDAO.register(this.state.email, this.state.username, this.state.password);
+	    if(userMessage == "FAILED")
+	    {
+	      document.getElementById('differentPasswords').style.visibility = 'hidden';
+	      document.getElementById('shortPasswords').style.visibility = 'hidden';
+	      document.getElementById('termsError').style.visibility = 'hidden';
+	      document.getElementById('duplicateUsername').style.visibility = 'visible';
+	      document.getElementById('duplicateEmail').style.visibility = 'hidden';
+	    }
 	  },
 	  handleTerms: function()
 	  {
 	    this.terms = !this.terms;
 	    if(this.terms)
+	    {
 	      document.getElementById('terms').checked = true;
+	      document.getElementById('termsError').style.visibility = 'hidden';
+	    }
 	    else
+	    {
 	      document.getElementById('terms').checked = false;
+	    }
 	  },
 	  render: function() {
 	    var email = this.state.email;
@@ -1950,12 +2015,12 @@
 
 	    }
 	    return (
-	        React.createElement("div", null, 
-	          React.createElement("div", {style: center}, 
-	            React.createElement("h1", null, " Sign up for Driveway! ")
+	      React.createElement("div", null, 
+	        React.createElement("div", {className: "panel panel-primary", style: bluePanelStyle}, 
+	          React.createElement("div", {className: "panel-heading", style: bluePanelHeaderStyle}, 
+	            "Sign up for Driveway!" 
 	          ), 
-	          React.createElement("div", {style: signUpForm}, 
-	           React.createElement("div", {className: "jumbotron", style: signUpJumbo}, 
+	          React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
 	           
 	                "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
 	                "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
@@ -1972,7 +2037,32 @@
 	                React.createElement("input", {type: "submit", value: "SIGN UP", onClick: this.register})
 	            
 	           )
-	          )
+	          ), 
+	          React.createElement("div", {id: "duplicateUsername", className: "alert alert-danger", role: "alert", style: passwordFailStyle}, 
+	            React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
+	            React.createElement("span", {className: "sr-only"}, "Error:"), 
+	            "Woops! It looks like that username belongs to somebody else."
+	          ), 
+	          React.createElement("div", {id: "duplicateEmail", className: "alert alert-danger", role: "alert", style: passwordFailStyle}, 
+	            React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
+	            React.createElement("span", {className: "sr-only"}, "Error:"), 
+	            "Woops! Looks like that email belongs to somebody else."
+	         ), 
+	          React.createElement("div", {id: "differentPasswords", className: "alert alert-danger", role: "alert", style: passwordFailStyle}, 
+	            React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
+	            React.createElement("span", {className: "sr-only"}, "Error:"), 
+	            "Woops! Those passwords are not the same!"
+	         ), 
+	         React.createElement("div", {id: "shortPasswords", className: "alert alert-danger", role: "alert", style: passwordFailStyle}, 
+	          React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
+	          React.createElement("span", {className: "sr-only"}, "Error:"), 
+	          "Woops! Passwords must be greater than 7 characters!"
+	         ), 
+	         React.createElement("div", {id: "termsError", className: "alert alert-danger", role: "alert", style: passwordFailStyle}, 
+	          React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
+	          React.createElement("span", {className: "sr-only"}, "Error:"), 
+	          "Woops! It looks like you need to accept the terms and conditions!"
+	         )
 	        )
 
 
@@ -1981,9 +2071,39 @@
 	});
 	var userDAO = 
 	{
+
 	  mixins: [History, Lifecycle],
+	  findEmail: function(email)
+	  {
+	    var url ="/api/users/findEmail";
+	    var returnValue = false;
+	    $.ajax
+	    ({
+	      url: url,
+	      dataType: 'json',
+	      type: 'POST',
+	      data: 
+	      {
+	        email: email
+	      },
+	      async: false,
+	      success: function(res)
+	      {
+	        console.log(res.email);
+	        returnValue = true;
+	        //email found!
+	      }.bind(this),
+	      error:function(res)
+	      {
+	        console.log(res.email);
+	      }.bind(this)
+
+	    });
+	    return returnValue;
+	  },
 	  register: function(email, username, password)
 	  {
+	    var returnError = '';
 	    var url = "/api/users/register";
 	    $.ajax
 	    ({
@@ -2001,11 +2121,15 @@
 	          userDAO.login(username, password);
 	          localStorage.username = username;
 	          location.href ='/#/profile';
+	          returnError = 'chicken poop';
 	        }.bind(this),
 	        error: function()
 	        {
+	          returnError = 'FAILED';
 	        }.bind(this)
 	    });
+	    
+	    return returnError;
 	  },
 	  login: function(username, password)
 	  {
@@ -2324,6 +2448,27 @@
 	    );
 	  }
 	});
+	var sentEmailStyle = 
+	{
+	  width: '50%',
+	  marginLeft: '25%',
+	  textAlign: 'center'
+	};
+	var sentEmail = React.createClass
+	({displayName: "sentEmail",
+	  render: function()
+	  {
+	    return (
+	      React.createElement("div", null, 
+	       React.createElement("div", {className: "alert alert-success", role: "alert", style: sentEmailStyle}, 
+	          React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
+
+	          "An email has been sent to you containing instructions to reset your password."
+	         )
+	      )
+	      );
+	  }
+	});
 	// Run the routes
 	var routes = (
 	      React.createElement(Router, null, 
@@ -2343,7 +2488,8 @@
 	          React.createElement(Route, {name: "confirm", path: "/confirm", component: confirmPage}), 
 	          React.createElement(Route, {name: "lookup", path: "/lookup", component: findOrders}), 
 	          React.createElement(Route, {name: "pastOrders", path: "/pastOrders", component: pastOrders}), 
-	          React.createElement(Route, {name: "forgottenPassword", path: "/forgottenPassword", component: forgottenPassword})
+	          React.createElement(Route, {name: "forgottenPassword", path: "/forgottenPassword", component: forgottenPassword}), 
+	          React.createElement(Route, {name: "sentEmail", path: "/sentEmail", component: sentEmail})
 	        )
 	      )
 	);
