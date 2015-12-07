@@ -255,22 +255,43 @@ var ReserveParking = React.createClass({
   }
 });
 
-
+var rightBluePanelStyle =
+{
+  width: '50%'
+  //<p>Addresses: <br/>{userDriveways}</p>
+  //<Link to="/driveway">Would you like to add a driveway?</Link>
+};
+var leftBluePanelStyle = 
+{
+  width: '50%'
+};  
 var profile = React.createClass
 ({
   render: function() 
   {
       return (
        <div>
-        <div className="panel panel-primary" style={bluePanelStyle}>
-          <div className="panel-heading" style={bluePanelHeaderStyle}>
-            {localStorage.username.toUpperCase()}
+        <div className="col-md-6" style={leftBluePanelStyle}>
+          <div className="panel panel-primary" >
+            <div className="panel-heading" style={bluePanelHeaderStyle}>
+              Profile
+            </div>
+            <div className="panel-body" style={bluePanelBodyStyle}>
+              <p>username: <br/>{localStorage.username}</p>
+              <p>email: <br/>{localStorage.email}</p>
+            </div>
           </div>
-          <div className="panel-body" style={bluePanelBodyStyle}>
-            <p>username: <br/>{localStorage.username}</p>
-            <p>email: <br/>{localStorage.email}</p>
-            <p>Addresses: <br/>{userDriveways}</p>
-            <Link to="/driveway">Would you like to add a driveway?</Link>
+        </div>
+        <div className="col-md-6" style={rightBluePanelStyle}>
+          <div className="panel panel-primary" >
+            
+            <div className="panel-heading" style={bluePanelHeaderStyle}>
+              Driveways
+            </div>
+            <div className="panel-body" style={bluePanelBodyStyle}>
+              <p>Addresses: <br/>{userDriveways}</p>
+              <Link to="/driveway">Would you like to add a driveway?</Link>
+            </div>
           </div>
         </div>
       </div>
