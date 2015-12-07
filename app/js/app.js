@@ -306,11 +306,11 @@ var driveway = React.createClass
       }
       return{ address: address, zip: zip, city: city, times: times, 
               numCars: numCars, state: state, startTime: '', endTime: '', 
-              day: '', editing: true,  displayTimes: displayTimes, id: id, fee: fee};
+              day: '', editing: true,  displayTimes: displayTimes, id: id, fee: fee, title: 'Edit your driveway!'};
     }
     else
         return {address: '', numCars: '1', zip:'', city: '', state:'', editing: false, 
-                startTime: '', endTime: '', day: '', times: [], displayTimes: [], fee: fee};
+                startTime: '', endTime: '', day: '', times: [], displayTimes: [], fee: fee, title: 'Add a new Driveway!'};
   },
   handleChange: function(event) 
   {
@@ -503,581 +503,299 @@ var driveway = React.createClass
     var endTime = this.state.endTime;
     var displayTimes = this.state.displayTimes;
     var fee = this.state.fee;
-    if(!this.state.editing)
-    {
+    var title = this.state.title;
       return (
       <div>
-        <div id="time">
-          Street address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
-          City: <br/><input type="text" name="city" value={city} onChange={this.handleChange}/><br/><br/>
-          State: <br/><select name="state" value={state} onChange={this.handleChange}>
-                        <option value="-"></option>
-                        <option value="AL">Alabama</option>
-                        <option value="AK">Alaska</option>
-                        <option value="AZ">Arizona</option>
-                        <option value="AR">Arkansas</option>
-                        <option value="CA">California</option>
-                        <option value="CO">Colorado</option>
-                        <option value="CT">Connecticut</option>
-                        <option value="DE">Delaware</option>
-                        <option value="DC">District Of Columbia</option>
-                        <option value="FL">Florida</option>
-                        <option value="GA">Georgia</option>
-                        <option value="HI">Hawaii</option>
-                        <option value="ID">Idaho</option>
-                        <option value="IL">Illinois</option>
-                        <option value="IN">Indiana</option>
-                        <option value="IA">Iowa</option>
-                        <option value="KS">Kansas</option>
-                        <option value="KY">Kentucky</option>
-                        <option value="LA">Louisiana</option>
-                        <option value="ME">Maine</option>
-                        <option value="MD">Maryland</option>
-                        <option value="MA">Massachusetts</option>
-                        <option value="MI">Michigan</option>
-                        <option value="MN">Minnesota</option>
-                        <option value="MS">Mississippi</option>
-                        <option value="MO">Missouri</option>
-                        <option value="MT">Montana</option>
-                        <option value="NE">Nebraska</option>
-                        <option value="NV">Nevada</option>
-                        <option value="NH">New Hampshire</option>
-                        <option value="NJ">New Jersey</option>
-                        <option value="NM">New Mexico</option>
-                        <option value="NY">New York</option>
-                        <option value="NC">North Carolina</option>
-                        <option value="ND">North Dakota</option>
-                        <option value="OH">Ohio</option>
-                        <option value="OK">Oklahoma</option>
-                        <option value="OR">Oregon</option>
-                        <option value="PA">Pennsylvania</option>
-                        <option value="RI">Rhode Island</option>
-                        <option value="SC">South Carolina</option>
-                        <option value="SD">South Dakota</option>
-                        <option value="TN">Tennessee</option>
-                        <option value="TX">Texas</option>
-                        <option value="UT">Utah</option>
-                        <option value="VT">Vermont</option>
-                        <option value="VA">Virginia</option>
-                        <option value="WA">Washington</option>
-                        <option value="WV">West Virginia</option>
-                        <option value="WI">Wisconsin</option>
-                        <option value="WY">Wyoming</option>
-                      </select> <br/> <br/>
-          Zip code: <br/><input type="text" name="zip" value={zip} onChange={this.handleChange}/><br/><br/>
-          Number of Cars: <br/><select name="numCars" value={numCars} onChange={this.handleChange}>
-                        <option value='1'>1</option>
-                        <option value='2'>2</option>
-                        <option value='3'>3</option>
-                      </select><br/><br/>
-          Fee: <br/><input type="text" name="fee" value={fee} onChange={this.handleChange}/><br/><br/>
-          <p id='chosenTimes'> Chosen times: {displayTimes}</p>            
-          Day: <space> </space> <select name="day" id="day" value={day} onChange={this.handleChange}>
-                                  <option value=""> </option>
-                                  <option value="monday"> Monday</option>
-                                  <option value="tuesday"> Tuesday</option>
-                                  <option value="wednesday"> Wednesday</option>
-                                  <option value="thursday"> Thursday</option>
-                                  <option value="friday"> Friday</option>
-                                  <option value="saturday"> Saturday</option>
-                                  <option value="sunday"> Sunday</option>
-                                  </select> <space></space>
-          
-          Start time: <space> </space>
-                      <select name="startTime" id="time" value={startTime} onChange={this.handleChange}>
-                        <option value=""></option>
-                        <option value="5:00 AM">5:00 AM</option>
-                        <option value="5:15 AM">5:15 AM</option>
-                        <option value="5:30 AM">5:30 AM</option>
-                        <option value="5:45 AM">5:45 AM</option>
-                       
-                        <option value="6:00 AM">6:00 AM</option>
-                        <option value="6:15 AM">6:15 AM</option>
-                        <option value="6:30 AM">6:30 AM</option>
-                        <option value="6:45 AM">6:45 AM</option>
-                       
-                        <option value="7:00 AM">7:00 AM</option>
-                        <option value="7:15 AM">7:15 AM</option>
-                        <option value="7:30 AM">7:30 AM</option>
-                        <option value="7:45 AM">7:45 AM</option>
-                       
-                        <option value="8:00 AM">8:00 AM</option>
-                        <option value="8:15 AM">8:15 AM</option>
-                        <option value="8:30 AM">8:30 AM</option>
-                        <option value="8:45 AM">8:45 AM</option>
-                       
-                        <option value="9:00 AM">9:00 AM</option>
-                        <option value="9:15 AM">9:15 AM</option>
-                        <option value="9:30 AM">9:30 AM</option>
-                        <option value="9:45 AM">9:45 AM</option>
-                       
-                        <option value="10:00 AM">10:00 AM</option>
-                        <option value="10:15 AM">10:15 AM</option>
-                        <option value="10:30 AM">10:30 AM</option>
-                        <option value="10:45 AM">10:45 AM</option>
-                       
-                        <option value="11:00 AM">11:00 AM</option>
-                        <option value="11:15 AM">11:15 AM</option>
-                        <option value="11:30 AM">11:30 AM</option>
-                        <option value="11:45 AM">11:45 AM</option>
-                       
-                        <option value="12:00 PM">12:00 PM</option>
-                        <option value="12:15 PM">12:15 PM</option>
-                        <option value="12:30 PM">12:30 PM</option>
-                        <option value="12:45 PM">12:45 PM</option>
-                       
-                        <option value="1:00 PM">1:00 PM</option>
-                        <option value="1:15 PM">1:15 PM</option>
-                        <option value="1:30 PM">1:30 PM</option>
-                        <option value="1:45 PM">1:45 PM</option>
-                       
-                        <option value="2:00 PM">2:00 PM</option>
-                        <option value="2:15 PM">2:15 PM</option>
-                        <option value="2:30 PM">2:30 PM</option>
-                        <option value="2:45 PM">2:45 PM</option>
-                       
-                        <option value="3:00 PM">3:00 PM</option>
-                        <option value="3:15 PM">3:15 PM</option>
-                        <option value="3:30 PM">3:30 PM</option>
-                        <option value="3:45 PM">3:45 PM</option>
-                       
-                        <option value="4:00 PM">4:00 PM</option>
-                        <option value="4:15 PM">4:15 PM</option>
-                        <option value="4:30 PM">4:30 PM</option>
-                        <option value="4:45 PM">4:45 PM</option>
-                       
-                        <option value="5:00 PM">5:00 PM</option>
-                        <option value="5:15 PM">5:15 PM</option>
-                        <option value="5:30 PM">5:30 PM</option>
-                        <option value="5:45 PM">5:45 PM</option>
-                       
-                        <option value="6:00 PM">6:00 PM</option>
-                        <option value="6:15 PM">6:15 PM</option>
-                        <option value="6:30 PM">6:30 PM</option>
-                        <option value="6:45 PM">6:45 PM</option>
-                       
-                        <option value="7:00 PM">7:00 PM</option>
-                        <option value="7:15 PM">7:15 PM</option>
-                        <option value="7:30 PM">7:30 PM</option>
-                        <option value="7:45 PM">7:45 PM</option>
-                       
-                        <option value="8:00 PM">8:00 PM</option>
-                        <option value="8:15 PM">8:15 PM</option>
-                        <option value="8:30 PM">8:30 PM</option>
-                        <option value="8:45 PM">8:45 PM</option>
-                       
-                        <option value="9:00 PM">9:00 PM</option>
-                        <option value="9:15 PM">9:15 PM</option>
-                        <option value="9:30 PM">9:30 PM</option>
-                        <option value="9:45 PM">9:45 PM</option>
-                       
-                        <option value="10:00 PM">10:00 PM</option>
-                        <option value="10:15 PM">10:15 PM</option>
-                        <option value="10:30 PM">10:30 PM</option>
-                        <option value="10:45 PM">10:45 PM</option>
-                       
-                        <option value="11:00 PM">11:00 PM</option>
-                        <option value="11:15 PM">11:15 PM</option>
-                        <option value="11:30 PM">11:30 PM</option>
-                        <option value="11:45 PM">11:45 PM</option>
-                      </select><space> </space>
-          End time: <space> </space>
-                      <select name="endTime" id="endTime" value={endTime} onChange={this.handleChange}>
-                        <option value=""></option>
-                        <option value="5:00 AM">5:00 AM</option>
-                        <option value="5:15 AM">5:15 AM</option>
-                        <option value="5:30 AM">5:30 AM</option>
-                        <option value="5:45 AM">5:45 AM</option>
-                       
-                        <option value="6:00 AM">6:00 AM</option>
-                        <option value="6:15 AM">6:15 AM</option>
-                        <option value="6:30 AM">6:30 AM</option>
-                        <option value="6:45 AM">6:45 AM</option>
-                       
-                        <option value="7:00 AM">7:00 AM</option>
-                        <option value="7:15 AM">7:15 AM</option>
-                        <option value="7:30 AM">7:30 AM</option>
-                        <option value="7:45 AM">7:45 AM</option>
-                       
-                        <option value="8:00 AM">8:00 AM</option>
-                        <option value="8:15 AM">8:15 AM</option>
-                        <option value="8:30 AM">8:30 AM</option>
-                        <option value="8:45 AM">8:45 AM</option>
-                       
-                        <option value="9:00 AM">9:00 AM</option>
-                        <option value="9:15 AM">9:15 AM</option>
-                        <option value="9:30 AM">9:30 AM</option>
-                        <option value="9:45 AM">9:45 AM</option>
-                       
-                        <option value="10:00 AM">10:00 AM</option>
-                        <option value="10:15 AM">10:15 AM</option>
-                        <option value="10:30 AM">10:30 AM</option>
-                        <option value="10:45 AM">10:45 AM</option>
-                       
-                        <option value="11:00 AM">11:00 AM</option>
-                        <option value="11:15 AM">11:15 AM</option>
-                        <option value="11:30 AM">11:30 AM</option>
-                        <option value="11:45 AM">11:45 AM</option>
-                       
-                        <option value="12:00 PM">12:00 PM</option>
-                        <option value="12:15 PM">12:15 PM</option>
-                        <option value="12:30 PM">12:30 PM</option>
-                        <option value="12:45 PM">12:45 PM</option>
-                       
-                        <option value="1:00 PM">1:00 PM</option>
-                        <option value="1:15 PM">1:15 PM</option>
-                        <option value="1:30 PM">1:30 PM</option>
-                        <option value="1:45 PM">1:45 PM</option>
-                       
-                        <option value="2:00 PM">2:00 PM</option>
-                        <option value="2:15 PM">2:15 PM</option>
-                        <option value="2:30 PM">2:30 PM</option>
-                        <option value="2:45 PM">2:45 PM</option>
-                       
-                        <option value="3:00 PM">3:00 PM</option>
-                        <option value="3:15 PM">3:15 PM</option>
-                        <option value="3:30 PM">3:30 PM</option>
-                        <option value="3:45 PM">3:45 PM</option>
-                       
-                        <option value="4:00 PM">4:00 PM</option>
-                        <option value="4:15 PM">4:15 PM</option>
-                        <option value="4:30 PM">4:30 PM</option>
-                        <option value="4:45 PM">4:45 PM</option>
-                       
-                        <option value="5:00 PM">5:00 PM</option>
-                        <option value="5:15 PM">5:15 PM</option>
-                        <option value="5:30 PM">5:30 PM</option>
-                        <option value="5:45 PM">5:45 PM</option>
-                       
-                        <option value="6:00 PM">6:00 PM</option>
-                        <option value="6:15 PM">6:15 PM</option>
-                        <option value="6:30 PM">6:30 PM</option>
-                        <option value="6:45 PM">6:45 PM</option>
-                       
-                        <option value="7:00 PM">7:00 PM</option>
-                        <option value="7:15 PM">7:15 PM</option>
-                        <option value="7:30 PM">7:30 PM</option>
-                        <option value="7:45 PM">7:45 PM</option>
-                       
-                        <option value="8:00 PM">8:00 PM</option>
-                        <option value="8:15 PM">8:15 PM</option>
-                        <option value="8:30 PM">8:30 PM</option>
-                        <option value="8:45 PM">8:45 PM</option>
-                       
-                        <option value="9:00 PM">9:00 PM</option>
-                        <option value="9:15 PM">9:15 PM</option>
-                        <option value="9:30 PM">9:30 PM</option>
-                        <option value="9:45 PM">9:45 PM</option>
-                       
-                        <option value="10:00 PM">10:00 PM</option>
-                        <option value="10:15 PM">10:15 PM</option>
-                        <option value="10:30 PM">10:30 PM</option>
-                        <option value="10:45 PM">10:45 PM</option>
-                       
-                        <option value="11:00 PM">11:00 PM</option>
-                        <option value="11:15 PM">11:15 PM</option>
-                        <option value="11:30 PM">11:30 PM</option>
-                        <option value="11:45 PM">11:45 PM</option>
-                      </select><space> </space>            
-          <button onClick={this.addNewTime}> Add time</button><br/><br/>
+        <div className="panel panel-primary" style={bluePanelStyle}>
+            <div className="panel-heading" style={bluePanelHeaderStyle}>
+             {title}
+            </div>
+          <div className="panel-body" style={bluePanelBodyStyle}>
+            <div id="time">
+              Street address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
+              City: <br/><input type="text" name="city" value={city} onChange={this.handleChange}/><br/><br/>
+              State: <br/><select name="state" value={state} onChange={this.handleChange}>
+                            <option value="-"></option>
+                            <option value="AL">Alabama</option>
+                            <option value="AK">Alaska</option>
+                            <option value="AZ">Arizona</option>
+                            <option value="AR">Arkansas</option>
+                            <option value="CA">California</option>
+                            <option value="CO">Colorado</option>
+                            <option value="CT">Connecticut</option>
+                            <option value="DE">Delaware</option>
+                            <option value="DC">District Of Columbia</option>
+                            <option value="FL">Florida</option>
+                            <option value="GA">Georgia</option>
+                            <option value="HI">Hawaii</option>
+                            <option value="ID">Idaho</option>
+                            <option value="IL">Illinois</option>
+                            <option value="IN">Indiana</option>
+                            <option value="IA">Iowa</option>
+                            <option value="KS">Kansas</option>
+                            <option value="KY">Kentucky</option>
+                            <option value="LA">Louisiana</option>
+                            <option value="ME">Maine</option>
+                            <option value="MD">Maryland</option>
+                            <option value="MA">Massachusetts</option>
+                            <option value="MI">Michigan</option>
+                            <option value="MN">Minnesota</option>
+                            <option value="MS">Mississippi</option>
+                            <option value="MO">Missouri</option>
+                            <option value="MT">Montana</option>
+                            <option value="NE">Nebraska</option>
+                            <option value="NV">Nevada</option>
+                            <option value="NH">New Hampshire</option>
+                            <option value="NJ">New Jersey</option>
+                            <option value="NM">New Mexico</option>
+                            <option value="NY">New York</option>
+                            <option value="NC">North Carolina</option>
+                            <option value="ND">North Dakota</option>
+                            <option value="OH">Ohio</option>
+                            <option value="OK">Oklahoma</option>
+                            <option value="OR">Oregon</option>
+                            <option value="PA">Pennsylvania</option>
+                            <option value="RI">Rhode Island</option>
+                            <option value="SC">South Carolina</option>
+                            <option value="SD">South Dakota</option>
+                            <option value="TN">Tennessee</option>
+                            <option value="TX">Texas</option>
+                            <option value="UT">Utah</option>
+                            <option value="VT">Vermont</option>
+                            <option value="VA">Virginia</option>
+                            <option value="WA">Washington</option>
+                            <option value="WV">West Virginia</option>
+                            <option value="WI">Wisconsin</option>
+                            <option value="WY">Wyoming</option>
+                          </select> <br/> <br/>
+              Zip code: <br/><input type="text" name="zip" value={zip} onChange={this.handleChange}/><br/><br/>
+              Number of Cars: <br/><select name="numCars" value={numCars} onChange={this.handleChange}>
+                            <option value='1'>1</option>
+                            <option value='2'>2</option>
+                            <option value='3'>3</option>
+                          </select><br/><br/>
+              Fee: <br/><input type="text" name="fee" value={fee} onChange={this.handleChange}/><br/><br/>
+              <p id='chosenTimes'> Chosen times: {displayTimes}</p>            
+              Day: <space> </space> <select name="day" id="day" value={day} onChange={this.handleChange}>
+                                      <option value=""> </option>
+                                      <option value="monday"> Monday</option>
+                                      <option value="tuesday"> Tuesday</option>
+                                      <option value="wednesday"> Wednesday</option>
+                                      <option value="thursday"> Thursday</option>
+                                      <option value="friday"> Friday</option>
+                                      <option value="saturday"> Saturday</option>
+                                      <option value="sunday"> Sunday</option>
+                                      </select> <space></space>
+              
+              Start time: <space> </space>
+                          <select name="startTime" id="time" value={startTime} onChange={this.handleChange}>
+                            <option value=""></option>
+                            <option value="5:00 AM">5:00 AM</option>
+                            <option value="5:15 AM">5:15 AM</option>
+                            <option value="5:30 AM">5:30 AM</option>
+                            <option value="5:45 AM">5:45 AM</option>
+                           
+                            <option value="6:00 AM">6:00 AM</option>
+                            <option value="6:15 AM">6:15 AM</option>
+                            <option value="6:30 AM">6:30 AM</option>
+                            <option value="6:45 AM">6:45 AM</option>
+                           
+                            <option value="7:00 AM">7:00 AM</option>
+                            <option value="7:15 AM">7:15 AM</option>
+                            <option value="7:30 AM">7:30 AM</option>
+                            <option value="7:45 AM">7:45 AM</option>
+                           
+                            <option value="8:00 AM">8:00 AM</option>
+                            <option value="8:15 AM">8:15 AM</option>
+                            <option value="8:30 AM">8:30 AM</option>
+                            <option value="8:45 AM">8:45 AM</option>
+                           
+                            <option value="9:00 AM">9:00 AM</option>
+                            <option value="9:15 AM">9:15 AM</option>
+                            <option value="9:30 AM">9:30 AM</option>
+                            <option value="9:45 AM">9:45 AM</option>
+                           
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="10:15 AM">10:15 AM</option>
+                            <option value="10:30 AM">10:30 AM</option>
+                            <option value="10:45 AM">10:45 AM</option>
+                           
+                            <option value="11:00 AM">11:00 AM</option>
+                            <option value="11:15 AM">11:15 AM</option>
+                            <option value="11:30 AM">11:30 AM</option>
+                            <option value="11:45 AM">11:45 AM</option>
+                           
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="12:15 PM">12:15 PM</option>
+                            <option value="12:30 PM">12:30 PM</option>
+                            <option value="12:45 PM">12:45 PM</option>
+                           
+                            <option value="1:00 PM">1:00 PM</option>
+                            <option value="1:15 PM">1:15 PM</option>
+                            <option value="1:30 PM">1:30 PM</option>
+                            <option value="1:45 PM">1:45 PM</option>
+                           
+                            <option value="2:00 PM">2:00 PM</option>
+                            <option value="2:15 PM">2:15 PM</option>
+                            <option value="2:30 PM">2:30 PM</option>
+                            <option value="2:45 PM">2:45 PM</option>
+                           
+                            <option value="3:00 PM">3:00 PM</option>
+                            <option value="3:15 PM">3:15 PM</option>
+                            <option value="3:30 PM">3:30 PM</option>
+                            <option value="3:45 PM">3:45 PM</option>
+                           
+                            <option value="4:00 PM">4:00 PM</option>
+                            <option value="4:15 PM">4:15 PM</option>
+                            <option value="4:30 PM">4:30 PM</option>
+                            <option value="4:45 PM">4:45 PM</option>
+                           
+                            <option value="5:00 PM">5:00 PM</option>
+                            <option value="5:15 PM">5:15 PM</option>
+                            <option value="5:30 PM">5:30 PM</option>
+                            <option value="5:45 PM">5:45 PM</option>
+                           
+                            <option value="6:00 PM">6:00 PM</option>
+                            <option value="6:15 PM">6:15 PM</option>
+                            <option value="6:30 PM">6:30 PM</option>
+                            <option value="6:45 PM">6:45 PM</option>
+                           
+                            <option value="7:00 PM">7:00 PM</option>
+                            <option value="7:15 PM">7:15 PM</option>
+                            <option value="7:30 PM">7:30 PM</option>
+                            <option value="7:45 PM">7:45 PM</option>
+                           
+                            <option value="8:00 PM">8:00 PM</option>
+                            <option value="8:15 PM">8:15 PM</option>
+                            <option value="8:30 PM">8:30 PM</option>
+                            <option value="8:45 PM">8:45 PM</option>
+                           
+                            <option value="9:00 PM">9:00 PM</option>
+                            <option value="9:15 PM">9:15 PM</option>
+                            <option value="9:30 PM">9:30 PM</option>
+                            <option value="9:45 PM">9:45 PM</option>
+                           
+                            <option value="10:00 PM">10:00 PM</option>
+                            <option value="10:15 PM">10:15 PM</option>
+                            <option value="10:30 PM">10:30 PM</option>
+                            <option value="10:45 PM">10:45 PM</option>
+                           
+                            <option value="11:00 PM">11:00 PM</option>
+                            <option value="11:15 PM">11:15 PM</option>
+                            <option value="11:30 PM">11:30 PM</option>
+                            <option value="11:45 PM">11:45 PM</option>
+                          </select><space> </space>
+              End time: <space> </space>
+                          <select name="endTime" id="endTime" value={endTime} onChange={this.handleChange}>
+                            <option value=""></option>
+                            <option value="5:00 AM">5:00 AM</option>
+                            <option value="5:15 AM">5:15 AM</option>
+                            <option value="5:30 AM">5:30 AM</option>
+                            <option value="5:45 AM">5:45 AM</option>
+                           
+                            <option value="6:00 AM">6:00 AM</option>
+                            <option value="6:15 AM">6:15 AM</option>
+                            <option value="6:30 AM">6:30 AM</option>
+                            <option value="6:45 AM">6:45 AM</option>
+                           
+                            <option value="7:00 AM">7:00 AM</option>
+                            <option value="7:15 AM">7:15 AM</option>
+                            <option value="7:30 AM">7:30 AM</option>
+                            <option value="7:45 AM">7:45 AM</option>
+                           
+                            <option value="8:00 AM">8:00 AM</option>
+                            <option value="8:15 AM">8:15 AM</option>
+                            <option value="8:30 AM">8:30 AM</option>
+                            <option value="8:45 AM">8:45 AM</option>
+                           
+                            <option value="9:00 AM">9:00 AM</option>
+                            <option value="9:15 AM">9:15 AM</option>
+                            <option value="9:30 AM">9:30 AM</option>
+                            <option value="9:45 AM">9:45 AM</option>
+                           
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="10:15 AM">10:15 AM</option>
+                            <option value="10:30 AM">10:30 AM</option>
+                            <option value="10:45 AM">10:45 AM</option>
+                           
+                            <option value="11:00 AM">11:00 AM</option>
+                            <option value="11:15 AM">11:15 AM</option>
+                            <option value="11:30 AM">11:30 AM</option>
+                            <option value="11:45 AM">11:45 AM</option>
+                           
+                            <option value="12:00 PM">12:00 PM</option>
+                            <option value="12:15 PM">12:15 PM</option>
+                            <option value="12:30 PM">12:30 PM</option>
+                            <option value="12:45 PM">12:45 PM</option>
+                           
+                            <option value="1:00 PM">1:00 PM</option>
+                            <option value="1:15 PM">1:15 PM</option>
+                            <option value="1:30 PM">1:30 PM</option>
+                            <option value="1:45 PM">1:45 PM</option>
+                           
+                            <option value="2:00 PM">2:00 PM</option>
+                            <option value="2:15 PM">2:15 PM</option>
+                            <option value="2:30 PM">2:30 PM</option>
+                            <option value="2:45 PM">2:45 PM</option>
+                           
+                            <option value="3:00 PM">3:00 PM</option>
+                            <option value="3:15 PM">3:15 PM</option>
+                            <option value="3:30 PM">3:30 PM</option>
+                            <option value="3:45 PM">3:45 PM</option>
+                           
+                            <option value="4:00 PM">4:00 PM</option>
+                            <option value="4:15 PM">4:15 PM</option>
+                            <option value="4:30 PM">4:30 PM</option>
+                            <option value="4:45 PM">4:45 PM</option>
+                           
+                            <option value="5:00 PM">5:00 PM</option>
+                            <option value="5:15 PM">5:15 PM</option>
+                            <option value="5:30 PM">5:30 PM</option>
+                            <option value="5:45 PM">5:45 PM</option>
+                           
+                            <option value="6:00 PM">6:00 PM</option>
+                            <option value="6:15 PM">6:15 PM</option>
+                            <option value="6:30 PM">6:30 PM</option>
+                            <option value="6:45 PM">6:45 PM</option>
+                           
+                            <option value="7:00 PM">7:00 PM</option>
+                            <option value="7:15 PM">7:15 PM</option>
+                            <option value="7:30 PM">7:30 PM</option>
+                            <option value="7:45 PM">7:45 PM</option>
+                           
+                            <option value="8:00 PM">8:00 PM</option>
+                            <option value="8:15 PM">8:15 PM</option>
+                            <option value="8:30 PM">8:30 PM</option>
+                            <option value="8:45 PM">8:45 PM</option>
+                           
+                            <option value="9:00 PM">9:00 PM</option>
+                            <option value="9:15 PM">9:15 PM</option>
+                            <option value="9:30 PM">9:30 PM</option>
+                            <option value="9:45 PM">9:45 PM</option>
+                           
+                            <option value="10:00 PM">10:00 PM</option>
+                            <option value="10:15 PM">10:15 PM</option>
+                            <option value="10:30 PM">10:30 PM</option>
+                            <option value="10:45 PM">10:45 PM</option>
+                           
+                            <option value="11:00 PM">11:00 PM</option>
+                            <option value="11:15 PM">11:15 PM</option>
+                            <option value="11:30 PM">11:30 PM</option>
+                            <option value="11:45 PM">11:45 PM</option>
+                          </select><space> </space>            
+              <button onClick={this.addNewTime}> Add time</button><br/><br/>
+              </div>
+              <div>
+                <button id='submit' onClick={this.handleClick}> Submit </button>  
+              </div>
           </div>
-          <div>
-            <button id='submit' onClick={this.handleClick}> Submit </button>  
-          </div>
+        </div>
       </div>
       
 
       );
-    }
-    else
-    {
-      return (
-      <div>
-        <div>
-          Street address: <br/><input type="text" name="address" value={address} onChange={this.handleChange}/><br/><br/>
-          City: <br/><input type="text" name="city" value={city} onChange={this.handleChange}/><br/><br/>
-          State: <br/><select name="state" value={state} onChange={this.handleChange}>
-                        <option value="AL">Alabama</option>
-                        <option value="AK">Alaska</option>
-                        <option value="AZ">Arizona</option>
-                        <option value="AR">Arkansas</option>
-                        <option value="CA">California</option>
-                        <option value="CO">Colorado</option>
-                        <option value="CT">Connecticut</option>
-                        <option value="DE">Delaware</option>
-                        <option value="DC">District Of Columbia</option>
-                        <option value="FL">Florida</option>
-                        <option value="GA">Georgia</option>
-                        <option value="HI">Hawaii</option>
-                        <option value="ID">Idaho</option>
-                        <option value="IL">Illinois</option>
-                        <option value="IN">Indiana</option>
-                        <option value="IA">Iowa</option>
-                        <option value="KS">Kansas</option>
-                        <option value="KY">Kentucky</option>
-                        <option value="LA">Louisiana</option>
-                        <option value="ME">Maine</option>
-                        <option value="MD">Maryland</option>
-                        <option value="MA">Massachusetts</option>
-                        <option value="MI">Michigan</option>
-                        <option value="MN">Minnesota</option>
-                        <option value="MS">Mississippi</option>
-                        <option value="MO">Missouri</option>
-                        <option value="MT">Montana</option>
-                        <option value="NE">Nebraska</option>
-                        <option value="NV">Nevada</option>
-                        <option value="NH">New Hampshire</option>
-                        <option value="NJ">New Jersey</option>
-                        <option value="NM">New Mexico</option>
-                        <option value="NY">New York</option>
-                        <option value="NC">North Carolina</option>
-                        <option value="ND">North Dakota</option>
-                        <option value="OH">Ohio</option>
-                        <option value="OK">Oklahoma</option>
-                        <option value="OR">Oregon</option>
-                        <option value="PA">Pennsylvania</option>
-                        <option value="RI">Rhode Island</option>
-                        <option value="SC">South Carolina</option>
-                        <option value="SD">South Dakota</option>
-                        <option value="TN">Tennessee</option>
-                        <option value="TX">Texas</option>
-                        <option value="UT">Utah</option>
-                        <option value="VT">Vermont</option>
-                        <option value="VA">Virginia</option>
-                        <option value="WA">Washington</option>
-                        <option value="WV">West Virginia</option>
-                        <option value="WI">Wisconsin</option>
-                        <option value="WY">Wyoming</option>
-                      </select> <br/> <br/>
-          Zip code: <br/><input type="text" name="zip" value={zip} onChange={this.handleChange}/><br/><br/>
-          Number of Cars: <br/><select name="numCars" value={numCars} onChange={this.handleChange}>
-                        <option value='1'>1</option>
-                        <option value='2'>2</option>
-                        <option value='3'>3</option>
-                      </select><br/><br/>
-          Fee: <br/><input type="text" name="fee" value={fee} onChange={this.handleChange}/><br/><br/>
-          <p id='chosenTimes'> Chosen times: {displayTimes}</p>            
-          Day: <space> </space> <select name="day" id="day" value={day} onChange={this.handleChange}>
-                                  <option value=""> </option>
-                                  <option value="monday"> Monday</option>
-                                  <option value="tuesday"> Tuesday</option>
-                                  <option value="wednesday"> Wednesday</option>
-                                  <option value="thursday"> Thursday</option>
-                                  <option value="friday"> Friday</option>
-                                  <option value="saturday"> Saturday</option>
-                                  <option value="sunday"> Sunday</option>
-                                  </select> <space></space>
-          Start time: <space> </space>
-                      <select name="startTime" id="time" value={startTime} onChange={this.handleChange}>
-                        <option value=""></option>
-                        <option value="5:00 AM">5:00 AM</option>
-                        <option value="5:15 AM">5:15 AM</option>
-                        <option value="5:30 AM">5:30 AM</option>
-                        <option value="5:45 AM">5:45 AM</option>
-                       
-                        <option value="6:00 AM">6:00 AM</option>
-                        <option value="6:15 AM">6:15 AM</option>
-                        <option value="6:30 AM">6:30 AM</option>
-                        <option value="6:45 AM">6:45 AM</option>
-                       
-                        <option value="7:00 AM">7:00 AM</option>
-                        <option value="7:15 AM">7:15 AM</option>
-                        <option value="7:30 AM">7:30 AM</option>
-                        <option value="7:45 AM">7:45 AM</option>
-                       
-                        <option value="8:00 AM">8:00 AM</option>
-                        <option value="8:15 AM">8:15 AM</option>
-                        <option value="8:30 AM">8:30 AM</option>
-                        <option value="8:45 AM">8:45 AM</option>
-                       
-                        <option value="9:00 AM">9:00 AM</option>
-                        <option value="9:15 AM">9:15 AM</option>
-                        <option value="9:30 AM">9:30 AM</option>
-                        <option value="9:45 AM">9:45 AM</option>
-                       
-                        <option value="10:00 AM">10:00 AM</option>
-                        <option value="10:15 AM">10:15 AM</option>
-                        <option value="10:30 AM">10:30 AM</option>
-                        <option value="10:45 AM">10:45 AM</option>
-                       
-                        <option value="11:00 AM">11:00 AM</option>
-                        <option value="11:15 AM">11:15 AM</option>
-                        <option value="11:30 AM">11:30 AM</option>
-                        <option value="11:45 AM">11:45 AM</option>
-                       
-                        <option value="12:00 PM">12:00 PM</option>
-                        <option value="12:15 PM">12:15 PM</option>
-                        <option value="12:30 PM">12:30 PM</option>
-                        <option value="12:45 PM">12:45 PM</option>
-                       
-                        <option value="1:00 PM">1:00 PM</option>
-                        <option value="1:15 PM">1:15 PM</option>
-                        <option value="1:30 PM">1:30 PM</option>
-                        <option value="1:45 PM">1:45 PM</option>
-                       
-                        <option value="2:00 PM">2:00 PM</option>
-                        <option value="2:15 PM">2:15 PM</option>
-                        <option value="2:30 PM">2:30 PM</option>
-                        <option value="2:45 PM">2:45 PM</option>
-                       
-                        <option value="3:00 PM">3:00 PM</option>
-                        <option value="3:15 PM">3:15 PM</option>
-                        <option value="3:30 PM">3:30 PM</option>
-                        <option value="3:45 PM">3:45 PM</option>
-                       
-                        <option value="4:00 PM">4:00 PM</option>
-                        <option value="4:15 PM">4:15 PM</option>
-                        <option value="4:30 PM">4:30 PM</option>
-                        <option value="4:45 PM">4:45 PM</option>
-                       
-                        <option value="5:00 PM">5:00 PM</option>
-                        <option value="5:15 PM">5:15 PM</option>
-                        <option value="5:30 PM">5:30 PM</option>
-                        <option value="5:45 PM">5:45 PM</option>
-                       
-                        <option value="6:00 PM">6:00 PM</option>
-                        <option value="6:15 PM">6:15 PM</option>
-                        <option value="6:30 PM">6:30 PM</option>
-                        <option value="6:45 PM">6:45 PM</option>
-                       
-                        <option value="7:00 PM">7:00 PM</option>
-                        <option value="7:15 PM">7:15 PM</option>
-                        <option value="7:30 PM">7:30 PM</option>
-                        <option value="7:45 PM">7:45 PM</option>
-                       
-                        <option value="8:00 PM">8:00 PM</option>
-                        <option value="8:15 PM">8:15 PM</option>
-                        <option value="8:30 PM">8:30 PM</option>
-                        <option value="8:45 PM">8:45 PM</option>
-                       
-                        <option value="9:00 PM">9:00 PM</option>
-                        <option value="9:15 PM">9:15 PM</option>
-                        <option value="9:30 PM">9:30 PM</option>
-                        <option value="9:45 PM">9:45 PM</option>
-                       
-                        <option value="10:00 PM">10:00 PM</option>
-                        <option value="10:15 PM">10:15 PM</option>
-                        <option value="10:30 PM">10:30 PM</option>
-                        <option value="10:45 PM">10:45 PM</option>
-                       
-                        <option value="11:00 PM">11:00 PM</option>
-                        <option value="11:15 PM">11:15 PM</option>
-                        <option value="11:30 PM">11:30 PM</option>
-                        <option value="11:45 PM">11:45 PM</option>
-                      </select><space> </space>
-          End time: <space> </space>
-                      <select name="endTime" id="endTime" value={endTime} onChange={this.handleChange}>
-                        <option value=""></option>
-                        <option value="5:00 AM">5:00 AM</option>
-                        <option value="5:15 AM">5:15 AM</option>
-                        <option value="5:30 AM">5:30 AM</option>
-                        <option value="5:45 AM">5:45 AM</option>
-                       
-                        <option value="6:00 AM">6:00 AM</option>
-                        <option value="6:15 AM">6:15 AM</option>
-                        <option value="6:30 AM">6:30 AM</option>
-                        <option value="6:45 AM">6:45 AM</option>
-                       
-                        <option value="7:00 AM">7:00 AM</option>
-                        <option value="7:15 AM">7:15 AM</option>
-                        <option value="7:30 AM">7:30 AM</option>
-                        <option value="7:45 AM">7:45 AM</option>
-                       
-                        <option value="8:00 AM">8:00 AM</option>
-                        <option value="8:15 AM">8:15 AM</option>
-                        <option value="8:30 AM">8:30 AM</option>
-                        <option value="8:45 AM">8:45 AM</option>
-                       
-                        <option value="9:00 AM">9:00 AM</option>
-                        <option value="9:15 AM">9:15 AM</option>
-                        <option value="9:30 AM">9:30 AM</option>
-                        <option value="9:45 AM">9:45 AM</option>
-                       
-                        <option value="10:00 AM">10:00 AM</option>
-                        <option value="10:15 AM">10:15 AM</option>
-                        <option value="10:30 AM">10:30 AM</option>
-                        <option value="10:45 AM">10:45 AM</option>
-                       
-                        <option value="11:00 AM">11:00 AM</option>
-                        <option value="11:15 AM">11:15 AM</option>
-                        <option value="11:30 AM">11:30 AM</option>
-                        <option value="11:45 AM">11:45 AM</option>
-                       
-                        <option value="12:00 PM">12:00 PM</option>
-                        <option value="12:15 PM">12:15 PM</option>
-                        <option value="12:30 PM">12:30 PM</option>
-                        <option value="12:45 PM">12:45 PM</option>
-                       
-                        <option value="1:00 PM">1:00 PM</option>
-                        <option value="1:15 PM">1:15 PM</option>
-                        <option value="1:30 PM">1:30 PM</option>
-                        <option value="1:45 PM">1:45 PM</option>
-                       
-                        <option value="2:00 PM">2:00 PM</option>
-                        <option value="2:15 PM">2:15 PM</option>
-                        <option value="2:30 PM">2:30 PM</option>
-                        <option value="2:45 PM">2:45 PM</option>
-                       
-                        <option value="3:00 PM">3:00 PM</option>
-                        <option value="3:15 PM">3:15 PM</option>
-                        <option value="3:30 PM">3:30 PM</option>
-                        <option value="3:45 PM">3:45 PM</option>
-                       
-                        <option value="4:00 PM">4:00 PM</option>
-                        <option value="4:15 PM">4:15 PM</option>
-                        <option value="4:30 PM">4:30 PM</option>
-                        <option value="4:45 PM">4:45 PM</option>
-                       
-                        <option value="5:00 PM">5:00 PM</option>
-                        <option value="5:15 PM">5:15 PM</option>
-                        <option value="5:30 PM">5:30 PM</option>
-                        <option value="5:45 PM">5:45 PM</option>
-                       
-                        <option value="6:00 PM">6:00 PM</option>
-                        <option value="6:15 PM">6:15 PM</option>
-                        <option value="6:30 PM">6:30 PM</option>
-                        <option value="6:45 PM">6:45 PM</option>
-                       
-                        <option value="7:00 PM">7:00 PM</option>
-                        <option value="7:15 PM">7:15 PM</option>
-                        <option value="7:30 PM">7:30 PM</option>
-                        <option value="7:45 PM">7:45 PM</option>
-                       
-                        <option value="8:00 PM">8:00 PM</option>
-                        <option value="8:15 PM">8:15 PM</option>
-                        <option value="8:30 PM">8:30 PM</option>
-                        <option value="8:45 PM">8:45 PM</option>
-                       
-                        <option value="9:00 PM">9:00 PM</option>
-                        <option value="9:15 PM">9:15 PM</option>
-                        <option value="9:30 PM">9:30 PM</option>
-                        <option value="9:45 PM">9:45 PM</option>
-                       
-                        <option value="10:00 PM">10:00 PM</option>
-                        <option value="10:15 PM">10:15 PM</option>
-                        <option value="10:30 PM">10:30 PM</option>
-                        <option value="10:45 PM">10:45 PM</option>
-                       
-                        <option value="11:00 PM">11:00 PM</option>
-                        <option value="11:15 PM">11:15 PM</option>
-                        <option value="11:30 PM">11:30 PM</option>
-                        <option value="11:45 PM">11:45 PM</option>
-                      </select><space> </space>            
-          <button onClick={this.addNewTime}> Add time</button><br/><br/>
-          </div>
-
-        <div>
-          <br/><br/><button onClick={this.handleClick}>
-          Submit
-          </button>
-          <text>     </text>
-          <button onClick={this.remove}>
-          Delete</button>
-        </div>
-      </div>
-
-      );
-    }
+    
+    
     
   }
 
