@@ -168,7 +168,6 @@ var homeStyle =
   fontSize: '30',
   align: 'center',
   color: '#ECF3F7',
-  backgroundColor: '#000066',
   left: '0',
   position: 'absolute'
 };
@@ -210,7 +209,7 @@ var Home = React.createClass
     }
     return (
     <div>
-      <div  className="Intro" style={homeStyle}>
+      <div  className="Intro bg-primary" style={homeStyle}>
       <br/>
       <br/>
         <p> <strong>Millions</strong> of driveways in one place.</p>

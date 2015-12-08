@@ -221,7 +221,6 @@
 	  fontSize: '30',
 	  align: 'center',
 	  color: '#ECF3F7',
-	  backgroundColor: '#000066',
 	  left: '0',
 	  position: 'absolute'
 	};
@@ -263,7 +262,7 @@
 	    }
 	    return (
 	    React.createElement("div", null, 
-	      React.createElement("div", {className: "Intro", style: homeStyle}, 
+	      React.createElement("div", {className: "Intro bg-primary", style: homeStyle}, 
 	      React.createElement("br", null), 
 	      React.createElement("br", null), 
 	        React.createElement("p", null, " ", React.createElement("strong", null, "Millions"), " of driveways in one place."), 
