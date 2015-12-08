@@ -128,15 +128,20 @@
 	  }
 	  return url.substring(index, i);
 	} 
+	var navStyle =
+	{
+	  marginBottom: '0'
+	};
 	var App = React.createClass({displayName: "App",
 	  render: function() 
 	  {
 	    drivewayDAO.getAll();
+
 	    if(!localStorage.username)
 	    {
 	      return(
 	        React.createElement("div", null, 
-	          React.createElement("nav", {className: "navbar navbar-default", role: "navigation"}, 
+	          React.createElement("nav", {className: "navbar navbar-default", role: "navigation", id: "navbar"}, 
 	            React.createElement("div", {className: "nav navbar-nav navbar-left"}, 
 	              React.createElement(Link, {className: "navbar-brand", to: "/home"}, "Home"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
@@ -162,7 +167,7 @@
 	      drivewayDAO.get(localStorage.username);
 	      return(
 	        React.createElement("div", null, 
-	            React.createElement("nav", {className: "navbar navbar-default", role: "navigation"}, 
+	            React.createElement("nav", {className: "navbar navbar-default", role: "navigation", id: "navbar"}, 
 	              React.createElement("div", {className: "nav navbar-nav navbar-left"}, 
 	                React.createElement(Link, {className: "navbar-brand", to: ""}, "Home"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
@@ -189,10 +194,13 @@
 	var homeStyle =
 	{
 	  textAlign: 'center',
-	  width: '100%',
 	  fontFamily: 'Calibri',
 	  fontSize: '30',
-	  align: 'center'
+	  align: 'center',
+	  backgroundColor: 'red',
+	  left: '0',
+	  position: 'absolute'
+
 	};
 	var left = 
 	{
@@ -206,6 +214,11 @@
 	{
 	  textAlign: 'center'
 	};
+	var inputStyle =
+	{
+	  width: '50%',
+	  marginLeft: '25%'
+	}
 	var Home = React.createClass
 	({displayName: "Home",
 	  mixins: [History, Lifecycle],
@@ -227,24 +240,36 @@
 	  },
 	  render: function() {
 	    var address = this.state.address;
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='0';
 	    return (
 	    React.createElement("div", null, 
 
-	      React.createElement("div", {className: "jumbotron", style: homeStyle}, 
+	      React.createElement("div", {className: "Intro", style: homeStyle}, 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
 	        React.createElement("p", null, " Better parking is just a few clicks away "), 
 	        React.createElement("div", {className: "row"}, 
-	          React.createElement("div", {className: "input-group"}, 
+	          React.createElement("div", {className: "input-group", style: inputStyle}, 
 	            React.createElement("input", {type: "text", className: "form-control", value: address, onChange: this.handleChange, placeholder: "Search the address of an event"}), 
 	            React.createElement("span", {className: "input-group-btn"}, 
 	              React.createElement("button", {className: "btn btn-default", type: "button", onClick: this.goToMap}, "Go!")
 	            )
 	          )
-	        )
+	        ), 
+	        React.createElement("br", null), 
+	        React.createElement("br", null), 
+	        React.createElement("br", null)
+
 	      ), 
 
-
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
 	      React.createElement("div", {className: "panel panel-primary"}, 
-	        React.createElement("span", {className: "glyphicon glyphicon-apple", "aria-hidden": "true"}), 
+
 	        React.createElement("div", {className: "panel-body", style: center}, 
 	          React.createElement("h3", null, "Rent out your driveway"), 
 	          React.createElement("p", null, "Easy as 1...2...3..."), 
@@ -322,6 +347,8 @@
 	({displayName: "profile",
 	  render: function() 
 	  {
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='';
 	      return (
 	       React.createElement("div", null, 
 	        React.createElement("div", {className: "col-md-6", style: leftBluePanelStyle}, 
@@ -573,6 +600,8 @@
 	  },
 	  render: function() 
 	  {
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='0';
 	    var address = this.state.address;
 	    var numCars = this.state.numCars;
 	    var zip = this.state.zip;
@@ -1367,7 +1396,8 @@
 	    this.history.pushState(null,'/Home');
 	  },
 	  render: function() {
-
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='0';
 	    return (
 	       React.createElement("div", {style: formStyle}, 
 	          React.createElement("p", null, " Click ", React.createElement("button", {onClick: this.handleClick}, " here"), " to log out ")
@@ -1433,6 +1463,8 @@
 	          
 	  },
 	  render: function() {
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='0';
 	    var username = this.state.username;
 	    var password = this.state.password;
 	    return (
@@ -1496,7 +1528,8 @@
 
 	  render: function() {
 	    var email = localStorage.email3;
-
+	    if(document.getElementById('navbar'))
+	          document.getElementById('navbar').style.marginBottom ='0';
 	    return (
 
 	      React.createElement("div", {className: "modal-dialog"}, 
@@ -1638,7 +1671,8 @@
 	    var duration1 = "4";
 	    var rTime = "6:00 PM";
 	    var city = "orem"
-
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='0';
 	    return (
 	      React.createElement("div", null, 
 	        React.createElement("div", {className: "row"}), 
@@ -2130,6 +2164,8 @@
 	    }
 	  },
 	  render: function() {
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='0';
 	    var email = this.state.email;
 	    var username = this.state.username;
 	    var password = this.state.password;
@@ -2462,6 +2498,8 @@
 	  {
 	    var email = this.state.email;
 	    var username = this.state.username;
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='0';
 	    return(
 	      React.createElement("div", null, 
 	        React.createElement("div", {className: "alert alert-info", role: "alert", style: centerPasswordForm}, 
@@ -2545,7 +2583,8 @@
 	  },
 	  render: function()
 	  {
-	    
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='0';
 	    var password = this.state.password;
 	    var confirmPassword = this.state.confirmPassword;
 
@@ -2606,6 +2645,8 @@
 	({displayName: "sentEmail",
 	  render: function()
 	  {
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='0';
 	    return (
 	      React.createElement("div", null, 
 	       React.createElement("div", {className: "alert alert-success", role: "alert", style: sentEmailStyle}, 

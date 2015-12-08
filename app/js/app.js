@@ -75,15 +75,20 @@ function get(parameter)
   }
   return url.substring(index, i);
 } 
+var navStyle =
+{
+  marginBottom: '0'
+};
 var App = React.createClass({
   render: function() 
   {
     drivewayDAO.getAll();
+
     if(!localStorage.username)
     {
       return(
         <div>
-          <nav className="navbar navbar-default" role="navigation">
+          <nav className="navbar navbar-default" role="navigation" id='navbar'>
             <div className="nav navbar-nav navbar-left">                
               <Link className="navbar-brand" to="/home">Home</Link>                  
               <Link className="navbar-brand" to="/learn">Learn</Link>              
@@ -109,7 +114,7 @@ var App = React.createClass({
       drivewayDAO.get(localStorage.username);
       return(
         <div>
-            <nav className="navbar navbar-default" role="navigation">
+            <nav className="navbar navbar-default" role="navigation" id='navbar'>
               <div className="nav navbar-nav navbar-left">                
                 <Link className="navbar-brand" to="">Home</Link>                  
                 <Link className="navbar-brand" to="/learn">Learn</Link>              
@@ -136,10 +141,13 @@ var App = React.createClass({
 var homeStyle =
 {
   textAlign: 'center',
-  width: '100%',
   fontFamily: 'Calibri',
   fontSize: '30',
-  align: 'center'
+  align: 'center',
+  backgroundColor: 'red',
+  left: '0',
+  position: 'absolute'
+
 };
 var left = 
 {
@@ -153,6 +161,11 @@ var center =
 {
   textAlign: 'center'
 };
+var inputStyle =
+{
+  width: '50%',
+  marginLeft: '25%'
+}
 var Home = React.createClass
 ({
   mixins: [History, Lifecycle],
@@ -174,24 +187,36 @@ var Home = React.createClass
   },
   render: function() {
     var address = this.state.address;
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='0';
     return (
     <div>
 
-      <div className="jumbotron" style={homeStyle}>
+      <div  className="Intro" style={homeStyle}>
+      <br/>
+      <br/>
         <p> Better parking is just a few clicks away </p>
         <div className="row">
-          <div className="input-group">
+          <div className="input-group" style={inputStyle}>
             <input type="text" className="form-control" value={address} onChange={this.handleChange} placeholder="Search the address of an event"/>
             <span className="input-group-btn">
               <button className="btn btn-default" type="button" onClick={this.goToMap}>Go!</button>
             </span>
           </div>
         </div>
+        <br/>
+        <br/>
+        <br/>
+
       </div>
 
-
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
       <div className="panel panel-primary">
-        <span className="glyphicon glyphicon-apple" aria-hidden="true"></span>
+
         <div className="panel-body" style={center}> 
           <h3>Rent out your driveway</h3>
           <p>Easy as 1...2...3...</p>
@@ -269,6 +294,8 @@ var profile = React.createClass
 ({
   render: function() 
   {
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='';
       return (
        <div>
         <div className="col-md-6" style={leftBluePanelStyle}>
@@ -520,6 +547,8 @@ var driveway = React.createClass
   },
   render: function() 
   {
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='0';
     var address = this.state.address;
     var numCars = this.state.numCars;
     var zip = this.state.zip;
@@ -1314,7 +1343,8 @@ var logOut = React.createClass
     this.history.pushState(null,'/Home');
   },
   render: function() {
-
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='0';
     return (
        <div style={formStyle}>
           <p> Click <button onClick={this.handleClick}> here</button> to log out </p>
@@ -1380,6 +1410,8 @@ var signIn = React.createClass
           
   },
   render: function() {
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='0';
     var username = this.state.username;
     var password = this.state.password;
     return (
@@ -1443,7 +1475,8 @@ var modalPage = React.createClass
 
   render: function() {
     var email = localStorage.email3;
-
+    if(document.getElementById('navbar'))
+          document.getElementById('navbar').style.marginBottom ='0';
     return (
 
       <div className="modal-dialog">
@@ -1585,7 +1618,8 @@ var findOrders = React.createClass
     var duration1 = "4";
     var rTime = "6:00 PM";
     var city = "orem"
-
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='0';
     return (
       <div>
         <div className="row"></div>
@@ -2077,6 +2111,8 @@ var signUp = React.createClass
     }
   },
   render: function() {
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='0';
     var email = this.state.email;
     var username = this.state.username;
     var password = this.state.password;
@@ -2409,6 +2445,8 @@ var forgottenPassword = React.createClass
   {
     var email = this.state.email;
     var username = this.state.username;
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='0';
     return(
       <div>
         <div className="alert alert-info" role="alert" style={centerPasswordForm}>
@@ -2492,7 +2530,8 @@ var updatePassword = React.createClass
   },
   render: function()
   {
-    
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='0';
     var password = this.state.password;
     var confirmPassword = this.state.confirmPassword;
 
@@ -2553,6 +2592,8 @@ var sentEmail = React.createClass
 ({
   render: function()
   {
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='0';
     return (
       <div>
        <div className="alert alert-success" role="alert" style={sentEmailStyle}>
