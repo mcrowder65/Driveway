@@ -158,18 +158,6 @@
 	          ), 
 	          React.createElement("div", {className: "container"}, 
 	            this.props.children
-	          ), 
-	          React.createElement("nav", {className: "navbar navbar-fixedbottom", role: "navigation", id: "navbar", style: navStyle}, 
-	            React.createElement("div", {className: "nav navbar-nav navbar-left"}, 
-	              React.createElement(Link, {className: "navbar-brand", to: "/home"}, "Home"), 
-	              React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
-	              React.createElement(Link, {className: "navbar-brand", to: "/reserveparking"}, "Reserve Parking"), 
-	              React.createElement(Link, {className: "navbar-brand", to: "/lookup"}, "Order Lookup")
-	            ), 
-	            React.createElement("div", {className: "nav navbar-nav navbar-right", id: "bs-example-navbar-collapse-1"}, 
-	              React.createElement("li", null, React.createElement(Link, {to: "signIn"}, "Sign in")), 
-	              React.createElement("li", null, React.createElement(Link, {to: "signUp"}, "Sign up"))
-	            )
 	          )
 	        )
 	      );

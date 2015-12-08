@@ -106,18 +106,6 @@ var App = React.createClass({
           <div className="container">
             {this.props.children}
           </div>
-          <nav className="navbar navbar-fixedbottom" role="navigation" id='navbar' style={navStyle}>
-            <div className="nav navbar-nav navbar-left">                
-              <Link className="navbar-brand" to="/home">Home</Link>                  
-              <Link className="navbar-brand" to="/learn">Learn</Link>              
-              <Link className="navbar-brand" to="/reserveparking">Reserve Parking</Link>                
-              <Link className="navbar-brand" to="/lookup">Order Lookup</Link> 
-            </div>
-            <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
-              <li><Link to="signIn">Sign in</Link></li>
-              <li><Link to="signUp">Sign up</Link></li>
-            </div>
-          </nav>
         </div>
       );
     }
