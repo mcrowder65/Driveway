@@ -192,7 +192,7 @@
 	  fontFamily: 'Calibri',
 	  fontSize: '30',
 	  align: 'center',
-	  backgroundColor: 'red',
+	  //backgroundColor: 'red',
 	  left: '0',
 	  position: 'absolute'
 
@@ -240,7 +240,7 @@
 	    return (
 	    React.createElement("div", null, 
 
-	      React.createElement("div", {className: "Intro", style: homeStyle}, 
+	      React.createElement("div", {className: "Intro bg-primary", style: homeStyle}, 
 	      React.createElement("br", null), 
 	      React.createElement("br", null), 
 	        React.createElement("p", null, " Better parking is just a few clicks away "), 
@@ -27101,10 +27101,29 @@
 	    router: React.PropTypes.func
 	  },
 
+	  getParam: function(parameter)
+	  {  
+	    var url = window.location.href;
+	    var index = url.indexOf(parameter);
+	    if(index == -1)
+	      return null;
+	    index += parameter.length + 1; //if the word we're looking for is address, get a index
+	                                   //then add address.length +1 to get start of value 
+	     
+	    var i = index;
+	    while(url[i] != '?' && url[i] != '&')
+	    {
+	      if(i > url.length)
+	        break;
+	      i++;
+	    }
+	    return url.substring(index, i);
+	  }, 
+
 	  getInitialState: function() {
 	    return {
 	      email: '',
-	      address: '',
+	      address: this.getParam('address'),
 	      date: '',
 	      time: '',
 	      map: undefined,
@@ -27122,11 +27141,6 @@
 	  },
 
 	  initializeMap: function() {
-	    //console.log(this.context);
-	    //alert(this.props.location.query.address);
-	    //var {address} = this.context.router.getCurrentQuery();
-	    //this.setState({address: address});
-
 	    //Parking Map    
 	    this.geocodeAddress(this.state.address, this, function(location, component){
 	      var mapOptions = {
@@ -27145,6 +27159,10 @@
 
 	      component.setState({map: map});
 	    });
+
+	    if(this.state.address != ''){
+	      this.handleSubmit();
+	    }
 	  },
 
 	  getReservations: function(){

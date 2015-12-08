@@ -139,7 +139,7 @@ var homeStyle =
   fontFamily: 'Calibri',
   fontSize: '30',
   align: 'center',
-  backgroundColor: 'red',
+  //backgroundColor: 'red',
   left: '0',
   position: 'absolute'
 
@@ -187,7 +187,7 @@ var Home = React.createClass
     return (
     <div>
 
-      <div  className="Intro" style={homeStyle}>
+      <div  className="Intro bg-primary" style={homeStyle}>
       <br/>
       <br/>
         <p> Better parking is just a few clicks away </p>
