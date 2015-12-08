@@ -61,17 +61,17 @@
 	var ReservationForm = __webpack_require__(211);
 	var RouteHandler = Router.RouteHandler;
 	var Redirect = Router.Redirect;
-	var CheckoutStrip = __webpack_require__(213);
+	var CheckoutStrip = __webpack_require__(212);
 	var signedIn = true;
 	var transitionTo = Router.transitionTo;
 	var History = __webpack_require__(160).History;
-	var $__0=     __webpack_require__(214),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
-	var ReactScriptLoaderMixin = __webpack_require__(219).ReactScriptLoaderMixin;
+	var $__0=     __webpack_require__(213),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
+	var ReactScriptLoaderMixin = __webpack_require__(218).ReactScriptLoaderMixin;
 	var $__1=  __webpack_require__(160),Lifecycle=$__1.Lifecycle;
 	var history = useBasename(createHistory)({
 	    basename: '/transitions'
 	})
-	var Button = __webpack_require__(220);
+	var Button = __webpack_require__(219);
 	var profileDriveways = '';
 	var allDriveways = [];
 	var userDriveways = [];
@@ -27088,8 +27088,9 @@
 
 	/** @jsx React.DOM */var React = __webpack_require__(2);
 	ReactDOM = __webpack_require__(159);
-	var ParkingMap = __webpack_require__(212);
-	var CheckoutStrip = __webpack_require__(213);
+	var CheckoutStrip = __webpack_require__(212);
+	var Marker = google.maps.Marker;
+	var geocoder = new google.maps.Geocoder();
 
 	var ReservationForm = React.createClass({displayName: "ReservationForm",
 	  contextTypes: {
@@ -27102,10 +27103,35 @@
 	      address: '',
 	      date: '',
 	      time: '',
-	      mapData: {event: {address: "156 East 200 North, Provo, UT 84606, USA", date: "", time: ""}, markers: []},
-	      payData: {event: {Email: "", Address: "", Price: "", street: "", zip1: "", state: "", resDate: "", duration: "", resTime: "", city: "", drivewayId: "", owner: ""}, parking: []},
-	      showPay: false
+	      map: undefined,
+	      markers: [],
+	      eventMapMarker: []
 	    }      
+	  },
+
+	  componentDidMount: function () {
+	    this.initializeMap();
+	  },
+
+	  initializeMap: function() {
+	    //Parking Map    
+	    this.geocodeAddress(this.state.address, this, function(location, component){
+	      var mapOptions = {
+	        center: location,
+	        draggableCursor: 'crosshair',
+	        zoom:            14,
+	        mapTypeId:       google.maps.MapTypeId.ROADMAP,
+	        streetViewControl:  false,
+	        panControl:         true,
+	        zoomControl:        true,
+	        mapTypeControl:     true,
+	        scaleControl:       true,
+	        overviewMapControl: true
+	      }
+	      var map = new google.maps.Map($('.map-canvas')[0], mapOptions);
+
+	      component.setState({map: map});
+	    });
 	  },
 
 	  getReservations: function(){
@@ -27169,14 +27195,24 @@
 	    return filteredDriveways;
 	  },
 
-	  generateMapMarkers: function(){    
+	  geocodeAddress: function(address, component, cb, marker, markers) {
+	    geocoder.geocode({'address': address}, function(results, status) {
+	      if (status === google.maps.GeocoderStatus.OK) {
+	        cb(results[0].geometry.location, component, marker, markers);
+	      } else {
+	        cb(null, component, marker, markers);
+	      }
+	    });
+	  },
+
+	  generateMarkers: function(){    
 	    driveways = this.getDriveways();
 	    reservations = this.getReservations();
 
 	    //Filter driveways
 	    filteredDriveways = this.filterDriveways(driveways, reservations);
 
-	    //Build Map Markers
+	    //Build Markers
 	    var markers = [];
 	    for(var i = 0; i < filteredDriveways.length; i++){
 	      var driveway = driveways[i];
@@ -27185,25 +27221,82 @@
 	      var infoWindow = new google.maps.InfoWindow({
 	        content: this.renderInfoWindow(address, driveway)
 	      });
-	      markers.push({address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow})
+	      var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow};
+
+	      this.geocodeAddress(address, this, function(location, component, marker, markers){
+	          markerOptions = { //Optimize this later
+	            map: component.state.map,
+	            //animation: google.maps.Animation.DROP,
+	            draggable: false,
+	            position:  location,
+	            title:     'Parking Location',
+	            icon: '../images/marker-green.png'//marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
+	          }
+
+	          var mapMarker = new Marker(markerOptions);
+	          mapMarker.addListener('click', function() {component.markerClicked(marker, mapMarker, component.state.map)});
+	          markers.push({marker: marker, mapMarker: mapMarker});
+	        }, marker, markers);
 	    }
 
+	    console.log(markers);
 	    return markers;
+	  },
+
+	  generateEventMarker: function(){
+	    var marker = undefined;
+	    var markers = [];
+	    this.geocodeAddress(this.state.address, this, function(location, component, marker, markers){
+	      markerOptions = {
+	        map: component.state.map,
+	        animation: google.maps.Animation.DROP,
+	        draggable: false,
+	        position:  location,
+	        title:     'Event Location',
+	        icon: '../images/marker-red.png'
+	      }
+
+	      var mapMarker = new Marker(markerOptions);
+	      markers.push({eventMapMarker: mapMarker});
+	    }, marker, markers);   
+
+	    return markers;
+	  },
+
+	  deleteMarkers: function(){
+	    for(var i = 0; i < this.state.markers.length; i++){
+	      this.state.markers[i].mapMarker.setMap(null);
+	    }
+
+	    for(var i = 0; i < this.state.eventMapMarker.length; i++){
+	      this.state.eventMapMarker[i].eventMapMarker.setMap(null);
+	    }
 	  },
 
 	  handleChange: function(event) {
 	    if(event.target.name == "email"){
 	      this.setState({email: event.target.value});
 	    }else if(event.target.name == "address"){
-	      mapMarkers = this.generateMapMarkers();
-	      this.setState({address: event.target.value, mapData: {event: {address: event.target.value, date: this.state.date, time: this.state.time}, markers: mapMarkers}});
-	    }else if(event.target.name == "date"){
-	      mapMarkers = this.generateMapMarkers();
-	      this.setState({date: event.target.value, mapData: {event: {address: this.state.address, date: event.target.value, time: this.state.time}, markers: mapMarkers}});
-	    }else if(event.target.name == "time"){
-	      mapMarkers = this.generateMapMarkers();
-	      this.setState({time: event.target.value, mapData: {event: {address: this.state.address, date: this.state.date, time: event.target.value}, markers: mapMarkers}});
+	      this.setState({address: event.target.value});
+	    }else if(event.target.name == "date"){      
+	      this.setState({date: event.target.value});
+	    }else if(event.target.name == "time"){      
+	      this.setState({time: event.target.value});
 	    }
+	  },
+
+	  recenterMap: function() {
+	    this.geocodeAddress(this.state.address, this, function(location, component){
+	      component.state.map.setCenter(location);
+	    });
+	  },
+
+	  handleSubmit: function(){
+	    this.deleteMarkers();
+	    var mapMarkers = this.generateMarkers();
+	    var eventMarker = this.generateEventMarker();
+	    this.recenterMap();
+	    this.setState({markers: mapMarkers, eventMapMarker: eventMarker});
 	  },
 
 	  renderInfoWindow: function(address, driveway){
@@ -27228,7 +27321,7 @@
 	    ReactDOM.render(React.createElement(CheckoutStrip, {data: payData}), document.getElementById('pay'));
 	  },
 
-	  render: function () {
+	  render: function() {
 	    var style = {
 	      width:     '100%',
 	      height: $(window).width() < 500 ? 300 : 500,
@@ -27236,16 +27329,23 @@
 	    }
 
 	    return(
-	      React.createElement("div", null, 
-	        React.createElement("div", {style: {textAlign: 'center', backgroundColor: 'black', paddingTop: '10px', paddingBottom: '10px'}}, 
-	            React.createElement("label", {style: {marginRight: '2px', color: 'slateblue'}}, "Email:"), React.createElement("input", {type: "email", name: "email", value: this.state.email, onChange: this.handleChange}), 
-	            React.createElement("label", {style: {marginRight: '2px', marginLeft: '10px', color: 'slateblue'}}, "Event Address:"), React.createElement("input", {type: "text", name: "address", value: this.state.address, onChange: this.handleChange}), 
-	            React.createElement("label", {style: {marginRight: '2px', marginLeft: '10px', color: 'slateblue'}}, "Event Date:"), React.createElement("input", {type: "text", name: "date", value: this.state.date, onChange: this.handleChange}), 
-	            React.createElement("label", {style: {marginRight: '2px', marginLeft: '10px', color: 'slateblue'}}, "Event Time:"), React.createElement("input", {type: "text", name: "time", value: this.state.time, onChange: this.handleChange})
+	      React.createElement("div", {className: "panel panel-primary"}, 
+	        React.createElement("div", {className: "panel-heading"}, 
+	          React.createElement("div", {className: "form-group", style: {textAlign: 'center'}}, 
+	              React.createElement("div", {className: "row"}, 
+	                React.createElement("div", {className: "col-md-3"}, React.createElement("label", {className: "form-label"}, "Email:"), React.createElement("input", {className: "form-control", type: "email", name: "email", placeholder: "Email", value: this.state.email, onChange: this.handleChange})), 
+	                React.createElement("div", {className: "col-md-3"}, React.createElement("label", {className: "form-label"}, "Event Address:"), React.createElement("input", {className: "form-control", type: "text", name: "address", placeholder: "156 East 200 North, Provo, UT 84606", value: this.state.address, onChange: this.handleChange})), 
+	                React.createElement("div", {className: "col-md-2"}, React.createElement("label", {className: "form-label"}, "Event Date:"), React.createElement("input", {className: "form-control", type: "text", name: "date", placeholder: "12/12/16", value: this.state.date, onChange: this.handleChange})), 
+	                React.createElement("div", {className: "col-md-2"}, React.createElement("label", {className: "form-label"}, "Event Time:"), React.createElement("input", {className: "form-control", type: "text", name: "time", placeholder: "6:00", value: this.state.time, onChange: this.handleChange})), 
+	                React.createElement("div", {className: "col-md-2", style: {marginTop: '24px'}}, React.createElement("input", {className: "form-control", type: "button", name: "submit", value: "Submit", onClick: this.handleSubmit}))
+	              )
+	          )
 	        ), 
 
-	        React.createElement("div", null, 
-	          React.createElement(ParkingMap, {data: this.state.mapData, markerClicked: this.markerClicked})
+	        React.createElement("div", {className: "panel-body"}, 
+	          React.createElement("div", null, 
+	            React.createElement("div", {style: style, className: "map-canvas"})
+	          )
 	        )
 	      )
 	    );        
@@ -27258,120 +27358,12 @@
 /* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @jsx React.DOM */var React = __webpack_require__(2);
-	var Marker = google.maps.Marker;
-	var geocoder = new google.maps.Geocoder();
-	var CheckoutStrip = __webpack_require__(213);
-
-	function geocodeAddress(address, component, cb, marker) {
-	  geocoder.geocode({'address': address}, function(results, status) {
-	    if (status === google.maps.GeocoderStatus.OK) {
-	      cb(results[0].geometry.location, component, marker);
-	    } else {
-	      cb(null, component, marker);
-	    }
-	  });
-	}
-
-	var ParkingMap = React.createClass({displayName: "ParkingMap",
-
-	  getInitialState: function () {
-	    return {
-	      event: undefined,
-	      map: undefined,
-	      markers: []
-	    }
-	  },
-
-	  // geocodeAddress: function(address) {
-	  //   var location;
-	  //   geocoder.geocode({'address': address}, function(results, status) {
-	  //     if (status === google.maps.GeocoderStatus.OK) {
-	  //       location = results[0].geometry.location;
-	  //     } else {
-	  //       location = undefined;
-	  //     }
-	  //   });
-	  //   return location;
-	  // },
-
-	  initializeMap: function() {
-	    //Parking Map
-	    var event = this.props.data.event;
-	    geocodeAddress(event.address, this, function(location, component){
-	      var mapOptions = {
-	        center: location,
-	        draggableCursor: 'crosshair',
-	        zoom:            14,
-	        mapTypeId:       google.maps.MapTypeId.ROADMAP,
-	        streetViewControl:  false,
-	        panControl:         true,
-	        zoomControl:        true,
-	        mapTypeControl:     true,
-	        scaleControl:       true,
-	        overviewMapControl: true
-	      }
-	      var map = new google.maps.Map($('.map-canvas')[0], mapOptions);
-
-	      // Parking Spots
-	      markers = component.props.data.markers;
-	      for(var i = 0; i < markers.length; i++){
-	        var marker = markers[i];
-	        geocodeAddress(marker.address, component, function(location, component, marker){
-	          markerOptions = { //Optimize this later
-	            map: map,
-	            animation: google.maps.Animation.DROP,
-	            draggable: false,
-	            position:  location,
-	            title:     'Parking Location',
-	            icon: '../images/marker-green.png'//marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
-	          }
-
-	          var mapMarker = new Marker(markerOptions);
-	          mapMarker.addListener('click', function() {component.props.markerClicked(marker, mapMarker, map)});
-	          //google.maps.event.addListener(mapMarker, 'click', component.props.markerClicked(marker));
-	        }, marker);
-	      }
-	    });
-	  },
-	  
-	  markerClicked: function(marker){
-	    console.log(marker);
-	  },
-
-	  componentDidMount: function () {
-	    this.initializeMap();
-	  },
-
-	  markerClicked: function(marker){
-	    //Render payment component
-	  },
-
-	  render: function () {
-	    var style = {
-	      width:     '100%',
-	      height: $(window).width() < 500 ? 300 : 500,
-	      maxHeight: $(window).height() / 1.5
-	    }
-	    this.initializeMap();
-	    return (
-	      React.createElement("div", {style: style, className: "map-canvas"})
-	    );
-	  }
-	});
-
-	module.exports = ParkingMap;
-
-/***/ },
-/* 213 */
-/***/ function(module, exports, __webpack_require__) {
-
 	/** @jsx React.DOM *//** @jsx React.DOM */
 
 	var React = __webpack_require__(2);
 	var History = __webpack_require__(160).History;
-	var $__0=     __webpack_require__(214),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
-	var ReactScriptLoaderMixin = __webpack_require__(219).ReactScriptLoaderMixin;
+	var $__0=     __webpack_require__(213),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
+	var ReactScriptLoaderMixin = __webpack_require__(218).ReactScriptLoaderMixin;
 	var $__1=  __webpack_require__(160),Lifecycle=$__1.Lifecycle;
 
 	var history = useBasename(createHistory)({
@@ -27586,7 +27578,7 @@
 
 
 /***/ },
-/* 214 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -27595,7 +27587,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _createBrowserHistory = __webpack_require__(215);
+	var _createBrowserHistory = __webpack_require__(214);
 
 	var _createBrowserHistory2 = _interopRequireDefault(_createBrowserHistory);
 
@@ -27625,7 +27617,7 @@
 
 	exports.useBasename = _useBasename3['default'];
 
-	var _useBeforeUnload2 = __webpack_require__(216);
+	var _useBeforeUnload2 = __webpack_require__(215);
 
 	var _useBeforeUnload3 = _interopRequireDefault(_useBeforeUnload2);
 
@@ -27645,20 +27637,20 @@
 
 	// deprecated
 
-	var _enableBeforeUnload2 = __webpack_require__(217);
+	var _enableBeforeUnload2 = __webpack_require__(216);
 
 	var _enableBeforeUnload3 = _interopRequireDefault(_enableBeforeUnload2);
 
 	exports.enableBeforeUnload = _enableBeforeUnload3['default'];
 
-	var _enableQueries2 = __webpack_require__(218);
+	var _enableQueries2 = __webpack_require__(217);
 
 	var _enableQueries3 = _interopRequireDefault(_enableQueries2);
 
 	exports.enableQueries = _enableQueries3['default'];
 
 /***/ },
-/* 215 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/** @jsx React.DOM */'use strict';
@@ -27836,7 +27828,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 216 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/** @jsx React.DOM */'use strict';
@@ -27953,7 +27945,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 217 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -27966,7 +27958,7 @@
 
 	var _deprecate2 = _interopRequireDefault(_deprecate);
 
-	var _useBeforeUnload = __webpack_require__(216);
+	var _useBeforeUnload = __webpack_require__(215);
 
 	var _useBeforeUnload2 = _interopRequireDefault(_useBeforeUnload);
 
@@ -27974,7 +27966,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 218 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -27995,7 +27987,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 219 */
+/* 218 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */
@@ -28119,14 +28111,14 @@
 
 
 /***/ },
-/* 220 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict'
 
 	var React     = __webpack_require__(2)
-	var assign    = __webpack_require__(221)
-	var normalize = __webpack_require__(222)
+	var assign    = __webpack_require__(220)
+	var normalize = __webpack_require__(221)
 
 	function emptyFn(){}
 
@@ -28660,7 +28652,7 @@
 	module.exports = ReactButton
 
 /***/ },
-/* 221 */
+/* 220 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -28692,16 +28684,16 @@
 
 
 /***/ },
-/* 222 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var hasOwn      = __webpack_require__(223)
-	var getPrefixed = __webpack_require__(224)
+	var hasOwn      = __webpack_require__(222)
+	var getPrefixed = __webpack_require__(223)
 
-	var map      = __webpack_require__(230)
-	var plugable = __webpack_require__(231)
+	var map      = __webpack_require__(229)
+	var plugable = __webpack_require__(230)
 
 	function plugins(key, value){
 
@@ -28762,7 +28754,7 @@
 	module.exports = plugable(RESULT)
 
 /***/ },
-/* 223 */
+/* 222 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -28773,13 +28765,13 @@
 
 
 /***/ },
-/* 224 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var getStylePrefixed = __webpack_require__(225)
-	var properties       = __webpack_require__(229)
+	var getStylePrefixed = __webpack_require__(224)
+	var properties       = __webpack_require__(228)
 
 	module.exports = function(key, value){
 
@@ -28791,14 +28783,14 @@
 	}
 
 /***/ },
-/* 225 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var toUpperFirst = __webpack_require__(226)
-	var getPrefix    = __webpack_require__(227)
-	var el           = __webpack_require__(228)
+	var toUpperFirst = __webpack_require__(225)
+	var getPrefix    = __webpack_require__(226)
+	var el           = __webpack_require__(227)
 
 	var MEMORY = {}
 	var STYLE
@@ -28847,7 +28839,7 @@
 	}
 
 /***/ },
-/* 226 */
+/* 225 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -28859,15 +28851,15 @@
 	}
 
 /***/ },
-/* 227 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var toUpperFirst = __webpack_require__(226)
+	var toUpperFirst = __webpack_require__(225)
 	var prefixes     = ["ms", "Moz", "Webkit", "O"]
 
-	var el = __webpack_require__(228)
+	var el = __webpack_require__(227)
 
 	var ELEMENT
 	var PREFIX
@@ -28898,7 +28890,7 @@
 	}
 
 /***/ },
-/* 228 */
+/* 227 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/** @jsx React.DOM */'use strict';
@@ -28920,7 +28912,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 229 */
+/* 228 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -28968,7 +28960,7 @@
 
 
 /***/ },
-/* 230 */
+/* 229 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -28989,12 +28981,12 @@
 	}
 
 /***/ },
-/* 231 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var getCssPrefixedValue = __webpack_require__(232)
+	var getCssPrefixedValue = __webpack_require__(231)
 
 	module.exports = function(target){
 		target.plugins = target.plugins || [
@@ -29025,14 +29017,14 @@
 	}
 
 /***/ },
-/* 232 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var getPrefix     = __webpack_require__(227)
-	var forcePrefixed = __webpack_require__(233)
-	var el            = __webpack_require__(228)
+	var getPrefix     = __webpack_require__(226)
+	var forcePrefixed = __webpack_require__(232)
+	var el            = __webpack_require__(227)
 
 	var MEMORY = {}
 	var STYLE
@@ -29079,14 +29071,14 @@
 	}
 
 /***/ },
-/* 233 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var toUpperFirst = __webpack_require__(226)
-	var getPrefix    = __webpack_require__(227)
-	var properties   = __webpack_require__(229)
+	var toUpperFirst = __webpack_require__(225)
+	var getPrefix    = __webpack_require__(226)
+	var properties   = __webpack_require__(228)
 
 	/**
 	 * Returns the given key prefixed, if the property is found in the prefixProps map.
