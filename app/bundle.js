@@ -71,6 +71,7 @@
 	var history = useBasename(createHistory)({
 	    basename: '/transitions'
 	})
+
 	var Button = __webpack_require__(219);
 	var profileDriveways = '';
 	var allDriveways = [];
@@ -130,8 +131,10 @@
 	} 
 	var navStyle =
 	{
-	  marginBottom: '0'
+	  marginBottom: '0',
+
 	};
+
 	var App = React.createClass({displayName: "App",
 	  render: function() 
 	  {
@@ -155,6 +158,18 @@
 	          ), 
 	          React.createElement("div", {className: "container"}, 
 	            this.props.children
+	          ), 
+	          React.createElement("nav", {className: "navbar navbar-fixedbottom", role: "navigation", id: "navbar", style: navStyle}, 
+	            React.createElement("div", {className: "nav navbar-nav navbar-left"}, 
+	              React.createElement(Link, {className: "navbar-brand", to: "/home"}, "Home"), 
+	              React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
+	              React.createElement(Link, {className: "navbar-brand", to: "/reserveparking"}, "Reserve Parking"), 
+	              React.createElement(Link, {className: "navbar-brand", to: "/lookup"}, "Order Lookup")
+	            ), 
+	            React.createElement("div", {className: "nav navbar-nav navbar-right", id: "bs-example-navbar-collapse-1"}, 
+	              React.createElement("li", null, React.createElement(Link, {to: "signIn"}, "Sign in")), 
+	              React.createElement("li", null, React.createElement(Link, {to: "signUp"}, "Sign up"))
+	            )
 	          )
 	        )
 	      );
@@ -179,13 +194,20 @@
 	            React.createElement("div", {className: "container"}, 
 	              this.props.children
 	            )
+	           
 	          )
 	      );
 	    }
 	    
 	  }
 	});
-
+	var footerStyle =
+	{
+	  paddingTop: '60px',
+	  backgroundColor: 'white',
+	  width: '50%',
+	  marginLeft: '25%',
+	};
 
 	var left = 
 	{
@@ -253,7 +275,6 @@
 	    }
 	    return (
 	    React.createElement("div", null, 
-
 	      React.createElement("div", {className: "Intro", style: homeStyle}, 
 	      React.createElement("br", null), 
 	      React.createElement("br", null), 

@@ -18,6 +18,7 @@ var {Lifecycle, RouteContext} = require('react-router');
 var history = useBasename(createHistory)({
     basename: '/transitions'
 })
+
 var Button = require('react-button');
 var profileDriveways = '';
 var allDriveways = [];
@@ -77,8 +78,10 @@ function get(parameter)
 } 
 var navStyle =
 {
-  marginBottom: '0'
+  marginBottom: '0',
+
 };
+
 var App = React.createClass({
   render: function() 
   {
@@ -103,6 +106,18 @@ var App = React.createClass({
           <div className="container">
             {this.props.children}
           </div>
+          <nav className="navbar navbar-fixedbottom" role="navigation" id='navbar' style={navStyle}>
+            <div className="nav navbar-nav navbar-left">                
+              <Link className="navbar-brand" to="/home">Home</Link>                  
+              <Link className="navbar-brand" to="/learn">Learn</Link>              
+              <Link className="navbar-brand" to="/reserveparking">Reserve Parking</Link>                
+              <Link className="navbar-brand" to="/lookup">Order Lookup</Link> 
+            </div>
+            <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
+              <li><Link to="signIn">Sign in</Link></li>
+              <li><Link to="signUp">Sign up</Link></li>
+            </div>
+          </nav>
         </div>
       );
     }
@@ -126,13 +141,20 @@ var App = React.createClass({
             <div className="container">
               {this.props.children}
             </div>
+           
           </div>
       );
     }
     
   }
 });
-
+var footerStyle =
+{
+  paddingTop: '60px',
+  backgroundColor: 'white',
+  width: '50%',
+  marginLeft: '25%',
+};
 
 var left = 
 {
@@ -200,7 +222,6 @@ var Home = React.createClass
     }
     return (
     <div>
-
       <div  className="Intro" style={homeStyle}>
       <br/>
       <br/>
