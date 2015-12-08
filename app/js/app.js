@@ -1775,6 +1775,109 @@ var recieptEmail =
   },
 };
 
+
+var learnMore = React.createClass
+({
+  mixins: [History, Lifecycle],
+  getInitialState: function()
+  {
+    return {email: ''}, {address: ''}, {price: ''};
+
+  },
+
+  handleChange: function(event)
+  {
+
+    if(event.target.name == "email")
+    {
+      this.setState({email: event.target.value});
+        //console.log(event.target.value);
+    }
+
+  },
+   
+
+  render: function() {
+    
+    return (
+      <div>
+        <div className="well">
+          <div style={formStyle}>
+           <h1>Frequently Asked Questions!</h1>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>About US</div>
+              <div className="panel-body">
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>About US</div>
+              <div className="panel-body">
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>How do I reserve a Driveway?</div>
+              <div className="panel-body">
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>About US</div>
+              <div className="panel-body">
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>How do I rent my Driveway?</div>
+              <div className="panel-body">
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+                <p>This is where we talk about what we do </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      );
+  }
+});
+
 var pastOrders = React.createClass
 ({
   mixins: [History, Lifecycle],
@@ -2650,7 +2753,7 @@ var routes = (
           <IndexRoute component={Home} />
           <Route name="home" path="/home" component={Home}/>
           <Route name="updatePassword" path="/updatePassword" component={updatePassword} />
-          <Route name="learn" path="/learn" component={learn} /> 
+          <Route name="learn" path="/learn" component={learnMore} /> 
           <Route name="allDriveways" path="/allDriveways" component={allDriveways} /> 
           <Route name="pay" path="/pay" component={pay} />
           <Route name="reserveParking" path="/reserveparking" component={ReserveParking} /> 

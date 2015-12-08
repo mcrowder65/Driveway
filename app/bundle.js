@@ -1828,6 +1828,109 @@
 	  },
 	};
 
+
+	var learnMore = React.createClass
+	({displayName: "learnMore",
+	  mixins: [History, Lifecycle],
+	  getInitialState: function()
+	  {
+	    return {email: ''}, {address: ''}, {price: ''};
+
+	  },
+
+	  handleChange: function(event)
+	  {
+
+	    if(event.target.name == "email")
+	    {
+	      this.setState({email: event.target.value});
+	        //console.log(event.target.value);
+	    }
+
+	  },
+	   
+
+	  render: function() {
+	    
+	    return (
+	      React.createElement("div", null, 
+	        React.createElement("div", {className: "well"}, 
+	          React.createElement("div", {style: formStyle}, 
+	           React.createElement("h1", null, "Frequently Asked Questions!")
+	          )
+	        ), 
+	        React.createElement("div", {className: "row"}, 
+	          React.createElement("div", {className: "col-md-6"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "About US"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do ")
+	              )
+	            )
+	          ), 
+	          React.createElement("div", {className: "col-md-6"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "About US"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do ")
+	              )
+	            )
+	          )
+	        ), 
+	        React.createElement("div", {className: "row"}, 
+	          React.createElement("div", {className: "col-md-6"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "How do I reserve a Driveway?"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do ")
+	              )
+	            )
+	          ), 
+	          React.createElement("div", {className: "col-md-6"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "About US"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do ")
+	              )
+	            )
+	          )
+	        ), 
+	        React.createElement("div", {className: "row"}, 
+	          React.createElement("div", {className: "col-md-12"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "How do I rent my Driveway?"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do "), 
+	                React.createElement("p", null, "This is where we talk about what we do ")
+	              )
+	            )
+	          )
+	        )
+	      )
+
+	      );
+	  }
+	});
+
 	var pastOrders = React.createClass
 	({displayName: "pastOrders",
 	  mixins: [History, Lifecycle],
@@ -2703,7 +2806,7 @@
 	          React.createElement(IndexRoute, {component: Home}), 
 	          React.createElement(Route, {name: "home", path: "/home", component: Home}), 
 	          React.createElement(Route, {name: "updatePassword", path: "/updatePassword", component: updatePassword}), 
-	          React.createElement(Route, {name: "learn", path: "/learn", component: learn}), 
+	          React.createElement(Route, {name: "learn", path: "/learn", component: learnMore}), 
 	          React.createElement(Route, {name: "allDriveways", path: "/allDriveways", component: allDriveways}), 
 	          React.createElement(Route, {name: "pay", path: "/pay", component: pay}), 
 	          React.createElement(Route, {name: "reserveParking", path: "/reserveparking", component: ReserveParking}), 
