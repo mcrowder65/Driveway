@@ -79,7 +79,7 @@ function get(parameter)
 var navStyle =
 {
   marginBottom: '0',
-
+  paddingRight: '10px'
 };
 
 var App = React.createClass({
