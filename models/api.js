@@ -115,13 +115,28 @@ app.post
 	function(req, res)
 	{
 		var email = req.body.email;
+		var name = req.body.name;
+		var cardType = req.body.cardType;
+		var last4 = req.body.last4;
+		var totalP = req.body.totalP;
+		var resAdd = req.body.resAdd;
+		var state = req.body.state;
+		var zip = req.body.zipC;
+		var resDate = req.body.dateOfRes;
+		var timeOfRes = req.body.timeOfRes;
+		var resDur = req.body.resDur;
+		var city = req.body.city;
+
+
+
+		var emailBod = '<p>'+"Order Details " + '</p>'+'<p>'+"Name: " + name + '</p>' + '<p>'+"Email: " + email + '</p>' + '<p>'+"Reserved Address: " + resAdd + '</p>' + '<p>'+"City: " + city + '</p>' + '<p>'+"State: " + state + '</p>' +'<p>'+"Zip: " + zip + '</p>' + '<p>'+"Reservation Date: " + resDate + '</p>' + '<p>'+"Time of Reservation: " + timeOfRes + '</p>' + '<p>'+"Reservation Duration: " + resDur + '</p>' + '<p>'+"Card Type: " + cardType + '</p>' + '<p>'+"Last 4 Digits of CC: " + last4 + '</p>' + '<p>'+"Total Price: $" + totalP + '</p>'
 		var href = 'http://ec2-52-10-45-219.us-west-2.compute.amazonaws.com:3000/#/updatePassword?id=' + req.body.id;
 		var mailOptions =
 		{
 			from: 'Driveway Team <driveway.matt.c@gmail.com>',
 			to: email,
 			subject: 'Requested password change',
-			html: '<p>cool</p>'
+			html: emailBod
 		};
 		transporter.sendMail(mailOptions, 
 		function(error, info)

@@ -1577,6 +1577,17 @@ var orderEmail =
         type: 'POST',
         data: {
           email: email11,
+          name: temp2.name1,
+          cardType: temp2.cardType,
+          last4: temp2.last4,
+          totalP: temp2.price/100,
+          resAdd: temp2.address,
+          state: temp2.state,
+          zipC: temp2.zip,
+          dateOfRes: temp2.reservationDate,
+          timeOfRes: temp2.reservationTime,
+          resDur: temp2.reservationDuration,
+          city: temp2.city
 
         },
         
