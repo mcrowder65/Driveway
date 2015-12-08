@@ -324,6 +324,7 @@
 	  render: function() {
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    return (
 	      React.createElement("div", {style: center}, 
 	        React.createElement("img", {src: "pic.jpg", style: picStyle}), 
@@ -350,6 +351,7 @@
 	  {
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    return (
 	     React.createElement("div", null, 
 	      React.createElement("p", null, allDriveways, " ")
@@ -363,6 +365,7 @@
 	  render: function() {
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    return (
 	      React.createElement(ReservationForm, null)
 	    );
@@ -385,6 +388,12 @@
 	  {
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    navStyle =
+	    {
+	      marginBottom: '',
+	      paddingRight: '10px'
+	    };
+	    this.forceUpdate();
 	      return (
 	       React.createElement("div", null, 
 	        React.createElement("div", {className: "col-md-6", style: leftBluePanelStyle}, 
@@ -638,6 +647,7 @@
 	  {
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    var address = this.state.address;
 	    var numCars = this.state.numCars;
 	    var zip = this.state.zip;
@@ -1434,6 +1444,7 @@
 	  render: function() {
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    return (
 	       React.createElement("div", {style: formStyle}, 
 	          React.createElement("p", null, " Click ", React.createElement("button", {onClick: this.handleClick}, " here"), " to log out ")
@@ -1501,6 +1512,7 @@
 	  render: function() {
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    var username = this.state.username;
 	    var password = this.state.password;
 	    return (
@@ -1565,7 +1577,8 @@
 	  render: function() {
 	    var email = localStorage.email3;
 	    if(document.getElementById('navbar'))
-	          document.getElementById('navbar').style.marginBottom ='';
+	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    return (
 
 	      React.createElement("div", {className: "modal-dialog"}, 
@@ -1709,6 +1722,7 @@
 	    var city = "orem"
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    return (
 	      React.createElement("div", null, 
 	        React.createElement("div", {className: "row"}), 
@@ -1851,7 +1865,9 @@
 	   
 
 	  render: function() {
-	    
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    return (
 	      React.createElement("div", null, 
 	        React.createElement("div", {className: "well"}, 
@@ -1982,6 +1998,7 @@
 
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    
 	    
 	    return (
@@ -2084,6 +2101,7 @@
 	    var owner = "John David";
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    var data = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city, drivewayId: drivewayId, owner: owner}, parking: []};
 	    return (
 
@@ -2151,6 +2169,7 @@
 	    var ZIP = "Zip Code: " + localStorage.Zip;
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    
 	    return (
 	      React.createElement("div", null, 
@@ -2308,6 +2327,7 @@
 	  render: function() {
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    var email = this.state.email;
 	    var username = this.state.username;
 	    var password = this.state.password;
@@ -2642,6 +2662,7 @@
 	    var username = this.state.username;
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    return(
 	      React.createElement("div", null, 
 	        React.createElement("div", {className: "alert alert-info", role: "alert", style: centerPasswordForm}, 
@@ -2727,6 +2748,7 @@
 	  {
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    var password = this.state.password;
 	    var confirmPassword = this.state.confirmPassword;
 
@@ -2789,6 +2811,7 @@
 	  {
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+	    this.forceUpdate();
 	    return (
 	      React.createElement("div", null, 
 	       React.createElement("div", {className: "alert alert-success", role: "alert", style: sentEmailStyle}, 
