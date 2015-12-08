@@ -288,6 +288,8 @@
 	var learn = React.createClass
 	({displayName: "learn",
 	  render: function() {
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='';
 	    return (
 	      React.createElement("div", {style: center}, 
 	        React.createElement("img", {src: "pic.jpg", style: picStyle}), 
@@ -312,6 +314,8 @@
 	({displayName: "allDriveways",
 	  render: function() 
 	  {
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='';
 	    return (
 	     React.createElement("div", null, 
 	      React.createElement("p", null, allDriveways, " ")
@@ -321,7 +325,10 @@
 	});
 
 	var ReserveParking = React.createClass({displayName: "ReserveParking",
+
 	  render: function() {
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='';
 	    return (
 	      React.createElement(ReservationForm, null)
 	    );
@@ -596,7 +603,7 @@
 	  render: function() 
 	  {
 	    if(document.getElementById('navbar'))
-	      document.getElementById('navbar').style.marginBottom ='0';
+	      document.getElementById('navbar').style.marginBottom ='';
 	    var address = this.state.address;
 	    var numCars = this.state.numCars;
 	    var zip = this.state.zip;
@@ -1392,7 +1399,7 @@
 	  },
 	  render: function() {
 	    if(document.getElementById('navbar'))
-	      document.getElementById('navbar').style.marginBottom ='0';
+	      document.getElementById('navbar').style.marginBottom ='';
 	    return (
 	       React.createElement("div", {style: formStyle}, 
 	          React.createElement("p", null, " Click ", React.createElement("button", {onClick: this.handleClick}, " here"), " to log out ")
@@ -1459,7 +1466,7 @@
 	  },
 	  render: function() {
 	    if(document.getElementById('navbar'))
-	      document.getElementById('navbar').style.marginBottom ='0';
+	      document.getElementById('navbar').style.marginBottom ='';
 	    var username = this.state.username;
 	    var password = this.state.password;
 	    return (
@@ -1524,7 +1531,7 @@
 	  render: function() {
 	    var email = localStorage.email3;
 	    if(document.getElementById('navbar'))
-	          document.getElementById('navbar').style.marginBottom ='0';
+	          document.getElementById('navbar').style.marginBottom ='';
 	    return (
 
 	      React.createElement("div", {className: "modal-dialog"}, 
@@ -1667,7 +1674,7 @@
 	    var rTime = "6:00 PM";
 	    var city = "orem"
 	    if(document.getElementById('navbar'))
-	      document.getElementById('navbar').style.marginBottom ='0';
+	      document.getElementById('navbar').style.marginBottom ='';
 	    return (
 	      React.createElement("div", null, 
 	        React.createElement("div", {className: "row"}), 
@@ -1836,7 +1843,8 @@
 	    var price = "Total Price: $" + price2;
 	    var ZIP = "Zip Code: " + temp2.zip;
 
-	    
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='';
 	    
 	    
 	    return (
@@ -1937,7 +1945,8 @@
 
 	    var drivewayId = 12345;
 	    var owner = "John David";
-
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='';
 	    var data = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city, drivewayId: drivewayId, owner: owner}, parking: []};
 	    return (
 
@@ -2003,7 +2012,8 @@
 	    var price2 = localStorage.price/100;
 	    var price = "Total Price: $" + price2;
 	    var ZIP = "Zip Code: " + localStorage.Zip;
-	    
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='';
 	    
 	    return (
 	      React.createElement("div", null, 
@@ -2160,7 +2170,7 @@
 	  },
 	  render: function() {
 	    if(document.getElementById('navbar'))
-	      document.getElementById('navbar').style.marginBottom ='0';
+	      document.getElementById('navbar').style.marginBottom ='';
 	    var email = this.state.email;
 	    var username = this.state.username;
 	    var password = this.state.password;
@@ -2494,7 +2504,7 @@
 	    var email = this.state.email;
 	    var username = this.state.username;
 	    if(document.getElementById('navbar'))
-	      document.getElementById('navbar').style.marginBottom ='0';
+	      document.getElementById('navbar').style.marginBottom ='';
 	    return(
 	      React.createElement("div", null, 
 	        React.createElement("div", {className: "alert alert-info", role: "alert", style: centerPasswordForm}, 
@@ -2579,7 +2589,7 @@
 	  render: function()
 	  {
 	    if(document.getElementById('navbar'))
-	      document.getElementById('navbar').style.marginBottom ='0';
+	      document.getElementById('navbar').style.marginBottom ='';
 	    var password = this.state.password;
 	    var confirmPassword = this.state.confirmPassword;
 
@@ -2641,7 +2651,7 @@
 	  render: function()
 	  {
 	    if(document.getElementById('navbar'))
-	      document.getElementById('navbar').style.marginBottom ='0';
+	      document.getElementById('navbar').style.marginBottom ='';
 	    return (
 	      React.createElement("div", null, 
 	       React.createElement("div", {className: "alert alert-success", role: "alert", style: sentEmailStyle}, 

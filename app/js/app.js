@@ -235,6 +235,8 @@ var picStyle=
 var learn = React.createClass
 ({
   render: function() {
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='';
     return (
       <div style={center}>
         <img src="pic.jpg" style={picStyle}/>
@@ -259,6 +261,8 @@ var allDriveways = React.createClass
 ({
   render: function() 
   {
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='';
     return (
      <div>
       <p>{allDriveways} </p>
@@ -268,7 +272,10 @@ var allDriveways = React.createClass
 });
 
 var ReserveParking = React.createClass({
+
   render: function() {
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='';
     return (
       <ReservationForm/>
     );
@@ -543,7 +550,7 @@ var driveway = React.createClass
   render: function() 
   {
     if(document.getElementById('navbar'))
-      document.getElementById('navbar').style.marginBottom ='0';
+      document.getElementById('navbar').style.marginBottom ='';
     var address = this.state.address;
     var numCars = this.state.numCars;
     var zip = this.state.zip;
@@ -1339,7 +1346,7 @@ var logOut = React.createClass
   },
   render: function() {
     if(document.getElementById('navbar'))
-      document.getElementById('navbar').style.marginBottom ='0';
+      document.getElementById('navbar').style.marginBottom ='';
     return (
        <div style={formStyle}>
           <p> Click <button onClick={this.handleClick}> here</button> to log out </p>
@@ -1406,7 +1413,7 @@ var signIn = React.createClass
   },
   render: function() {
     if(document.getElementById('navbar'))
-      document.getElementById('navbar').style.marginBottom ='0';
+      document.getElementById('navbar').style.marginBottom ='';
     var username = this.state.username;
     var password = this.state.password;
     return (
@@ -1471,7 +1478,7 @@ var modalPage = React.createClass
   render: function() {
     var email = localStorage.email3;
     if(document.getElementById('navbar'))
-          document.getElementById('navbar').style.marginBottom ='0';
+          document.getElementById('navbar').style.marginBottom ='';
     return (
 
       <div className="modal-dialog">
@@ -1614,7 +1621,7 @@ var findOrders = React.createClass
     var rTime = "6:00 PM";
     var city = "orem"
     if(document.getElementById('navbar'))
-      document.getElementById('navbar').style.marginBottom ='0';
+      document.getElementById('navbar').style.marginBottom ='';
     return (
       <div>
         <div className="row"></div>
@@ -1783,7 +1790,8 @@ var pastOrders = React.createClass
     var price = "Total Price: $" + price2;
     var ZIP = "Zip Code: " + temp2.zip;
 
-    
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='';
     
     
     return (
@@ -1884,7 +1892,8 @@ var pay = React.createClass
 
     var drivewayId = 12345;
     var owner = "John David";
-
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='';
     var data = {event: {Email: email, Address: address, Price: price, street: streetA, zip1: zip, state: state1, resDate: rDate, duration: duration1, resTime: rTime, city: city, drivewayId: drivewayId, owner: owner}, parking: []};
     return (
 
@@ -1950,7 +1959,8 @@ var confirmPage = React.createClass
     var price2 = localStorage.price/100;
     var price = "Total Price: $" + price2;
     var ZIP = "Zip Code: " + localStorage.Zip;
-    
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='';
     
     return (
       <div>
@@ -2107,7 +2117,7 @@ var signUp = React.createClass
   },
   render: function() {
     if(document.getElementById('navbar'))
-      document.getElementById('navbar').style.marginBottom ='0';
+      document.getElementById('navbar').style.marginBottom ='';
     var email = this.state.email;
     var username = this.state.username;
     var password = this.state.password;
@@ -2441,7 +2451,7 @@ var forgottenPassword = React.createClass
     var email = this.state.email;
     var username = this.state.username;
     if(document.getElementById('navbar'))
-      document.getElementById('navbar').style.marginBottom ='0';
+      document.getElementById('navbar').style.marginBottom ='';
     return(
       <div>
         <div className="alert alert-info" role="alert" style={centerPasswordForm}>
@@ -2526,7 +2536,7 @@ var updatePassword = React.createClass
   render: function()
   {
     if(document.getElementById('navbar'))
-      document.getElementById('navbar').style.marginBottom ='0';
+      document.getElementById('navbar').style.marginBottom ='';
     var password = this.state.password;
     var confirmPassword = this.state.confirmPassword;
 
@@ -2588,7 +2598,7 @@ var sentEmail = React.createClass
   render: function()
   {
     if(document.getElementById('navbar'))
-      document.getElementById('navbar').style.marginBottom ='0';
+      document.getElementById('navbar').style.marginBottom ='';
     return (
       <div>
        <div className="alert alert-success" role="alert" style={sentEmailStyle}>
