@@ -115,6 +115,7 @@ app.post
 	function(req, res)
 	{
 		var email = req.body.email;
+		var email2 = req.body.email2;
 		var name = req.body.name;
 		var cardType = req.body.cardType;
 		var last4 = req.body.last4;
@@ -129,7 +130,7 @@ app.post
 
 
 
-		var emailBod = '<p>'+"Order Details " + '</p>'+'<p>'+"Name: " + name + '</p>' + '<p>'+"Email: " + email + '</p>' + '<p>'+"Reserved Address: " + resAdd + '</p>' + '<p>'+"City: " + city + '</p>' + '<p>'+"State: " + state + '</p>' +'<p>'+"Zip: " + zip + '</p>' + '<p>'+"Reservation Date: " + resDate + '</p>' + '<p>'+"Time of Reservation: " + timeOfRes + '</p>' + '<p>'+"Reservation Duration: " + resDur + '</p>' + '<p>'+"Card Type: " + cardType + '</p>' + '<p>'+"Last 4 Digits of CC: " + last4 + '</p>' + '<p>'+"Total Price: $" + totalP + '</p>'
+		var emailBod = '<p>'+"Order Details " + '</p>'+'<p>'+"Name: " + name + '</p>' + '<p>'+"Email: " + email2 + '</p>' + '<p>'+"Reserved Address: " + resAdd + '</p>' + '<p>'+"City: " + city + '</p>' + '<p>'+"State: " + state + '</p>' +'<p>'+"Zip: " + zip + '</p>' + '<p>'+"Reservation Date: " + resDate + '</p>' + '<p>'+"Time of Reservation: " + timeOfRes + '</p>' + '<p>'+"Reservation Duration: " + resDur + '</p>' + '<p>'+"Card Type: " + cardType + '</p>' + '<p>'+"Last 4 Digits of CC: " + last4 + '</p>' + '<p>'+"Total Price: $" + totalP + '</p>'
 		var href = 'http://ec2-52-10-45-219.us-west-2.compute.amazonaws.com:3000/#/updatePassword?id=' + req.body.id;
 		var mailOptions =
 		{

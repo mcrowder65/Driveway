@@ -1577,6 +1577,7 @@ var orderEmail =
         type: 'POST',
         data: {
           email: email11,
+          email2: temp2.email,
           name: temp2.name1,
           cardType: temp2.cardType,
           last4: temp2.last4,
@@ -1588,6 +1589,51 @@ var orderEmail =
           timeOfRes: temp2.reservationTime,
           resDur: temp2.reservationDuration,
           city: temp2.city
+
+        },
+        
+        success: function(res)
+        {
+          console.log("success sendEmails");
+  
+        }.bind(this),
+        error: function()
+        {
+          console.log("failure in orderDAQ");
+        }.bind(this)
+
+    });
+   
+  },
+};
+
+var recieptEmail =
+{
+ 
+  sendEmails: function(email)
+  {
+    var url = "/api/emailOrder";
+    var email11 = email;
+    
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          email: email11,
+          email2: localStorage.email,
+          name: localStorage.Name,
+          cardType: localStorage.cardType,
+          last4: localStorage.Last4,
+          totalP: localStorage.price/100,
+          resAdd: localStorage.ResAddress,
+          state: localStorage.State,
+          zipC: localStorage.Zip,
+          dateOfRes: localStorage.ResDate,
+          timeOfRes: localStorage.ResTime,
+          resDur: localStorage.ResDuration,
+          city: localStorage.City
 
         },
         
@@ -1796,6 +1842,7 @@ var buttonStyle=
 
 var confirmPage = React.createClass
 ({
+  mixins: [History, Lifecycle],
   getInitialState: function()
   {
     return {email: ''}, {address: ''}, {price: ''};
@@ -1809,6 +1856,14 @@ var confirmPage = React.createClass
     {
       this.setState({email: event.target.value});
     }
+
+  },
+
+  sendEm: function(event)
+  {
+
+    recieptEmail.sendEmails(this.state.email);
+    this.history.pushState(null, '/home');
 
   },
 
@@ -1874,7 +1929,7 @@ var confirmPage = React.createClass
                 <p style={jumboStyle}>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </p>
                 <div style={jumboStyle}>
                   Email: <input type="text" name="email" value={email} onChange={this.handleChange}/>
-                  <a className="btn btn-primary btn-sm" href="#" role="button">Learn more</a>
+                  <button type="button" className="btn btn-primary btn-md" onClick={this.sendEm}>SEND!</button> 
                 </div>
               </div>
             </div>
