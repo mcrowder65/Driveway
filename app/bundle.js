@@ -1465,7 +1465,60 @@
 	  }
 	});
 
+	var jumboStyle = 
+	{
+	  textAlign: 'center'
+	};
 
+	var fontStyle =
+	{
+	  fontSize: '20px'
+	};
+	var fontStyle2 =
+	{
+	  fontSize: '15px',
+	  fontWeight: 'bold',
+	  textAlign: 'center'
+	};
+	var buttonStyle=
+	{
+	  width: '10%'
+	};
+
+
+	var modalPage = React.createClass
+	({displayName: "modalPage",
+	  mixins: [History, Lifecycle],
+	  closeWindow: function()
+	  {
+	    this.history.pushState(null, '/home');
+	  },
+
+	  render: function() {
+	    var email = localStorage.email3;
+
+	    return (
+
+	      React.createElement("div", {className: "modal-dialog"}, 
+	        React.createElement("div", {className: "modal-content"}, 
+	          React.createElement("div", {className: "modal-header"}, 
+	            React.createElement("button", {type: "button", className: "close", "data-dismiss": "modal"}, "×"), 
+	            React.createElement("h4", {className: "modal-title", style: jumboStyle}, "Thank You!")
+	          ), 
+	          React.createElement("div", {className: "modal-body", style: fontStyle2}, 
+	            React.createElement("p", null, "An email with the details of your reservation has been sent to ", email)
+	          ), 
+	          React.createElement("div", {className: "modal-footer"}, 
+	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.closeWindow, "data-dismiss": "modal"}, "Close")
+	          )
+	        )
+	      )
+
+	    );
+	  }
+
+
+	});
 
 	var orderDAO =
 	{
@@ -1729,7 +1782,8 @@
 	  {
 
 	    orderEmail.sendEmails(this.state.email);
-	    this.history.pushState(null, '/home');
+	    localStorage.email3 = this.state.email;
+	    this.history.pushState(null, '/modalPage');
 
 	  },
 
@@ -1873,25 +1927,8 @@
 	  }
 	});
 
-	var jumboStyle = 
-	{
-	  textAlign: 'center'
-	};
 
-	var fontStyle =
-	{
-	  fontSize: '20px'
-	};
-	var fontStyle2 =
-	{
-	  fontSize: '25px',
-	  fontWeight: 'bold',
-	  textAlign: 'center'
-	};
-	var buttonStyle=
-	{
-	  width: '10%'
-	}
+
 
 	var confirmPage = React.createClass
 	({displayName: "confirmPage",
@@ -1916,7 +1953,8 @@
 	  {
 
 	    recieptEmail.sendEmails(this.state.email);
-	    this.history.pushState(null, '/home');
+	    localStorage.email3 = this.state.email;
+	    this.history.pushState(null, '/modalPage');
 
 	  },
 
@@ -2598,7 +2636,8 @@
 	          React.createElement(Route, {name: "lookup", path: "/lookup", component: findOrders}), 
 	          React.createElement(Route, {name: "pastOrders", path: "/pastOrders", component: pastOrders}), 
 	          React.createElement(Route, {name: "forgottenPassword", path: "/forgottenPassword", component: forgottenPassword}), 
-	          React.createElement(Route, {name: "sentEmail", path: "/sentEmail", component: sentEmail})
+	          React.createElement(Route, {name: "sentEmail", path: "/sentEmail", component: sentEmail}), 
+	          React.createElement(Route, {name: "sentEmail", path: "/modalPage", component: modalPage})
 	        )
 	      )
 	);

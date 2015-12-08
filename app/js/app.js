@@ -1412,7 +1412,60 @@ var signIn = React.createClass
   }
 });
 
+var jumboStyle = 
+{
+  textAlign: 'center'
+};
 
+var fontStyle =
+{
+  fontSize: '20px'
+};
+var fontStyle2 =
+{
+  fontSize: '15px',
+  fontWeight: 'bold',
+  textAlign: 'center'
+};
+var buttonStyle=
+{
+  width: '10%'
+};
+
+
+var modalPage = React.createClass
+({
+  mixins: [History, Lifecycle],
+  closeWindow: function()
+  {
+    this.history.pushState(null, '/home');
+  },
+
+  render: function() {
+    var email = localStorage.email3;
+
+    return (
+
+      <div className="modal-dialog">
+        <div className="modal-content">
+          <div className="modal-header" >
+            <button type="button" className="close" data-dismiss="modal">&times;</button>
+            <h4 className="modal-title" style={jumboStyle}>Thank You!</h4>
+          </div>
+          <div className="modal-body" style={fontStyle2}>
+            <p>An email with the details of your reservation has been sent to {email}</p>
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-primary" onClick={this.closeWindow} data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+
+    );
+  }
+
+
+});
 
 var orderDAO =
 {
@@ -1676,7 +1729,8 @@ var pastOrders = React.createClass
   {
 
     orderEmail.sendEmails(this.state.email);
-    this.history.pushState(null, '/home');
+    localStorage.email3 = this.state.email;
+    this.history.pushState(null, '/modalPage');
 
   },
 
@@ -1820,25 +1874,8 @@ var pay = React.createClass
   }
 });
 
-var jumboStyle = 
-{
-  textAlign: 'center'
-};
 
-var fontStyle =
-{
-  fontSize: '20px'
-};
-var fontStyle2 =
-{
-  fontSize: '25px',
-  fontWeight: 'bold',
-  textAlign: 'center'
-};
-var buttonStyle=
-{
-  width: '10%'
-}
+
 
 var confirmPage = React.createClass
 ({
@@ -1863,7 +1900,8 @@ var confirmPage = React.createClass
   {
 
     recieptEmail.sendEmails(this.state.email);
-    this.history.pushState(null, '/home');
+    localStorage.email3 = this.state.email;
+    this.history.pushState(null, '/modalPage');
 
   },
 
@@ -2546,6 +2584,7 @@ var routes = (
           <Route name="pastOrders" path="/pastOrders" component={pastOrders}/>
           <Route name="forgottenPassword" path="/forgottenPassword" component={forgottenPassword}/>
           <Route name="sentEmail" path="/sentEmail" component={sentEmail}/>
+          <Route name="sentEmail" path="/modalPage" component={modalPage}/>
         </Route>
       </Router>
 );
