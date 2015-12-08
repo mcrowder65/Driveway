@@ -1,12 +1,21 @@
 var React = require('react');
 ReactDOM = require('react-dom');
+//var History = require('react-router').History;
+//var { createHistory, useBasename } = require('history');
+//var {Lifecycle} = require('react-router');
 var CheckoutStrip = require('./StripePayment.js');
 var Marker = google.maps.Marker;
 var geocoder = new google.maps.Geocoder();
 
+// var history = useBasename(createHistory)({
+//     basename: '/transitions'
+// })
+
 var ReservationForm = React.createClass({
+  //mixins: [History, Lifecycle],
+
   contextTypes: {
-        router: React.PropTypes.func
+    router: React.PropTypes.func
   },
 
   getInitialState: function() {
@@ -21,11 +30,20 @@ var ReservationForm = React.createClass({
     }      
   },
 
+  routerWillLeave: function(nextLocation){
+
+  },
+
   componentDidMount: function () {
     this.initializeMap();
   },
 
   initializeMap: function() {
+    //console.log(this.context);
+    //alert(this.props.location.query.address);
+    //var {address} = this.context.router.getCurrentQuery();
+    //this.setState({address: address});
+
     //Parking Map    
     this.geocodeAddress(this.state.address, this, function(location, component){
       var mapOptions = {

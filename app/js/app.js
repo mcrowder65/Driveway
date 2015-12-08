@@ -14,7 +14,7 @@ var transitionTo = Router.transitionTo;
 var History = require('react-router').History;
 var { createHistory, useBasename } = require('history');
 var ReactScriptLoaderMixin = require('react-script-loader').ReactScriptLoaderMixin;
-var {Lifecycle} = require('react-router');
+var {Lifecycle, RouteContext} = require('react-router');
 var history = useBasename(createHistory)({
     basename: '/transitions'
 })
@@ -92,10 +92,7 @@ var App = React.createClass({
             <div className="nav navbar-nav navbar-left">                
               <Link className="navbar-brand" to="/home">Home</Link>                  
               <Link className="navbar-brand" to="/learn">Learn</Link>              
-              <Link className="navbar-brand" to="/map">Map</Link>  
-              <Link className="navbar-brand" to="/reserveparking">Reserve Parking</Link>  
-              <Link className="navbar-brand" to="/pay">Pay</Link> 
-
+              <Link className="navbar-brand" to="/reserveparking">Reserve Parking</Link>                
               <Link className="navbar-brand" to="/lookup">Order Lookup</Link> 
             </div>
             <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
@@ -119,8 +116,6 @@ var App = React.createClass({
                 <Link className="navbar-brand" to="">Home</Link>                  
                 <Link className="navbar-brand" to="/learn">Learn</Link>              
                 <Link className="navbar-brand" to="/reserveparking">Reserve Parking</Link>  
-                <Link className="navbar-brand" to="/pay">Pay</Link> 
-                <Link className="navbar-brand" to="/confirm">Confirm Page</Link> 
                 <Link className="navbar-brand" to="/lookup">Order Lookup</Link> 
               </div>
               <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
@@ -168,14 +163,14 @@ var inputStyle =
 }
 var Home = React.createClass
 ({
-  mixins: [History, Lifecycle],
+  mixins: [History, Lifecycle, RouteContext],
   getInitialState: function() 
   {
     return {address:''};
   },
   goToMap: function()
   {
-    location.href='/#/map?' + this.state.address;
+    location.href='/#/reserveparking?address=' + this.state.address;
   },
   handleChange: function(event)
   {

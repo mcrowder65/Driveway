@@ -67,7 +67,7 @@
 	var History = __webpack_require__(160).History;
 	var $__0=     __webpack_require__(213),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
 	var ReactScriptLoaderMixin = __webpack_require__(218).ReactScriptLoaderMixin;
-	var $__1=  __webpack_require__(160),Lifecycle=$__1.Lifecycle;
+	var $__1=   __webpack_require__(160),Lifecycle=$__1.Lifecycle,RouteContext=$__1.RouteContext;
 	var history = useBasename(createHistory)({
 	    basename: '/transitions'
 	})
@@ -145,10 +145,7 @@
 	            React.createElement("div", {className: "nav navbar-nav navbar-left"}, 
 	              React.createElement(Link, {className: "navbar-brand", to: "/home"}, "Home"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
-	              React.createElement(Link, {className: "navbar-brand", to: "/map"}, "Map"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/reserveparking"}, "Reserve Parking"), 
-	              React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay"), 
-
 	              React.createElement(Link, {className: "navbar-brand", to: "/lookup"}, "Order Lookup")
 	            ), 
 	            React.createElement("div", {className: "nav navbar-nav navbar-right", id: "bs-example-navbar-collapse-1"}, 
@@ -172,8 +169,6 @@
 	                React.createElement(Link, {className: "navbar-brand", to: ""}, "Home"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/reserveparking"}, "Reserve Parking"), 
-	                React.createElement(Link, {className: "navbar-brand", to: "/pay"}, "Pay"), 
-	                React.createElement(Link, {className: "navbar-brand", to: "/confirm"}, "Confirm Page"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/lookup"}, "Order Lookup")
 	              ), 
 	              React.createElement("div", {className: "nav navbar-nav navbar-right", id: "bs-example-navbar-collapse-1"}, 
@@ -221,14 +216,14 @@
 	}
 	var Home = React.createClass
 	({displayName: "Home",
-	  mixins: [History, Lifecycle],
+	  mixins: [History, Lifecycle, RouteContext],
 	  getInitialState: function() 
 	  {
 	    return {address:''};
 	  },
 	  goToMap: function()
 	  {
-	    location.href='/#/map?' + this.state.address;
+	    location.href='/#/reserveparking?address=' + this.state.address;
 	  },
 	  handleChange: function(event)
 	  {
@@ -27088,13 +27083,22 @@
 
 	/** @jsx React.DOM */var React = __webpack_require__(2);
 	ReactDOM = __webpack_require__(159);
+	//var History = require('react-router').History;
+	//var { createHistory, useBasename } = require('history');
+	//var {Lifecycle} = require('react-router');
 	var CheckoutStrip = __webpack_require__(212);
 	var Marker = google.maps.Marker;
 	var geocoder = new google.maps.Geocoder();
 
+	// var history = useBasename(createHistory)({
+	//     basename: '/transitions'
+	// })
+
 	var ReservationForm = React.createClass({displayName: "ReservationForm",
+	  //mixins: [History, Lifecycle],
+
 	  contextTypes: {
-	        router: React.PropTypes.func
+	    router: React.PropTypes.func
 	  },
 
 	  getInitialState: function() {
@@ -27109,11 +27113,20 @@
 	    }      
 	  },
 
+	  routerWillLeave: function(nextLocation){
+
+	  },
+
 	  componentDidMount: function () {
 	    this.initializeMap();
 	  },
 
 	  initializeMap: function() {
+	    //console.log(this.context);
+	    //alert(this.props.location.query.address);
+	    //var {address} = this.context.router.getCurrentQuery();
+	    //this.setState({address: address});
+
 	    //Parking Map    
 	    this.geocodeAddress(this.state.address, this, function(location, component){
 	      var mapOptions = {
