@@ -382,6 +382,7 @@
 	{
 	  width: '50%'
 	};  
+
 	var profile = React.createClass
 	({displayName: "profile",
 	  render: function() 
@@ -395,30 +396,23 @@
 	    };
 	    //this.forceUpdate();
 	      return (
-	       React.createElement("div", null, 
-	        React.createElement("div", {className: "col-md-6", style: leftBluePanelStyle}, 
-	          React.createElement("div", {className: "panel panel-primary"}, 
-	            React.createElement("div", {className: "panel-heading", style: bluePanelHeaderStyle}, 
-	              "Profile"
-	            ), 
-	            React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
-	              React.createElement("p", null, "username: ", React.createElement("br", null), localStorage.username), 
-	              React.createElement("p", null, "email: ", React.createElement("br", null), localStorage.email)
-	            )
-	          )
-	        ), 
-	        React.createElement("div", {className: "col-md-6", style: rightBluePanelStyle}, 
-	          React.createElement("div", {className: "panel panel-primary"}, 
-	            
-	            React.createElement("div", {className: "panel-heading", style: bluePanelHeaderStyle}, 
-	              "Driveways"
-	            ), 
-	            React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
-	              React.createElement("p", null, "Addresses: ", React.createElement("br", null), userDriveways), 
-	              React.createElement(Link, {to: "/driveway"}, "Would you like to add a driveway?")
-	            )
+	       React.createElement("div", {style: center}, 
+	        React.createElement("h2", null, " ", localStorage.username.toUpperCase()), 
+	        React.createElement("h4", null, localStorage.email.toUpperCase(), " "), 
+	        React.createElement("br", null), 
+	        React.createElement("br", null), 
+	        React.createElement("br", null), 
+	        React.createElement("div", {className: "panel panel-primary", style: bluePanelStyle}, 
+	          
+	          React.createElement("div", {className: "panel-heading", style: bluePanelHeaderStyle}, 
+	            "Driveways"
+	          ), 
+	          React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
+	            userDriveways, React.createElement("br", null), 
+	            React.createElement("button", null, " ", React.createElement(Link, {to: "/driveway"}, "Add driveway"))
 	          )
 	        )
+	        
 	      )
 	      );
 	  }

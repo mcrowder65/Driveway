@@ -329,6 +329,7 @@ var leftBluePanelStyle =
 {
   width: '50%'
 };  
+
 var profile = React.createClass
 ({
   render: function() 
@@ -342,30 +343,23 @@ var profile = React.createClass
     };
     //this.forceUpdate();
       return (
-       <div>
-        <div className="col-md-6" style={leftBluePanelStyle}>
-          <div className="panel panel-primary" >
-            <div className="panel-heading" style={bluePanelHeaderStyle}>
-              Profile
-            </div>
-            <div className="panel-body" style={bluePanelBodyStyle}>
-              <p>username: <br/>{localStorage.username}</p>
-              <p>email: <br/>{localStorage.email}</p>
-            </div>
+       <div style={center}>
+        <h2> {localStorage.username.toUpperCase()}</h2>
+        <h4>{localStorage.email.toUpperCase()} </h4>
+        <br/>
+        <br/>
+        <br/>
+        <div className="panel panel-primary" style={bluePanelStyle}>
+          
+          <div className="panel-heading" style={bluePanelHeaderStyle}>
+            Driveways
+          </div>
+          <div className="panel-body" style={bluePanelBodyStyle}>
+            {userDriveways}<br/>
+            <button> <Link to="/driveway">Add driveway</Link></button>
           </div>
         </div>
-        <div className="col-md-6" style={rightBluePanelStyle}>
-          <div className="panel panel-primary" >
-            
-            <div className="panel-heading" style={bluePanelHeaderStyle}>
-              Driveways
-            </div>
-            <div className="panel-body" style={bluePanelBodyStyle}>
-              <p>Addresses: <br/>{userDriveways}</p>
-              <Link to="/driveway">Would you like to add a driveway?</Link>
-            </div>
-          </div>
-        </div>
+        
       </div>
       );
   }
