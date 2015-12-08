@@ -88,7 +88,7 @@ var App = React.createClass({
     {
       return(
         <div>
-          <nav className="navbar navbar-default" role="navigation" id='navbar'>
+          <nav className="navbar navbar-default" role="navigation" id='navbar' style={navStyle}>
             <div className="nav navbar-nav navbar-left">                
               <Link className="navbar-brand" to="/home">Home</Link>                  
               <Link className="navbar-brand" to="/learn">Learn</Link>              
@@ -111,7 +111,7 @@ var App = React.createClass({
       drivewayDAO.get(localStorage.username);
       return(
         <div>
-            <nav className="navbar navbar-default" role="navigation" id='navbar'>
+            <nav className="navbar navbar-default" role="navigation" id='navbar' style={navStyle}>
               <div className="nav navbar-nav navbar-left">                
                 <Link className="navbar-brand" to="">Home</Link>                  
                 <Link className="navbar-brand" to="/learn">Learn</Link>              
@@ -133,17 +133,7 @@ var App = React.createClass({
   }
 });
 
-var homeStyle =
-{
-  textAlign: 'center',
-  fontFamily: 'Calibri',
-  fontSize: '30',
-  align: 'center',
-  backgroundColor: 'red',
-  left: '0',
-  position: 'absolute'
 
-};
 var left = 
 {
   textAlign: 'left'
@@ -161,36 +151,60 @@ var inputStyle =
   width: '50%',
   marginLeft: '25%'
 }
+var homeStyle =
+{
+  textAlign: 'center',
+  fontFamily: '100 50px proxima-nova-1,proxima-nova-2,\'Proxima Nova\',HelveticaNeue,Helvetica,Arial,sans-serif',
+  fontSize: '30',
+  align: 'center',
+  color: '#ECF3F7',
+  backgroundColor: '#000066',
+  left: '0',
+  position: 'absolute'
+};
+var learnMoreStyle =
+{
+  width: '50%',
+  marginLeft: '25%',
+  textAlign: 'center'
+};
+//Better parking is just a few clicks away
 var Home = React.createClass
 ({
   mixins: [History, Lifecycle, RouteContext],
   getInitialState: function() 
   {
+
     return {address:''};
   },
   goToMap: function()
   {
+
     location.href='/#/reserveparking?address=' + this.state.address;
   },
   handleChange: function(event)
   {
+
     this.setState({address: event.target.value});
   },
   goToLearn: function()
   {
+
     this.history.pushState(null, '/learn');
   },
   render: function() {
     var address = this.state.address;
     if(document.getElementById('navbar'))
+    {
       document.getElementById('navbar').style.marginBottom ='0';
+    }
     return (
     <div>
 
       <div  className="Intro" style={homeStyle}>
       <br/>
       <br/>
-        <p> Better parking is just a few clicks away </p>
+        <p> <strong>Millions</strong> of driveways in one place.</p>
         <div className="row">
           <div className="input-group" style={inputStyle}>
             <input type="text" className="form-control" value={address} onChange={this.handleChange} placeholder="Search the address of an event"/>
@@ -210,9 +224,21 @@ var Home = React.createClass
       <br/>
       <br/>
       <br/>
-      <div className="panel panel-primary">
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
 
-        <div className="panel-body" style={center}> 
+      <div className="panel panel-primary" style={learnMoreStyle}>
+        <div className="panel-body" > 
           <h3>Rent out your driveway</h3>
           <p>Easy as 1...2...3...</p>
           <button className="btn btn-default btn-lg dropdown-toggle" type="button" onClick={this.goToLearn}>

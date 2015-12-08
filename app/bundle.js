@@ -141,7 +141,7 @@
 	    {
 	      return(
 	        React.createElement("div", null, 
-	          React.createElement("nav", {className: "navbar navbar-default", role: "navigation", id: "navbar"}, 
+	          React.createElement("nav", {className: "navbar navbar-default", role: "navigation", id: "navbar", style: navStyle}, 
 	            React.createElement("div", {className: "nav navbar-nav navbar-left"}, 
 	              React.createElement(Link, {className: "navbar-brand", to: "/home"}, "Home"), 
 	              React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
@@ -164,7 +164,7 @@
 	      drivewayDAO.get(localStorage.username);
 	      return(
 	        React.createElement("div", null, 
-	            React.createElement("nav", {className: "navbar navbar-default", role: "navigation", id: "navbar"}, 
+	            React.createElement("nav", {className: "navbar navbar-default", role: "navigation", id: "navbar", style: navStyle}, 
 	              React.createElement("div", {className: "nav navbar-nav navbar-left"}, 
 	                React.createElement(Link, {className: "navbar-brand", to: ""}, "Home"), 
 	                React.createElement(Link, {className: "navbar-brand", to: "/learn"}, "Learn"), 
@@ -186,17 +186,7 @@
 	  }
 	});
 
-	var homeStyle =
-	{
-	  textAlign: 'center',
-	  fontFamily: 'Calibri',
-	  fontSize: '30',
-	  align: 'center',
-	  backgroundColor: 'red',
-	  left: '0',
-	  position: 'absolute'
 
-	};
 	var left = 
 	{
 	  textAlign: 'left'
@@ -214,36 +204,60 @@
 	  width: '50%',
 	  marginLeft: '25%'
 	}
+	var homeStyle =
+	{
+	  textAlign: 'center',
+	  fontFamily: '100 50px proxima-nova-1,proxima-nova-2,\'Proxima Nova\',HelveticaNeue,Helvetica,Arial,sans-serif',
+	  fontSize: '30',
+	  align: 'center',
+	  color: '#ECF3F7',
+	  backgroundColor: '#000066',
+	  left: '0',
+	  position: 'absolute'
+	};
+	var learnMoreStyle =
+	{
+	  width: '50%',
+	  marginLeft: '25%',
+	  textAlign: 'center'
+	};
+	//Better parking is just a few clicks away
 	var Home = React.createClass
 	({displayName: "Home",
 	  mixins: [History, Lifecycle, RouteContext],
 	  getInitialState: function() 
 	  {
+
 	    return {address:''};
 	  },
 	  goToMap: function()
 	  {
+
 	    location.href='/#/reserveparking?address=' + this.state.address;
 	  },
 	  handleChange: function(event)
 	  {
+
 	    this.setState({address: event.target.value});
 	  },
 	  goToLearn: function()
 	  {
+
 	    this.history.pushState(null, '/learn');
 	  },
 	  render: function() {
 	    var address = this.state.address;
 	    if(document.getElementById('navbar'))
+	    {
 	      document.getElementById('navbar').style.marginBottom ='0';
+	    }
 	    return (
 	    React.createElement("div", null, 
 
 	      React.createElement("div", {className: "Intro", style: homeStyle}, 
 	      React.createElement("br", null), 
 	      React.createElement("br", null), 
-	        React.createElement("p", null, " Better parking is just a few clicks away "), 
+	        React.createElement("p", null, " ", React.createElement("strong", null, "Millions"), " of driveways in one place."), 
 	        React.createElement("div", {className: "row"}, 
 	          React.createElement("div", {className: "input-group", style: inputStyle}, 
 	            React.createElement("input", {type: "text", className: "form-control", value: address, onChange: this.handleChange, placeholder: "Search the address of an event"}), 
@@ -263,9 +277,21 @@
 	      React.createElement("br", null), 
 	      React.createElement("br", null), 
 	      React.createElement("br", null), 
-	      React.createElement("div", {className: "panel panel-primary"}, 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
+	      React.createElement("br", null), 
 
-	        React.createElement("div", {className: "panel-body", style: center}, 
+	      React.createElement("div", {className: "panel panel-primary", style: learnMoreStyle}, 
+	        React.createElement("div", {className: "panel-body"}, 
 	          React.createElement("h3", null, "Rent out your driveway"), 
 	          React.createElement("p", null, "Easy as 1...2...3..."), 
 	          React.createElement("button", {className: "btn btn-default btn-lg dropdown-toggle", type: "button", onClick: this.goToLearn}, 
