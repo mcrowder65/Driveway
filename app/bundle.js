@@ -27273,7 +27273,7 @@
 	        if (!StripeButton.stripeHandler) {
 	            StripeButton.stripeHandler = StripeCheckout.configure({
 	                key: 'pk_test_HSPvK9dod2Uhf8JRQJIBP4rW',
-	                image: './app/gg.png',
+	                image: '../images/blueCar.png',
 	                token: function(token) {
 	                  var url = "/api/payment/chargeToken";
 	                  var price = priceT;
@@ -27407,7 +27407,7 @@
 
 	        this.hideLoadingDialog();
 	        StripeButton.stripeHandler.open({
-	                name: 'ParkingLot',
+	                name: 'Parking Geeks',
 	                description: this.props.data.event.Address,
 	                billingAddress: true,
 	                amount: this.props.data.event.Price,
@@ -27429,7 +27429,7 @@
 	    },
 	    render: function() {
 	        return (
-	            React.createElement("button", {onClick: this.onClick}, "Place order")
+	            React.createElement("button", {type: "button", className: "btn btn-primary btn-sm", onClick: this.onClick}, "Place order")
 	        );
 	    }
 	});
