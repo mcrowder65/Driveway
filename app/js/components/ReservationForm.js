@@ -82,6 +82,36 @@ var ReservationForm = React.createClass({
     }
   },
 
+  getDayFromNum: function(numDay){
+    var day = '';
+    switch(numDay) {
+      case 0:
+          day = 'sunday';
+          break;
+      case 1:
+          day = 'monday';
+          break;
+      case 2:
+          day = 'tuesday';
+          break;
+      case 3:
+          day = 'wednesday';
+          break;
+      case 4:
+          day = 'thursday';
+          break;
+      case 5:
+          day = 'friday';
+          break;
+      case 6:
+          day = 'saturday';
+          break;
+      default:
+          day = 'monday';
+    }
+    return day;
+  },
+
   getReservations: function(){
     var url = "/api/users/getAllReservations";
     var reservations;
@@ -136,8 +166,27 @@ var ReservationForm = React.createClass({
           break;
         }
       }      
+      
       if(!reserved){
-        filteredDriveways.push(driveways[i]);
+        //Check the day if the date isn't empty or undefined
+        if(this.state.date != undefined && this.state.date != ''){
+          var date = new Date(this.state.date);
+          var dayAsNum = date.getDay();
+          var dayToCheck = this.getDayFromNum(dayAsNum);
+          var isRightDay = false;
+          for(var k = 0; k < driveways[i].times.length; k++){
+            if(driveways[i].times[k].stateDay == dayToCheck){
+              isRightDay = true;
+              break;
+            }
+          }
+
+          if(isRightDay){
+            filteredDriveways.push(driveways[i]);
+          }  
+        }else{
+          filteredDriveways.push(driveways[i]); 
+        }        
       }
     }
     return filteredDriveways;
@@ -248,12 +297,13 @@ var ReservationForm = React.createClass({
   },
 
   renderInfoWindow: function(address, driveway){
+    var fee = !driveway.fee? "10" : driveway.fee;
     var content = (
       <div style={{fontSize: '14px'}}>
         <label style={{fontSize: '16px'}}>Address: {address}</label>
         <ul>
           <li><div style={{display: 'inline-block'}}>Owner:</div><div style={{display: 'inline-block', marginLeft: '10px'}}>{driveway.username}</div></li>
-          <li><div style={{display: 'inline-block'}}>Price:</div><div style={{display: 'inline-block', marginLeft: '10px'}}>{"$10.00"}</div></li>
+          <li><div style={{display: 'inline-block'}}>Price:</div><div style={{display: 'inline-block', marginLeft: '10px'}}>{"$"+fee}</div></li>
         </ul>
         <div id='pay'></div>
       </div>
@@ -284,7 +334,7 @@ var ReservationForm = React.createClass({
                 <div className='col-md-3'><label className='form-label'>Email:</label><input className='form-control' type="email" name="email" placeholder='Email' value={this.state.email} onChange={this.handleChange} /></div>
                 <div className='col-md-3'><label className='form-label'>Event Address:</label><input className='form-control' type="text" name="address" placeholder='156 East 200 North, Provo, UT 84606' value={this.state.address} onChange={this.handleChange} /></div>
                 <div className='col-md-2'><label className='form-label'>Event Date:</label><input className='form-control' type="text" name="date" placeholder='12/12/16' value={this.state.date} onChange={this.handleChange} /></div>
-                <div className='col-md-2'><label className='form-label'>Event Time:</label><input className='form-control' type="text" name="time" placeholder='6:00' value={this.state.time} onChange={this.handleChange} /></div>
+                <div className='col-md-2'><label className='form-label'>Event Time:</label><input className='form-control' type="text" name="time" placeholder='6:00 PM' value={this.state.time} onChange={this.handleChange} /></div>
                 <div className='col-md-2' style={{marginTop: '24px'}}><input className='form-control' type="button" name="submit" value="Submit" onClick={this.handleSubmit} /></div>
               </div>
           </div>

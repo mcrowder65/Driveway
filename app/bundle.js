@@ -27333,6 +27333,36 @@
 	    }
 	  },
 
+	  getDayFromNum: function(numDay){
+	    var day = '';
+	    switch(numDay) {
+	      case 0:
+	          day = 'sunday';
+	          break;
+	      case 1:
+	          day = 'monday';
+	          break;
+	      case 2:
+	          day = 'tuesday';
+	          break;
+	      case 3:
+	          day = 'wednesday';
+	          break;
+	      case 4:
+	          day = 'thursday';
+	          break;
+	      case 5:
+	          day = 'friday';
+	          break;
+	      case 6:
+	          day = 'saturday';
+	          break;
+	      default:
+	          day = 'monday';
+	    }
+	    return day;
+	  },
+
 	  getReservations: function(){
 	    var url = "/api/users/getAllReservations";
 	    var reservations;
@@ -27387,8 +27417,27 @@
 	          break;
 	        }
 	      }      
+	      
 	      if(!reserved){
-	        filteredDriveways.push(driveways[i]);
+	        //Check the day if the date isn't empty or undefined
+	        if(this.state.date != undefined && this.state.date != ''){
+	          var date = new Date(this.state.date);
+	          var dayAsNum = date.getDay();
+	          var dayToCheck = this.getDayFromNum(dayAsNum);
+	          var isRightDay = false;
+	          for(var k = 0; k < driveways[i].times.length; k++){
+	            if(driveways[i].times[k].stateDay == dayToCheck){
+	              isRightDay = true;
+	              break;
+	            }
+	          }
+
+	          if(isRightDay){
+	            filteredDriveways.push(driveways[i]);
+	          }  
+	        }else{
+	          filteredDriveways.push(driveways[i]); 
+	        }        
 	      }
 	    }
 	    return filteredDriveways;
@@ -27499,12 +27548,13 @@
 	  },
 
 	  renderInfoWindow: function(address, driveway){
+	    var fee = !driveway.fee? "10" : driveway.fee;
 	    var content = (
 	      React.createElement("div", {style: {fontSize: '14px'}}, 
 	        React.createElement("label", {style: {fontSize: '16px'}}, "Address: ", address), 
 	        React.createElement("ul", null, 
 	          React.createElement("li", null, React.createElement("div", {style: {display: 'inline-block'}}, "Owner:"), React.createElement("div", {style: {display: 'inline-block', marginLeft: '10px'}}, driveway.username)), 
-	          React.createElement("li", null, React.createElement("div", {style: {display: 'inline-block'}}, "Price:"), React.createElement("div", {style: {display: 'inline-block', marginLeft: '10px'}}, "$10.00"))
+	          React.createElement("li", null, React.createElement("div", {style: {display: 'inline-block'}}, "Price:"), React.createElement("div", {style: {display: 'inline-block', marginLeft: '10px'}}, "$"+fee))
 	        ), 
 	        React.createElement("div", {id: "pay"})
 	      )
@@ -27535,7 +27585,7 @@
 	                React.createElement("div", {className: "col-md-3"}, React.createElement("label", {className: "form-label"}, "Email:"), React.createElement("input", {className: "form-control", type: "email", name: "email", placeholder: "Email", value: this.state.email, onChange: this.handleChange})), 
 	                React.createElement("div", {className: "col-md-3"}, React.createElement("label", {className: "form-label"}, "Event Address:"), React.createElement("input", {className: "form-control", type: "text", name: "address", placeholder: "156 East 200 North, Provo, UT 84606", value: this.state.address, onChange: this.handleChange})), 
 	                React.createElement("div", {className: "col-md-2"}, React.createElement("label", {className: "form-label"}, "Event Date:"), React.createElement("input", {className: "form-control", type: "text", name: "date", placeholder: "12/12/16", value: this.state.date, onChange: this.handleChange})), 
-	                React.createElement("div", {className: "col-md-2"}, React.createElement("label", {className: "form-label"}, "Event Time:"), React.createElement("input", {className: "form-control", type: "text", name: "time", placeholder: "6:00", value: this.state.time, onChange: this.handleChange})), 
+	                React.createElement("div", {className: "col-md-2"}, React.createElement("label", {className: "form-label"}, "Event Time:"), React.createElement("input", {className: "form-control", type: "text", name: "time", placeholder: "6:00 PM", value: this.state.time, onChange: this.handleChange})), 
 	                React.createElement("div", {className: "col-md-2", style: {marginTop: '24px'}}, React.createElement("input", {className: "form-control", type: "button", name: "submit", value: "Submit", onClick: this.handleSubmit}))
 	              )
 	          )
