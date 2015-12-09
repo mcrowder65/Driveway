@@ -176,7 +176,7 @@
 	              ), 
 	              React.createElement("div", {className: "nav navbar-nav navbar-right", id: "bs-example-navbar-collapse-1"}, 
 	                React.createElement("li", null, React.createElement(Link, {to: "profile"}, "Profile")), 
-	                React.createElement("li", null, React.createElement(Link, {to: "logOut"}, "Log out"))
+	                React.createElement("li", null, React.createElement(Link, {to: "", onClick: userDAO.logOut}, "Log out"))
 	              )
 	            ), 
 	            React.createElement("div", {className: "container"}, 
@@ -2587,6 +2587,13 @@
 	        location.href ='/#/profile';
 	      }
 	    });
+	  },
+	  logOut: function()
+	  {
+	    delete localStorage.username;
+	    delete localStorage.email;
+	    //this.history.pushState(null,'/Home');
+	    location.href="/#/home";
 	  }
 	};
 
