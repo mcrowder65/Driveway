@@ -1611,27 +1611,40 @@ var findOrders = React.createClass
   register: function()
   {
 
+    var docUser = document.getElementById('errorUsername');
+    var docEmail = document.getElementById('errorEmail');
+
+
     if(!this.state.email){
-      alert("Please enter an email address");
+      docUser.style.visibility = 'visible';
+      //docEmail.style.visibility = 'visible';
+      //alert("Please enter an email address");
     }
     else if(this.state.email.length < 4){
-      alert("INVALID EMAIL ADDRESS");
+      docUser.style.visibility = 'visible';
+      //alert("INVALID EMAIL ADDRESS");
     }
     else if(!this.state.Last4){
-      console.log("0");
-      alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
+      docUser.style.visibility = 'visible';
+      //console.log("0");
+      //alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
     }
     else if(this.state.Last4.length !==4){
-      console.log("<4");
-      alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
+      docUser.style.visibility = 'visible';
+      //console.log("<4");
+      //alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
     }
     else{
       orderDAO.getAll(this.state.Last4, this.state.email);
+      if(!temp2){
+
+      }
       if(temp2){
         this.history.pushState(null, '/pastOrders');
       }
       else{
-       alert("Your Email and/or credit card is invalid");
+       docUser.style.visibility = 'visible';
+
 
       }
     }
@@ -1668,8 +1681,7 @@ var findOrders = React.createClass
     var rTime = "6:00 PM";
     var city = "orem"
     if(document.getElementById('navbar'))
-      document.getElementById('navbar').style.marginBottom ='';
-    //this.forceUpdate();
+      document.getElementById('navbar').style.marginBottom ='0';
     return (
       <div>
         <div className="row"></div>
@@ -1691,7 +1703,17 @@ var findOrders = React.createClass
                 </div>
               </div>
             </div>
-          <div className="col-md-4"></div>
+          <div id='errorUsername' className="alert alert-danger" role="alert" style={usernameFailStyle}>
+          <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+          <span className="sr-only">Error:</span>
+          Woops! It looks like this email address and/or last 4 CC digits is incorrect!
+        </div>
+          <div id='errorEmail' className="alert alert-danger" role="alert" style={usernameFailStyle}>
+          <span className="glyphicon glyphicon-exclamation-sign" ariaHidden="true"></span>
+          <span className="sr-only">Error:</span>
+          Woops! It looks like the last 4 digits of your credit card are incorrect!
+        </div>
+        
         </div>
       
 
