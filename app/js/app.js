@@ -123,7 +123,7 @@ var App = React.createClass({
               </div>
               <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
                 <li><Link to="profile">Profile</Link></li>
-                <li><Link to="logOut">Log out</Link></li>
+                <li><Link to="" onClick={userDAO.logOut}>Log out</Link></li>
               </div>
             </nav>
             <div className="container">
@@ -1846,11 +1846,11 @@ var learnMore = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>How do I reserve a Driveway?</div>
               <div className="panel-body">
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
+                <p> Reserving a parking spot can be done in 4 easy steps!</p>
+                <p> Step 1: Click on the "Reserve Parking" tab in the nav-bar above</p>
+                <p> Step 2: Fill out a simple form regaring the details of your event</p>
+                <p> Step 3: Choose the parking spot you wish to reserve on the map</p>
+                <p> Step 4: Once you choose your parking spot click "pay" and the spot is yours11!</p>
               </div>
             </div>
           </div>
@@ -1858,11 +1858,8 @@ var learnMore = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>What if I lose my receipt?</div>
               <div className="panel-body">
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
+                <p>If you happen to lose your receipt simply use the following steps</p>
+                <p>Step 1: Click on "Order Lookup" in the navigation bar at the top of the page</p>
               </div>
             </div>
           </div>
@@ -2537,6 +2534,13 @@ var userDAO =
         location.href ='/#/profile';
       }
     });
+  },
+  logOut: function()
+  {
+    delete localStorage.username;
+    delete localStorage.email;
+    //this.history.pushState(null,'/Home');
+    location.href="/#/home";
   }
 };
 
