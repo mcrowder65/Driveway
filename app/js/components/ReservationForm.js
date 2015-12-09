@@ -107,7 +107,7 @@ var ReservationForm = React.createClass({
           day = 'saturday';
           break;
       default:
-          day = 'monday';
+          day = '';
     }
     return day;
   },
@@ -169,7 +169,7 @@ var ReservationForm = React.createClass({
       
       if(!reserved){
         //Check the day if the date isn't empty or undefined
-        if(this.state.date != undefined && this.state.date != ''){
+        if(this.state.date != ''){
           var date = new Date(this.state.date);
           var dayAsNum = date.getDay();
           var dayToCheck = this.getDayFromNum(dayAsNum);
@@ -298,14 +298,35 @@ var ReservationForm = React.createClass({
 
   renderInfoWindow: function(address, driveway){
     var fee = !driveway.fee? "10" : driveway.fee;
+    var center = {textAlign: 'center'};
     var content = (
-      <div style={{fontSize: '14px'}}>
-        <label style={{fontSize: '16px'}}>Address: {address}</label>
-        <ul>
-          <li><div style={{display: 'inline-block'}}>Owner:</div><div style={{display: 'inline-block', marginLeft: '10px'}}>{driveway.username}</div></li>
-          <li><div style={{display: 'inline-block'}}>Price:</div><div style={{display: 'inline-block', marginLeft: '10px'}}>{"$"+fee}</div></li>
-        </ul>
-        <div id='pay'></div>
+      <div>
+        <div style={{fontSize: '16px', fontWeight: 'bold'}}>{address}</div>        
+        <table className='table table-striped table-compact' style={center}>
+          <tbody>
+            <tr>
+              <th style={center}>Owner</th>
+              <td>{driveway.username}</td>
+            </tr>
+            <tr>
+              <th style={center}>Price</th>
+              <td>{"$" + fee}</td>
+            </tr>
+            <tr>
+              <th style={center}>Start Time</th>
+              <th style={center}>End Time</th>
+            </tr>
+            {driveway.times.map(function(time, i){
+              return (
+                <tr key={i}>
+                  <td>{time.startTime}</td>
+                  <td>{time.endTime}</td>
+                </tr>
+              ); 
+            })}
+            </tbody>
+          </table>  
+        <div id='pay' style={{textAlign: 'center'}}></div>
       </div>
     );
 

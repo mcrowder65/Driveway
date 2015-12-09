@@ -27554,7 +27554,14 @@
 	        React.createElement("label", {style: {fontSize: '16px'}}, "Address: ", address), 
 	        React.createElement("ul", null, 
 	          React.createElement("li", null, React.createElement("div", {style: {display: 'inline-block'}}, "Owner:"), React.createElement("div", {style: {display: 'inline-block', marginLeft: '10px'}}, driveway.username)), 
-	          React.createElement("li", null, React.createElement("div", {style: {display: 'inline-block'}}, "Price:"), React.createElement("div", {style: {display: 'inline-block', marginLeft: '10px'}}, "$"+fee))
+	          React.createElement("li", null, React.createElement("div", {style: {display: 'inline-block'}}, "Price:"), React.createElement("div", {style: {display: 'inline-block', marginLeft: '10px'}}, "$"+fee)), 
+	          React.createElement("li", null, 
+	            React.createElement("ul", null, 
+	              driveway.times.map(function(time){
+	                return React.createElement("li", null, React.createElement("div", {style: {display: 'inline-block'}}, "Time:"), React.createElement("div", {style: {display: 'inline-block', marginLeft: '10px'}}, time)); 
+	              })
+	            )
+	          )
 	        ), 
 	        React.createElement("div", {id: "pay"})
 	      )
