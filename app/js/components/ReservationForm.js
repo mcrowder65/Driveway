@@ -1,19 +1,11 @@
 var React = require('react');
-ReactDOM = require('react-dom');
-//var History = require('react-router').History;
-//var { createHistory, useBasename } = require('history');
-//var {Lifecycle} = require('react-router');
+var ReactDOM = require('react-dom');
+var ReactDOMServer = require('react-dom/server.js');
 var CheckoutStrip = require('./StripePayment.js');
 var Marker = google.maps.Marker;
 var geocoder = new google.maps.Geocoder();
 
-// var history = useBasename(createHistory)({
-//     basename: '/transitions'
-// })
-
 var ReservationForm = React.createClass({
-  //mixins: [History, Lifecycle],
-
   contextTypes: {
     router: React.PropTypes.func
   },
@@ -330,7 +322,7 @@ var ReservationForm = React.createClass({
       </div>
     );
 
-    return React.renderToStaticMarkup(content);
+    return ReactDOMServer.renderToStaticMarkup(content);
   },
 
   markerClicked: function(marker, mapMarker, map){
