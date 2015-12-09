@@ -123,7 +123,7 @@ var App = React.createClass({
               </div>
               <div className="nav navbar-nav navbar-right" id="bs-example-navbar-collapse-1">
                 <li><Link to="profile">Profile</Link></li>
-                <li><Link to="logOut">Log out</Link></li>
+                <li><Link to="" onClick={userDAO.logOut}>Log out</Link></li>
               </div>
             </nav>
             <div className="container">
@@ -2534,6 +2534,13 @@ var userDAO =
         location.href ='/#/profile';
       }
     });
+  },
+  logOut: function()
+  {
+    delete localStorage.username;
+    delete localStorage.email;
+    //this.history.pushState(null,'/Home');
+    location.href="/#/home";
   }
 };
 
