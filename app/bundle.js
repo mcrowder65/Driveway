@@ -230,7 +230,6 @@
 	  marginLeft: '25%',
 	  textAlign: 'center'
 	};
-	//Better parking is just a few clicks away
 	var Home = React.createClass
 	({displayName: "Home",
 	  mixins: [History, Lifecycle, RouteContext],
@@ -1405,10 +1404,17 @@
 	          for(var i = 0; i < res.driveway.length; i++)
 	          {
 	            var temp = res.driveway[i];
-	            var tempString = ' ' + temp.address + ' ' + temp.city + ', ' + temp.state + ' ' + temp.zip + ' - ' + temp.numCars + ' car(s)';
+	            var address= temp.address;
+	            var city = temp.city;
+	            var state = temp.state;
+	            var zip = temp.zip;
+	            var numCars = temp.numCars;
+	            var times = temp.times;
+	            var fee = temp.fee;
+	            var json = {address:address, city:city, state:state, zip:zip, numCars:numCars, times:times, fee:fee};
 	            if(temp.username != localStorage.username)
 	            {
-	              allDriveways.push(tempString);
+	              allDriveways.push(json);
 	              allDriveways.push(React.createElement("br", null));
 	            }
 	          }

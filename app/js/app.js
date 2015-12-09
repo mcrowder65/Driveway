@@ -177,7 +177,6 @@ var learnMoreStyle =
   marginLeft: '25%',
   textAlign: 'center'
 };
-//Better parking is just a few clicks away
 var Home = React.createClass
 ({
   mixins: [History, Lifecycle, RouteContext],
@@ -1352,10 +1351,17 @@ var drivewayDAO =
           for(var i = 0; i < res.driveway.length; i++)
           {
             var temp = res.driveway[i];
-            var tempString = ' ' + temp.address + ' ' + temp.city + ', ' + temp.state + ' ' + temp.zip + ' - ' + temp.numCars + ' car(s)';
+            var address= temp.address;
+            var city = temp.city;
+            var state = temp.state;
+            var zip = temp.zip;
+            var numCars = temp.numCars;
+            var times = temp.times;
+            var fee = temp.fee;
+            var json = {address, city, state, zip, numCars, times, fee};
             if(temp.username != localStorage.username)
             {
-              allDriveways.push(tempString);
+              allDriveways.push(json);
               allDriveways.push(React.createElement("br", null));
             }
           }
