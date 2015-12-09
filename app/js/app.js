@@ -307,11 +307,7 @@ var allDriveways = React.createClass
 });
 
 var ReserveParking = React.createClass({
-
   render: function() {
-    if(document.getElementById('navbar'))
-      document.getElementById('navbar').style.marginBottom ='';
-    //this.forceUpdate();
     return (
       <ReservationForm/>
     );
