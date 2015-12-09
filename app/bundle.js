@@ -1865,9 +1865,10 @@
 	   
 
 	  render: function() {
+
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
-	    //this.forceUpdate();
+	    
 	    return (
 	      React.createElement("div", null, 
 	        React.createElement("div", {className: "well"}, 
@@ -1878,25 +1879,17 @@
 	        React.createElement("div", {className: "row"}, 
 	          React.createElement("div", {className: "col-md-6"}, 
 	            React.createElement("div", {className: "panel panel-primary"}, 
-	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "About US"), 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "About Us"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do ")
+	                React.createElement("p", null, "Parking Geek is the here to take care of all your event parking needs. Large events can be stressful. Finding parking can be expensive and time consuming. With Parking Geek the hassles of finding a nice, close parking spot vanish. Simply locate your event on our map, find an open parking spot and reserve it. All thats left to do is enjoy your event!    ")
 	              )
 	            )
 	          ), 
 	          React.createElement("div", {className: "col-md-6"}, 
 	            React.createElement("div", {className: "panel panel-primary"}, 
-	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "About US"), 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "How do I rent my driveway?"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do ")
+	                React.createElement("p", null, "Renting your driveway is a great way to make a little extra cash. In the top right corner of the page you should see a tab called \"Sign Up\". This will propmt you to enter your email address, as well as choose a username and password. Now that you have an account you may go in and add any address you wish to rent out. Its that simple!  ")
 	              )
 	            )
 	          )
@@ -1916,7 +1909,7 @@
 	          ), 
 	          React.createElement("div", {className: "col-md-6"}, 
 	            React.createElement("div", {className: "panel panel-primary"}, 
-	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "About US"), 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "What if I lose my receipt?"), 
 	              React.createElement("div", {className: "panel-body"}, 
 	                React.createElement("p", null, "This is where we talk about what we do "), 
 	                React.createElement("p", null, "This is where we talk about what we do "), 
@@ -1946,6 +1939,7 @@
 	      );
 	  }
 	});
+
 
 	var pastOrders = React.createClass
 	({displayName: "pastOrders",

@@ -1812,9 +1812,10 @@ var learnMore = React.createClass
    
 
   render: function() {
+
     if(document.getElementById('navbar'))
       document.getElementById('navbar').style.marginBottom ='';
-    //this.forceUpdate();
+    
     return (
       <div>
         <div className="well">
@@ -1825,25 +1826,17 @@ var learnMore = React.createClass
         <div className="row">
           <div className="col-md-6">
             <div className="panel panel-primary">
-              <div className="panel-heading" style={fontStyle2}>About US</div>
+              <div className="panel-heading" style={fontStyle2}>About Us</div>
               <div className="panel-body">
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
+                <p>Parking Geek is the here to take care of all your event parking needs. Large events can be stressful. Finding parking can be expensive and time consuming. With Parking Geek the hassles of finding a nice, close parking spot vanish. Simply locate your event on our map, find an open parking spot and reserve it. All thats left to do is enjoy your event!    </p>
               </div>
             </div>
           </div>
           <div className="col-md-6">
             <div className="panel panel-primary">
-              <div className="panel-heading" style={fontStyle2}>About US</div>
+              <div className="panel-heading" style={fontStyle2}>How do I rent my driveway?</div>
               <div className="panel-body">
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
+                <p>Renting your driveway is a great way to make a little extra cash. In the top right corner of the page you should see a tab called "Sign Up". This will propmt you to enter your email address, as well as choose a username and password. Now that you have an account you may go in and add any address you wish to rent out. Its that simple!  </p>
               </div>
             </div>
           </div>
@@ -1863,7 +1856,7 @@ var learnMore = React.createClass
           </div>
           <div className="col-md-6">
             <div className="panel panel-primary">
-              <div className="panel-heading" style={fontStyle2}>About US</div>
+              <div className="panel-heading" style={fontStyle2}>What if I lose my receipt?</div>
               <div className="panel-body">
                 <p>This is where we talk about what we do </p>
                 <p>This is where we talk about what we do </p>
@@ -1893,6 +1886,7 @@ var learnMore = React.createClass
       );
   }
 });
+
 
 var pastOrders = React.createClass
 ({
