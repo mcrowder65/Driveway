@@ -299,8 +299,8 @@
 
 	      React.createElement("div", {className: "panel panel-primary", style: learnMoreStyle}, 
 	        React.createElement("div", {className: "panel-body"}, 
-	          React.createElement("h3", null, "Rent out your driveway"), 
-	          React.createElement("p", null, "Easy as 1...2...3..."), 
+	          React.createElement("h2", null, "Rent out your driveway"), 
+	          React.createElement("h4", null, "Easy as 1...2...3..."), 
 	          React.createElement("button", {className: "btn btn-default btn-lg dropdown-toggle", type: "button", onClick: this.goToLearn}, 
 	          "Learn more"
 	          )
@@ -1664,27 +1664,40 @@
 	  register: function()
 	  {
 
+	    var docUser = document.getElementById('errorUsername');
+	    var docEmail = document.getElementById('errorEmail');
+
+
 	    if(!this.state.email){
-	      alert("Please enter an email address");
+	      docUser.style.visibility = 'visible';
+	      //docEmail.style.visibility = 'visible';
+	      //alert("Please enter an email address");
 	    }
 	    else if(this.state.email.length < 4){
-	      alert("INVALID EMAIL ADDRESS");
+	      docUser.style.visibility = 'visible';
+	      //alert("INVALID EMAIL ADDRESS");
 	    }
 	    else if(!this.state.Last4){
-	      console.log("0");
-	      alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
+	      docUser.style.visibility = 'visible';
+	      //console.log("0");
+	      //alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
 	    }
 	    else if(this.state.Last4.length !==4){
-	      console.log("<4");
-	      alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
+	      docUser.style.visibility = 'visible';
+	      //console.log("<4");
+	      //alert("Please enter the last 4 digits of the credit card with which you reserved the parking location");
 	    }
 	    else{
 	      orderDAO.getAll(this.state.Last4, this.state.email);
+	      if(!temp2){
+
+	      }
 	      if(temp2){
 	        this.history.pushState(null, '/pastOrders');
 	      }
 	      else{
-	       alert("Your Email and/or credit card is invalid");
+	       docUser.style.visibility = 'visible';
+
 
 	      }
 	    }
@@ -1721,8 +1734,7 @@
 	    var rTime = "6:00 PM";
 	    var city = "orem"
 	    if(document.getElementById('navbar'))
-	      document.getElementById('navbar').style.marginBottom ='';
-	    //this.forceUpdate();
+	      document.getElementById('navbar').style.marginBottom ='0';
 	    return (
 	      React.createElement("div", null, 
 	        React.createElement("div", {className: "row"}), 
@@ -1744,7 +1756,17 @@
 	                )
 	              )
 	            ), 
-	          React.createElement("div", {className: "col-md-4"})
+	          React.createElement("div", {id: "errorUsername", className: "alert alert-danger", role: "alert", style: usernameFailStyle}, 
+	          React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
+	          React.createElement("span", {className: "sr-only"}, "Error:"), 
+	          "Woops! It looks like this email address and/or last 4 CC digits is incorrect!"
+	        ), 
+	          React.createElement("div", {id: "errorEmail", className: "alert alert-danger", role: "alert", style: usernameFailStyle}, 
+	          React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
+	          React.createElement("span", {className: "sr-only"}, "Error:"), 
+	          "Woops! It looks like the last 4 digits of your credit card are incorrect!"
+	        )
+	        
 	        )
 	      
 
@@ -1843,6 +1865,20 @@
 	};
 
 
+	var textColor =
+	{
+	  color: "white"
+	}
+	var fontWeights =
+	{
+	  fontWeight: "400"
+	}
+	var centerTexts =
+	{
+	  textAlign: "center"
+	}
+
+
 	var learnMore = React.createClass
 	({displayName: "learnMore",
 	  mixins: [History, Lifecycle],
@@ -1881,7 +1917,9 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "About Us"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, "Parking Geek is the here to take care of all your event parking needs. Large events can be stressful. Finding parking can be expensive and time consuming. With Parking Geek the hassles of finding a nice, close parking spot vanish. Simply locate your event on our map, find an open parking spot and reserve it. All thats left to do is enjoy your event!    ")
+	                React.createElement("p", {style: fontWeights}, React.createElement("b", null, "Parking Geek"), " is here to take care of all your event parking needs. Finding parking can be expensive and time consuming. With Parking Geek the hassles of finding a nice, close parking spot vanish. Simply locate your event on our map, find an open parking spot and reserve it. All thats left to do is enjoy your event!" + " " +    
+	                
+	                 "Parking Geek also provides everyone the opertunity to rent out their driveway to earn some extra cash. Simply follow the 4 steps provided in \"How do I rent my driveway?\" (located directly to your right) and you will be renting your driveway in just a few short minutes!")
 	              )
 	            )
 	          ), 
@@ -1889,7 +1927,11 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "How do I rent my driveway?"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, "Renting your driveway is a great way to make a little extra cash. In the top right corner of the page you should see a tab called \"Sign Up\". This will propmt you to enter your email address, as well as choose a username and password. Now that you have an account you may go in and add any address you wish to rent out. Its that simple!  ")
+	                React.createElement("p", {style: centerTexts}, React.createElement("b", null, "Renting your driveway can be done in 4 easy steps")), 
+	                React.createElement("p", null, React.createElement("b", null, "Step 1:"), " Click \"Sign Up\"  on the top right corner of the page"), 
+	                React.createElement("p", null, React.createElement("b", null, "Step 2:"), " Fill out the sign up form and click \"Sign UP\""), 
+	                React.createElement("p", null, React.createElement("b", null, "Step 3:"), " Click on \"Order Lookup\" in the navigation bar at the top of the page"), 
+	                React.createElement("p", null, React.createElement("b", null, "Step 4:"), " Lastly, click add a driveway on your profile page and provide the address and cost of the driveway you wish to rent")
 	              )
 	            )
 	          )
@@ -1899,11 +1941,11 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "How do I reserve a Driveway?"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, " Reserving a parking spot can be done in 4 easy steps!"), 
-	                React.createElement("p", null, " Step 1: Click on the \"Reserve Parking\" tab in the nav-bar above"), 
-	                React.createElement("p", null, " Step 2: Fill out a simple form regaring the details of your event"), 
-	                React.createElement("p", null, " Step 3: Choose the parking spot you wish to reserve on the map"), 
-	                React.createElement("p", null, " Step 4: Once you choose your parking spot click \"pay\" and the spot is yours11!")
+	                React.createElement("p", {style: centerTexts}, React.createElement("b", null, " Reserving a parking spot can be done in 4 easy steps!")), 
+	                React.createElement("p", null, React.createElement("b", null, "Step 1:"), " Click on the \"Reserve Parking\" tab in the nav-bar above"), 
+	                React.createElement("p", null, React.createElement("b", null, "Step 2:"), " Fill out a simple form regaring the details of your event"), 
+	                React.createElement("p", null, React.createElement("b", null, "Step 3:"), " Choose the parking spot you wish to reserve on the map"), 
+	                React.createElement("p", null, React.createElement("b", null, "Step 4:"), " Once you choose your parking spot click \"pay\" and the spot is yours!")
 	              )
 	            )
 	          ), 
@@ -1911,8 +1953,11 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "What if I lose my receipt?"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, "If you happen to lose your receipt simply use the following steps"), 
-	                React.createElement("p", null, "Step 1: Click on \"Order Lookup\" in the navigation bar at the top of the page")
+	                React.createElement("p", {style: centerTexts}, React.createElement("b", null, "If you happen to lose your receipt simply use the following steps")), 
+	                React.createElement("p", null, React.createElement("b", null, "Step 1:"), " Click on \"Order Lookup\" in the navigation bar at the top of the page"), 
+	                React.createElement("p", null, React.createElement("b", null, "Step 2:"), " Enter the email address that you used to reserve your parking spot"), 
+	                React.createElement("p", null, React.createElement("b", null, "Step 3:"), " Enter the last 4 digits of the card you used to reserve your parking spot"), 
+	                React.createElement("p", null, "You will be automatically redirected to the page containing your order information")
 	              )
 	            )
 	          )
@@ -2282,6 +2327,7 @@
 	    else
 	    {
 	      var email = userDAO.findEmail(this.state.email);
+	      console.log(email);
 	      if(email != 'none')
 	      {
 	        document.getElementById('differentPasswords').style.visibility = 'hidden';
@@ -2404,7 +2450,7 @@
 	  findEmail: function(email)
 	  {
 	    var url ="/api/users/findEmail";
-	    var returnValue = false;
+	    var returnValue = '';
 	    $.ajax
 	    ({
 	      url: url,
@@ -2417,8 +2463,7 @@
 	      async: false,
 	      success: function(res)
 	      {
-	        console.log(res.email);
-	        returnValue = true;
+	        returnValue = res.email;
 	        //email found!
 	      }.bind(this),
 	      error:function(res)
