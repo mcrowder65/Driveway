@@ -246,8 +246,8 @@ var Home = React.createClass
 
       <div className="panel panel-primary" style={learnMoreStyle}>
         <div className="panel-body" > 
-          <h3>Rent out your driveway</h3>
-          <p>Easy as 1...2...3...</p>
+          <h2>Rent out your driveway</h2>
+          <h4>Easy as 1...2...3...</h4>
           <button className="btn btn-default btn-lg dropdown-toggle" type="button" onClick={this.goToLearn}>
           Learn more
           </button>
@@ -2229,6 +2229,7 @@ var signUp = React.createClass
     else
     {
       var email = userDAO.findEmail(this.state.email);
+      console.log(email);
       if(email != 'none')
       {
         document.getElementById('differentPasswords').style.visibility = 'hidden';
@@ -2351,7 +2352,7 @@ var userDAO =
   findEmail: function(email)
   {
     var url ="/api/users/findEmail";
-    var returnValue = false;
+    var returnValue = '';
     $.ajax
     ({
       url: url,
@@ -2364,8 +2365,7 @@ var userDAO =
       async: false,
       success: function(res)
       {
-        console.log(res.email);
-        returnValue = true;
+        returnValue = res.email;
         //email found!
       }.bind(this),
       error:function(res)
