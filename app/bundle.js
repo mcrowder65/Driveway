@@ -1899,11 +1899,11 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "How do I reserve a Driveway?"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do ")
+	                React.createElement("p", null, " Reserving a parking spot can be done in 4 easy steps!"), 
+	                React.createElement("p", null, " Step 1: Click on the \"Reserve Parking\" tab in the nav-bar above"), 
+	                React.createElement("p", null, " Step 2: Fill out a simple form regaring the details of your event"), 
+	                React.createElement("p", null, " Step 3: Choose the parking spot you wish to reserve on the map"), 
+	                React.createElement("p", null, " Step 4: Once you choose your parking spot click \"pay\" and the spot is yours!")
 	              )
 	            )
 	          ), 
