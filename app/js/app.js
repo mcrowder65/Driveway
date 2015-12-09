@@ -1850,7 +1850,7 @@ var learnMore = React.createClass
                 <p> Step 1: Click on the "Reserve Parking" tab in the nav-bar above</p>
                 <p> Step 2: Fill out a simple form regaring the details of your event</p>
                 <p> Step 3: Choose the parking spot you wish to reserve on the map</p>
-                <p> Step 4: Once you choose your parking spot click "pay" and the spot is yours!</p>
+                <p> Step 4: Once you choose your parking spot click "pay" and the spot is yours11!</p>
               </div>
             </div>
           </div>

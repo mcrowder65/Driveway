@@ -1903,7 +1903,7 @@
 	                React.createElement("p", null, " Step 1: Click on the \"Reserve Parking\" tab in the nav-bar above"), 
 	                React.createElement("p", null, " Step 2: Fill out a simple form regaring the details of your event"), 
 	                React.createElement("p", null, " Step 3: Choose the parking spot you wish to reserve on the map"), 
-	                React.createElement("p", null, " Step 4: Once you choose your parking spot click \"pay\" and the spot is yours!")
+	                React.createElement("p", null, " Step 4: Once you choose your parking spot click \"pay\" and the spot is yours11!")
 	              )
 	            )
 	          ), 
