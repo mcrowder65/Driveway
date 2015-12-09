@@ -1858,11 +1858,8 @@ var learnMore = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>What if I lose my receipt?</div>
               <div className="panel-body">
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
+                <p>If you happen to lose your receipt simply use the following steps</p>
+                <p>Step 1: Click on "Order Lookup" in the navigation bar at the top of the page</p>
               </div>
             </div>
           </div>

@@ -1911,11 +1911,8 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "What if I lose my receipt?"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do ")
+	                React.createElement("p", null, "If you happen to lose your receipt simply use the following steps"), 
+	                React.createElement("p", null, "Step 1: Click on \"Order Lookup\" in the navigation bar at the top of the page")
 	              )
 	            )
 	          )
