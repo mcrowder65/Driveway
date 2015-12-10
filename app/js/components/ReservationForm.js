@@ -206,7 +206,6 @@ var ReservationForm = React.createClass({
     filteredDriveways = this.filterDriveways(driveways, reservations);
 
     //Build Markers
-    var markers = [];
     for(var i = 0; i < filteredDriveways.length; i++){
       var driveway = driveways[i];
       var address = driveway.address + ', ' + driveway.city + ', ' + driveway.state + ' ' + driveway.zip + ', USA';
@@ -218,9 +217,8 @@ var ReservationForm = React.createClass({
 
       this.geocodeAddress(address, this, marker, function(location, component, marker){
           if(location != null){
-            markerOptions = { //Optimize this later 
+            markerOptions = {
               map: component.state.map,
-              //animation: google.maps.Animation.DROP,
               draggable: false,
               position:  location,
               title:     'Parking Location',
@@ -283,12 +281,10 @@ var ReservationForm = React.createClass({
 
   handleSubmit: function(){
     this.deleteMarkers();
-    //this.generateMarkers();
     this.recenterMap();
     this.generateEventMarker();
-
+    this.generateMarkers();
     console.log(this.state.eventMapMarker);
-    // this.setState({markers: mapMarkers, eventMapMarker: eventMarker});
   },
 
   renderInfoWindow: function(address, driveway){
