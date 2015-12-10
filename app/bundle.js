@@ -380,6 +380,16 @@
 	  width: '50%'
 	};  
 
+	var rightPanel =
+	{
+	  width: '45%',
+	  float: 'right'
+	}
+	var leftPanel =
+	{
+	  width: '45%',
+	  float: 'left'
+	};
 	var profile = React.createClass
 	({displayName: "profile",
 	  reroute: function()
@@ -403,7 +413,7 @@
 	        React.createElement("br", null), 
 	        React.createElement("br", null), 
 	        React.createElement("br", null), 
-	        React.createElement("div", {className: "panel panel-primary", style: bluePanelStyle}, 
+	        React.createElement("div", {className: "panel panel-primary", style: leftPanel}, 
 	          
 	          React.createElement("div", {className: "panel-heading", style: bluePanelHeaderStyle}, 
 	            "Driveways"
@@ -412,8 +422,19 @@
 	            userDriveways, React.createElement("br", null), 
 	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.reroute}, "Add driveway")
 	          )
+
+	        ), 
+	        React.createElement("div", {className: "panel panel-primary", style: rightPanel}, 
+	          
+	          React.createElement("div", {className: "panel-heading", style: bluePanelHeaderStyle}, 
+	            "Driveways"
+	          ), 
+	          React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
+	            userDriveways, React.createElement("br", null), 
+	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.reroute}, "Add driveway")
+	          )
+
 	        )
-	        
 	      )
 	      );
 	  }

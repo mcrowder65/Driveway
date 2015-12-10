@@ -327,6 +327,16 @@ var leftBluePanelStyle =
   width: '50%'
 };  
 
+var rightPanel =
+{
+  width: '45%',
+  float: 'right'
+}
+var leftPanel =
+{
+  width: '45%',
+  float: 'left'
+};
 var profile = React.createClass
 ({
   reroute: function()
@@ -350,7 +360,7 @@ var profile = React.createClass
         <br/>
         <br/>
         <br/>
-        <div className="panel panel-primary" style={bluePanelStyle}>
+        <div className="panel panel-primary" style={leftPanel}>
           
           <div className="panel-heading" style={bluePanelHeaderStyle}>
             Driveways
@@ -359,8 +369,19 @@ var profile = React.createClass
             {userDriveways}<br/>
             <button type="button" className="btn btn-primary" onClick={this.reroute}>Add driveway</button>
           </div>
+
         </div>
-        
+        <div className="panel panel-primary" style={rightPanel}>
+          
+          <div className="panel-heading" style={bluePanelHeaderStyle}>
+            Driveways
+          </div>
+          <div className="panel-body" style={bluePanelBodyStyle}>
+            {userDriveways}<br/>
+            <button type="button" className="btn btn-primary" onClick={this.reroute}>Add driveway</button>
+          </div>
+
+        </div>
       </div>
       );
   }
