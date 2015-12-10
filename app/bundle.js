@@ -71,7 +71,7 @@
 	var history = useBasename(createHistory)({
 	    basename: '/transitions'
 	})
-
+	var geocoder = new google.maps.Geocoder();
 	var Button = __webpack_require__(220);
 	var profileDriveways = '';
 	var allDriveways = [];
@@ -459,6 +459,25 @@
 	        return {address: '', numCars: '1', zip:'', city: '', state:'', editing: false, 
 	                startTime: '', endTime: '', day: '', times: [], displayTimes: [], fee: fee, title: 'Add a new Driveway!'};
 	  },
+	  geocodeAddress: function(address){
+	    console.log('trying to geocode address');
+	    var geo;
+	    $.ajax({
+	        url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCwbk5pU1WPZPc24uCD6XZJ3OUBV127_bQ',
+	        data: {
+	            sensor: false,
+	            address: address
+	        },
+	        async: false,
+	        dataType:'json',
+	        success: function (data) {
+	            geo = data.results;
+	        }
+	    });
+	    if(geo[0] == null)
+	      return null;
+	    return geo[0].geometry.location;
+	  },
 	  handleChange: function(event) 
 	  {
 	    var dayBool = false;
@@ -508,15 +527,24 @@
 	  },
 	  handleClick: function(event)
 	  {
+	    var fullAddress = this.state.address + ' ' + this.state.city + ', ' + this.state.state + this.state.zip;
+	    var location = this.geocodeAddress(fullAddress);
+	    if(location == null)
+	    {
+	      alert("That is not a correct address. Ensure that you have input a correct address.");
+	      return;
+	    }
 	    if(this.state.state == '')
+	    {
 	      alert('You must pick a state');
-
+	      return;
+	    }
 	    if(this.state.editing)
 	      drivewayDAO.update(this.state.id, this.state.address, this.state.numCars, this.state.city, 
-	                         this.state.zip, this.state.state, this.state.times, this.state.fee);
+	                         this.state.zip, this.state.state, this.state.times, this.state.fee, location);
 	    else
 	      drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, 
-	                      this.state.zip, this.state.state, this.state.times, this.state.fee);
+	                      this.state.zip, this.state.state, this.state.times, this.state.fee, location);
 	    this.history.pushState(null, '/profile');  
 	  },
 	  deleteTime: function(event)
@@ -1245,7 +1273,7 @@
 	{
 	  
 	  mixins: [History, Lifecycle],
-	  update: function(id, address, numCars, city, zip, state, times, fee)
+	  update: function(id, address, numCars, city, zip, state, times, fee, location)
 	  {
 	    var url = "/api/users/updateDriveway";
 	    $.ajax
@@ -1262,7 +1290,8 @@
 	        zip: zip,
 	        state: state,
 	        times: times,
-	        fee: fee
+	        fee: fee,
+	        location: location
 	      },
 	      async: false,
 	      success: function(res)
@@ -1321,7 +1350,7 @@
 
 	      });
 	  },
-	  add: function(username, address, numCars, city, zip, state, times, fee)
+	  add: function(username, address, numCars, city, zip, state, times, fee, location)
 	  {
 
 	    var url = "/api/users/addDriveway";
@@ -1338,7 +1367,8 @@
 	            city: city,
 	            state: state,
 	            times: times,
-	            fee: fee
+	            fee: fee,
+	            location:location
 	        },
 	        async:false,
 	        success: function(res) 

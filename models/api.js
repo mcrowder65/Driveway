@@ -159,7 +159,7 @@ app.post
 	{
 		driveway.update({_id: req.body._id}, {address: req.body.address, numCars: req.body.numCars,
 											  city: req.body.city, zip: req.body.zip, state: req.body.state,
-											  times: req.body.times, fee: req.body.fee},
+											  times: req.body.times, fee: req.body.fee, location: req.body.location},
 		function(err, driveway)
 		{
 			if(driveway)
@@ -230,10 +230,11 @@ app.post
 ('/api/users/addDriveway',
 	function (req, res)
 	{
+		
 		driveway.findOrCreate({
 			username: req.body.username, address: req.body.address, zip: req.body.zip, 
 			city: req.body.city, state: req.body.state, numCars: req.body.numCars, 
-			times: req.body.times, fee: req.body.fee},
+			times: req.body.times, fee: req.body.fee, location: req.body.location},
 		
 		function(err, driveway, created)
 		{
@@ -245,6 +246,7 @@ app.post
 				driveway.city = req.body.city;
 				driveway.times = req.body.times;
 				driveway.fee = req.body.fee;
+				driveway.location = req.body.location;
 				driveway.save
 				(
 					function(err)
