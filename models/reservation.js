@@ -5,7 +5,7 @@ var findOrCreate = require('mongoose-findorcreate')
 var reservationSchema = new Schema({
 	owner: {type: String, index: true},
 	buyer: String,
-	drivewayId: Number,
+	drivewayId: String,
 	date: String,
 	time: Number
 	
