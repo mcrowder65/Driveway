@@ -2481,6 +2481,10 @@ var userDAO =
 {
 
   mixins: [History, Lifecycle],
+  getUserReservations: function(username)
+  {
+
+  },
   findEmail: function(email)
   {
     var url ="/api/users/findEmail";

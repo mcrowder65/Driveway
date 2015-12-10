@@ -230,7 +230,7 @@ app.post
 ('/api/users/addDriveway',
 	function (req, res)
 	{
-		
+
 		driveway.findOrCreate({
 			username: req.body.username, address: req.body.address, zip: req.body.zip, 
 			city: req.body.city, state: req.body.state, numCars: req.body.numCars, 
@@ -312,13 +312,14 @@ app.post
 		reservation.findOrCreate({drivewayId: req.body.drivewayId, date: req.body.resDate, buyer: req.body.buyer},
 		function(err, reservation, created)
 		{
+
 			if (created)
-			{
+			{	console.log('time: ' + req.body.time);
 				reservation.buyer = req.body.buyer;
 				reservation.owner = req.body.owner;
 				reservation.drivewayId = req.body.drivewayId;
 				reservation.date = req.body.resDate;
-				reservation.time = req.body.resTime;
+				reservation.time = req.body.time;
 				reservation.save
 				(
 					function(err)
@@ -337,7 +338,13 @@ app.post
 		});
 	}
 );
-
+// app.post
+// ('/api/users/getUserReservations',
+// 	function(req, res)
+// 	{
+// 		reservation.findOne({})
+// 	}
+// );
 app.post
 ('/api/users/getAllReservations',
 	function (req, res)

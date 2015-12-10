@@ -2534,6 +2534,10 @@
 	{
 
 	  mixins: [History, Lifecycle],
+	  getUserReservations: function(username)
+	  {
+
+	  },
 	  findEmail: function(email)
 	  {
 	    var url ="/api/users/findEmail";
@@ -27880,6 +27884,7 @@
 	                        localStorage.cardType = CardType;
 	                        localStorage.Last4 = Last4;
 	                        var url2 = "/api/users/addReservation";
+	                        console.log('reservationTime: ' + reservationTime);
 	                        
 
 

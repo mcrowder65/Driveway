@@ -122,6 +122,7 @@ var StripeButton = React.createClass({
                         localStorage.cardType = CardType;
                         localStorage.Last4 = Last4;
                         var url2 = "/api/users/addReservation";
+                        console.log('reservationTime: ' + reservationTime);
                         
 
 
