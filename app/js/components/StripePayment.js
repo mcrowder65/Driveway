@@ -155,7 +155,7 @@ var StripeButton = React.createClass({
                         });
 
 
-                        self.history.pushState(null,'/confirm');
+                        location.href='/#/confirm';
                     }
                 }
             });
