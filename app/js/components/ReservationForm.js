@@ -10,8 +10,6 @@ var ReservationForm = React.createClass({
     router: React.PropTypes.func
   },
 
-  //Multiply price by 1000 TODO
-
   getParam: function(parameter)
   {  
     var url = window.location.href;
@@ -216,7 +214,10 @@ var ReservationForm = React.createClass({
       var infoWindow = new google.maps.InfoWindow({
         content: this.renderInfoWindow(address, driveway)
       });
-      
+      if(!driveway.fee){
+        driveway.fee = 10;
+      }
+
       var location = this.geocodeAddress(address);
 
       if(location != null){
@@ -324,8 +325,8 @@ var ReservationForm = React.createClass({
 
   markerClicked: function(marker){
     marker.infoWindow.open(this.state.map, marker.mapMarker);
-    
-    var payData = {event: {Email: this.state.email, Address: marker.address, Price: marker.driveway.fee, street: marker.driveway.address, zip1: marker.driveway.zip, state: marker.driveway.state, resDate: this.state.date, duration: "4", resTime: this.state.time, city: marker.driveway.city, drivewayId: marker.driveway._id, owner: marker.driveway.username}, parking: []};
+
+    var payData = {event: {Email: this.state.email, Address: marker.address, Price: marker.driveway.fee * 1000, street: marker.driveway.address, zip1: marker.driveway.zip, state: marker.driveway.state, resDate: this.state.date, duration: "4", resTime: this.state.time, city: marker.driveway.city, drivewayId: marker.driveway._id, owner: marker.driveway.username}, parking: []};
     ReactDOM.render(<CheckoutStrip data={payData}/>, document.getElementById('pay'));
   },
 
