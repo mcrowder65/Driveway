@@ -336,6 +336,21 @@ app.post
 	}
 );
 
+app.post
+('/api/users/getAllReservations',
+	function (req, res)
+	{
+		reservation.find({},
+		function(err, reservations)
+		{
+			if (reservation)
+				res.json({reservations: reservations});
+			else
+				res.sendStatus("403");
+		});
+	}
+);
+
 app.post('/api/users/login', function (req, res) 
 {
     // find the user with the given username
