@@ -18,7 +18,7 @@ var {Lifecycle, RouteContext} = require('react-router');
 var history = useBasename(createHistory)({
     basename: '/transitions'
 })
-
+var geocoder = new google.maps.Geocoder();
 var Button = require('react-button');
 var profileDriveways = '';
 var allDriveways = [];
@@ -248,7 +248,7 @@ var Home = React.createClass
         <div className="panel-body" > 
           <h2>Rent out your driveway</h2>
           <h4>Easy as 1...2...3...</h4>
-          <button className="btn btn-default btn-lg dropdown-toggle" type="button" onClick={this.goToLearn}>
+          <button className="btn btn-primary" type="button" onClick={this.goToLearn}>
           Learn more
           </button>
         </div>
@@ -327,8 +327,22 @@ var leftBluePanelStyle =
   width: '50%'
 };  
 
+var rightPanel =
+{
+  width: '45%',
+  float: 'right'
+}
+var leftPanel =
+{
+  width: '45%',
+  float: 'left'
+};
 var profile = React.createClass
 ({
+  reroute: function()
+  {
+    location.href ='/#/driveway';
+  },
   render: function() 
   {
     if(document.getElementById('navbar'))
@@ -346,17 +360,28 @@ var profile = React.createClass
         <br/>
         <br/>
         <br/>
-        <div className="panel panel-primary" style={bluePanelStyle}>
+        <div className="panel panel-primary" style={leftPanel}>
           
           <div className="panel-heading" style={bluePanelHeaderStyle}>
             Driveways
           </div>
           <div className="panel-body" style={bluePanelBodyStyle}>
             {userDriveways}<br/>
-            <button> <Link to="/driveway">Add driveway</Link></button>
+            <button type="button" className="btn btn-primary" onClick={this.reroute}>Add driveway</button>
           </div>
+
         </div>
-        
+        <div className="panel panel-primary" style={rightPanel}>
+          
+          <div className="panel-heading" style={bluePanelHeaderStyle}>
+            Driveways
+          </div>
+          <div className="panel-body" style={bluePanelBodyStyle}>
+            {userDriveways}<br/>
+            <button type="button" className="btn btn-primary" onClick={this.reroute}>Add driveway</button>
+          </div>
+
+        </div>
       </div>
       );
   }
@@ -401,6 +426,25 @@ var driveway = React.createClass
     else
         return {address: '', numCars: '1', zip:'', city: '', state:'', editing: false, 
                 startTime: '', endTime: '', day: '', times: [], displayTimes: [], fee: fee, title: 'Add a new Driveway!'};
+  },
+  geocodeAddress: function(address){
+    console.log('trying to geocode address');
+    var geo;
+    $.ajax({
+        url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCwbk5pU1WPZPc24uCD6XZJ3OUBV127_bQ',
+        data: {
+            sensor: false,
+            address: address
+        },
+        async: false,
+        dataType:'json',
+        success: function (data) {
+            geo = data.results;
+        }
+    });
+    if(geo[0] == null)
+      return null;
+    return geo[0].geometry.location;
   },
   handleChange: function(event) 
   {
@@ -451,15 +495,24 @@ var driveway = React.createClass
   },
   handleClick: function(event)
   {
+    var fullAddress = this.state.address + ' ' + this.state.city + ', ' + this.state.state + this.state.zip;
+    var location = this.geocodeAddress(fullAddress);
+    if(location == null)
+    {
+      alert("That is not a correct address. Ensure that you have input a correct address.");
+      return;
+    }
     if(this.state.state == '')
+    {
       alert('You must pick a state');
-
+      return;
+    }
     if(this.state.editing)
       drivewayDAO.update(this.state.id, this.state.address, this.state.numCars, this.state.city, 
-                         this.state.zip, this.state.state, this.state.times, this.state.fee);
+                         this.state.zip, this.state.state, this.state.times, this.state.fee, location);
     else
       drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, 
-                      this.state.zip, this.state.state, this.state.times, this.state.fee);
+                      this.state.zip, this.state.state, this.state.times, this.state.fee, location);
     this.history.pushState(null, '/profile');  
   },
   deleteTime: function(event)
@@ -495,7 +548,7 @@ var driveway = React.createClass
       
       var id = stateDay+ ' ' + startTime + ' ' + endTime;
       displayTimes.push(value);
-      displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id}, 'Delete'));
+      displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id, className: 'btn btn-primary', type: 'button'}, 'Delete'));
     }
     this.setState({displayTimes: displayTimes});
     this.forceUpdate();
@@ -567,7 +620,7 @@ var driveway = React.createClass
         var end = times[i].endTime;
         var id = stateDay+ ' ' + start + ' ' + end;
         displayTimes.push(value);
-        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id}, 'Delete'));
+        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id, className: 'btn', type: 'button'}, 'Delete'));
       }
 
       this.state.displayTimes = displayTimes;
@@ -878,10 +931,10 @@ var driveway = React.createClass
                             <option value="11:30 PM">11:30 PM</option>
                             <option value="11:45 PM">11:45 PM</option>
                           </select><space> </space>            
-              <button onClick={this.addNewTime}> Add time</button><br/><br/>
+              <button onClick={this.addNewTime} className="btn btn-primary" type="button"> Add time</button><br/><br/>
               </div>
               <div>
-                <button id="submit" onClick={this.handleClick}> Submit </button>  
+                <button id="submit" onClick={this.handleClick} type="button" className="btn btn-primary"> Submit </button>  
               </div>
           </div>
         </div>
@@ -1168,12 +1221,12 @@ var driveway = React.createClass
                             <option value="11:30 PM">11:30 PM</option>
                             <option value="11:45 PM">11:45 PM</option>
                           </select><space> </space>            
-              <button onClick={this.addNewTime}> Add time</button><br/><br/>
+              <button onClick={this.addNewTime} type="button" className="btn btn-primary"> Add time</button><br/><br/>
               </div>
               <div>
-                <button id="submit" onClick={this.handleClick}> Submit </button>  
+                <button id="submit" onClick={this.handleClick} type="button" className="btn btn-primary"> Submit </button>  
                 <text>     </text>
-                <button onClick={this.remove}>Delete</button>
+                <button onClick={this.remove} type="button" className="btn btn-primary">Delete</button>
               </div>
         </div>
       </div>
@@ -1188,7 +1241,7 @@ var drivewayDAO =
 {
   
   mixins: [History, Lifecycle],
-  update: function(id, address, numCars, city, zip, state, times, fee)
+  update: function(id, address, numCars, city, zip, state, times, fee, location)
   {
     var url = "/api/users/updateDriveway";
     $.ajax
@@ -1205,7 +1258,8 @@ var drivewayDAO =
         zip: zip,
         state: state,
         times: times,
-        fee: fee
+        fee: fee,
+        location: location
       },
       async: false,
       success: function(res)
@@ -1264,7 +1318,7 @@ var drivewayDAO =
 
       });
   },
-  add: function(username, address, numCars, city, zip, state, times, fee)
+  add: function(username, address, numCars, city, zip, state, times, fee, location)
   {
 
     var url = "/api/users/addDriveway";
@@ -1281,7 +1335,8 @@ var drivewayDAO =
             city: city,
             state: state,
             times: times,
-            fee: fee
+            fee: fee,
+            location
         },
         async:false,
         success: function(res) 
@@ -1470,7 +1525,7 @@ var signIn = React.createClass
             Username: <br/><input type="text" name="username" value ={username} placeholder="Username" onChange={this.handleChange}/><br/><br/>
             Password: <br/><input type="password" name="password" value ={password} placeholder="Password" onChange={this.handleChange}/><br/>
             <br/><Link to="/forgottenPassword">Forgot your password?</Link><br/>
-            <br/><button onClick={this.handleClick}>
+            <br/><button type="button" className="btn btn-primary" onClick={this.handleClick}>
               SIGN IN
               </button>
           </div>
@@ -1909,15 +1964,9 @@ var learnMore = React.createClass
         </div>
         <div className="row">
           <div className="col-md-12">
-            <div className="panel panel-primary">
-              <div className="panel-heading" style={fontStyle2}>How do I rent my Driveway?</div>
-              <div className="panel-body">
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-              </div>
+            <div className="form-group">
+              <label for="comment">Comment:</label>
+              <textarea className="form-control" rows="5" id="comment"></textarea>
             </div>
           </div>
         </div>
@@ -1978,20 +2027,19 @@ var pastOrders = React.createClass
   render: function() {
 
     var email = this.state.email;
-    var email2 = "Email: " + temp2.email;
-    var name = "Name: " + temp2.name1;
-    var cardType = "Card Type: " + temp2.cardType;
-    var Last4 = "Last 4 Digits: " + temp2.last4;
-    var ReservedAddress = "Reserved Address: " + temp2.address;
-    var State = "State: " + temp2.state;
-    var City = "City: " + temp2.city;
-    var DOR = "Date of Reservation: " + temp2.reservationDate;
-    var ResTime = "Email: " + temp2.reservationTime;
-    var resDur = "Reservation Duration: " + temp2.reservationDuration+ " hours";
+    var email2 = temp2.email;
+    var name =  temp2.name1;
+    var cardType =  temp2.cardType;
+    var Last4 =  temp2.last4;
+    var ReservedAddress =  temp2.address;
+    var State =  temp2.state;
+    var City =  temp2.city;
+    var DOR = temp2.reservationDate;
+    var ResTime = temp2.reservationTime;
+    var resDur = temp2.reservationDuration+ " hours";
     var price2 = temp2.price/100;
-    console.log(price2);
-    var price = "Total Price: $" + price2;
-    var ZIP = "Zip Code: " + temp2.zip;
+    var price = price2;
+    var ZIP =  temp2.zip;
 
     if(document.getElementById('navbar'))
       document.getElementById('navbar').style.marginBottom ='';
@@ -2011,12 +2059,12 @@ var pastOrders = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Order Information</div>
               <div className="panel-body">
-                <p>{ReservedAddress}</p>
-                <p>{State}</p>
-                <p>{ZIP}</p>
-                <p>{DOR}</p>
-                <p>{ResTime}</p>
-                <p>{resDur}</p>
+                <p><b>Reserved Address: </b>{ReservedAddress}</p>
+                <p><b>State: </b>{State}</p>
+                <p><b>Zip Code: </b>{ZIP}</p>
+                <p><b>Date of Reservation: </b>{DOR}</p>
+                <p><b>Reservation Time: </b>{ResTime}</p>
+                <p><b>Reservation Duration: </b>{resDur}</p>
               </div>
             </div>
           </div>
@@ -2024,12 +2072,12 @@ var pastOrders = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Personal Information</div>
               <div className="panel-body">
-                <p>{name}</p>
-                <p>{email2}</p>
-                <p>{cardType}</p>
-                <p>{Last4}</p>
-                <p>{price}</p>
-                <p>Total Amount due: $0.00</p>
+                <p><b>Name: </b>{name}</p>
+                <p><b>Email: </b>{email2}</p>
+                <p><b>Card Type: </b>{cardType}</p>
+                <p><b>Last 4 Digits: </b>{Last4}</p>
+                <p><b>Price: </b>{price}</p>
+                <p><b>Total Amount due: </b>$0.00</p>
               </div>
             </div>
           </div>
@@ -2039,7 +2087,7 @@ var pastOrders = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Email Me!</div>
               <div className="panel-body">
-                <p style={jumboStyle}>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </p>
+                <p style={jumboStyle}><b>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </b></p>
                 <div style={jumboStyle}>
                   Email: <input type="text" name="email" value={email} onChange={this.handleChange}/>
                    <button type="button" className="btn btn-primary btn-md" onClick={this.sendEm}>SEND!</button> 
@@ -2154,26 +2202,30 @@ var confirmPage = React.createClass
 
     recieptEmail.sendEmails(this.state.email);
     localStorage.email3 = this.state.email;
-    this.history.pushState(null, '/modalPage');
+    var div1 = document.getElementById('bottomPanel');
+    var div2 = document.getElementById('bottomPanel2');
+    div1.style.display = 'none';
+    div2.style.display = 'block';
+    //this.history.pushState(null, '/modalPage');
 
   },
 
   render: function() {
 
     var email = this.state.email;
-    var email2 = "Email: " + localStorage.email;
-    var name = "Name: " + localStorage.Name;
-    var cardType = "Card Type: " + localStorage.cardType;
-    var Last4 = "Last 4 Digits: " + localStorage.Last4;
-    var ReservedAddress = "Reserved Address: " + localStorage.ResAddress;
-    var State = "State: " + localStorage.State;
-    var City = "City: " + localStorage.City;
-    var DOR = "Date of Reservation: " + localStorage.ResDate;
-    var ResTime = "Reservation Time: " + localStorage.ResTime;
-    var resDur = "Reservation Duration: " + localStorage.ResDuration + " hours";
+    var email2 =  localStorage.email;
+    var name = localStorage.Name;
+    var cardType = localStorage.cardType;
+    var Last4 =  localStorage.Last4;
+    var ReservedAddress = localStorage.ResAddress;
+    var State = localStorage.State;
+    var City = localStorage.City;
+    var DOR = localStorage.ResDate;
+    var ResTime =  localStorage.ResTime;
+    var resDur = localStorage.ResDuration + " hours";
     var price2 = localStorage.price/100;
-    var price = "Total Price: $" + price2;
-    var ZIP = "Zip Code: " + localStorage.Zip;
+    var price =  price2;
+    var ZIP = localStorage.Zip;
     if(document.getElementById('navbar'))
       document.getElementById('navbar').style.marginBottom ='';
     //this.forceUpdate();
@@ -2192,12 +2244,12 @@ var confirmPage = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Order Information</div>
               <div className="panel-body">
-                <p>{ReservedAddress}</p>
-                <p>{State}</p>
-                <p>{ZIP}</p>
-                <p>{DOR}</p>
-                <p>{ResTime}</p>
-                <p>{resDur}</p>
+                <p><b>Reserved Address: </b>{ReservedAddress}</p>
+                <p><b>State: </b>{State}</p>
+                <p><b>Zip Code: </b>{ZIP}</p>
+                <p><b>Date of Reservation: </b>{DOR}</p>
+                <p><b>Reservation Time: </b>{ResTime}</p>
+                <p><b>Reservation Duration: </b>{resDur}</p>
               </div>
             </div>
           </div>
@@ -2205,26 +2257,36 @@ var confirmPage = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Personal Information</div>
               <div className="panel-body">
-                <p>{name}</p>
-                <p>{email2}</p>
-                <p>{cardType}</p>
-                <p>{Last4}</p>
-                <p>{price}</p>
-                <p>Total Amount due: $0.00</p>
+                <p><b>Name: </b>{name}</p>
+                <p><b>Email: </b>{email2}</p>
+                <p><b>Card Type: </b>{cardType}</p>
+                <p><b>Last 4 Digit: </b>{Last4}</p>
+                <p><b>Total Price: </b>${price}</p>
+                <p><b>Total Amount due: </b>$0.00</p>
               </div>
             </div>
           </div>
         </div>
         <div className="row">
+          <div id="bottomPanel" className="col-md-12">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Email Me!</div>
+              <div className="panel-body">
+                <p style={jumboStyle}><b>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </b></p>
+                <div style={jumboStyle}>
+                  <b>Email: </b> <input type="text" name="email" value={email} onChange={this.handleChange}/>
+                  <button type="button" className="btn btn-primary btn-md" onClick={this.sendEm}>SEND!</button> 
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="bottomPanel2" className="row" style={thanksStyle}>
           <div className="col-md-12">
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Email Me!</div>
               <div className="panel-body">
-                <p style={jumboStyle}>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </p>
-                <div style={jumboStyle}>
-                  Email: <input type="text" name="email" value={email} onChange={this.handleChange}/>
-                  <button type="button" className="btn btn-primary btn-md" onClick={this.sendEm}>SEND!</button> 
-                </div>
+                <p style={textStyle}>Thank you for your request. An email as been sent to {email} </p>
               </div>
             </div>
           </div>
@@ -2380,7 +2442,7 @@ var signUp = React.createClass
                 <input type="radio" onClick={this.handleTerms} id="terms"> 
                   I agree to the <a href="randomHTMLFiles/terms.html">terms and conditions</a>
                 </input><br/><br/>
-                <input type="submit" value="SIGN UP" onClick={this.register}/> 
+                <input type="button" className="btn btn-primary" value="SIGN UP" onClick={this.register}/> 
             
            </div>
           </div>
@@ -2419,6 +2481,10 @@ var userDAO =
 {
 
   mixins: [History, Lifecycle],
+  getUserReservations: function(username)
+  {
+
+  },
   findEmail: function(email)
   {
     var url ="/api/users/findEmail";
@@ -2691,7 +2757,7 @@ var forgottenPassword = React.createClass
           <div className="panel-body" style={bluePanelBodyStyle}>
             Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange} placeholder="Email"/> <br/><br/>
             Username: <br/><input type="text" name="username" value={username} onChange={this.handleChange} placeholder="Username"/><br/><br/>
-            <button onClick={this.sendEmail}> Submit </button>
+            <button type="button" className="btn btn-primary" onClick={this.sendEmail}> Submit </button>
           </div>
         </div>
         <div id='errorUsername' className="alert alert-danger" role="alert" style={usernameFailStyle}>
@@ -2797,7 +2863,7 @@ var updatePassword = React.createClass
         
             Password: <br/><input id="password" type="password" value={password} name="password" onChange={this.handleChange} placeholder="Password"/><br/><br/>
             Confirm password: <br/><input id="confirmPassword" type="password" value={confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Confirm password" /><br/><br/>
-            <button onClick={this.changePassword}> Submit </button>
+            <button type="button" className="btn btn-primary" onClick={this.changePassword}> Submit </button>
           </div>
         </div>  
          <div id='differentPasswords' className="alert alert-danger" role="alert" style={passwordFailStyle}>

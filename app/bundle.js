@@ -71,7 +71,7 @@
 	var history = useBasename(createHistory)({
 	    basename: '/transitions'
 	})
-
+	var geocoder = new google.maps.Geocoder();
 	var Button = __webpack_require__(220);
 	var profileDriveways = '';
 	var allDriveways = [];
@@ -301,7 +301,7 @@
 	        React.createElement("div", {className: "panel-body"}, 
 	          React.createElement("h2", null, "Rent out your driveway"), 
 	          React.createElement("h4", null, "Easy as 1...2...3..."), 
-	          React.createElement("button", {className: "btn btn-default btn-lg dropdown-toggle", type: "button", onClick: this.goToLearn}, 
+	          React.createElement("button", {className: "btn btn-primary", type: "button", onClick: this.goToLearn}, 
 	          "Learn more"
 	          )
 	        )
@@ -380,8 +380,22 @@
 	  width: '50%'
 	};  
 
+	var rightPanel =
+	{
+	  width: '45%',
+	  float: 'right'
+	}
+	var leftPanel =
+	{
+	  width: '45%',
+	  float: 'left'
+	};
 	var profile = React.createClass
 	({displayName: "profile",
+	  reroute: function()
+	  {
+	    location.href ='/#/driveway';
+	  },
 	  render: function() 
 	  {
 	    if(document.getElementById('navbar'))
@@ -399,17 +413,28 @@
 	        React.createElement("br", null), 
 	        React.createElement("br", null), 
 	        React.createElement("br", null), 
-	        React.createElement("div", {className: "panel panel-primary", style: bluePanelStyle}, 
+	        React.createElement("div", {className: "panel panel-primary", style: leftPanel}, 
 	          
 	          React.createElement("div", {className: "panel-heading", style: bluePanelHeaderStyle}, 
 	            "Driveways"
 	          ), 
 	          React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
 	            userDriveways, React.createElement("br", null), 
-	            React.createElement("button", null, " ", React.createElement(Link, {to: "/driveway"}, "Add driveway"))
+	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.reroute}, "Add driveway")
 	          )
+
+	        ), 
+	        React.createElement("div", {className: "panel panel-primary", style: rightPanel}, 
+	          
+	          React.createElement("div", {className: "panel-heading", style: bluePanelHeaderStyle}, 
+	            "Driveways"
+	          ), 
+	          React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
+	            userDriveways, React.createElement("br", null), 
+	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.reroute}, "Add driveway")
+	          )
+
 	        )
-	        
 	      )
 	      );
 	  }
@@ -454,6 +479,25 @@
 	    else
 	        return {address: '', numCars: '1', zip:'', city: '', state:'', editing: false, 
 	                startTime: '', endTime: '', day: '', times: [], displayTimes: [], fee: fee, title: 'Add a new Driveway!'};
+	  },
+	  geocodeAddress: function(address){
+	    console.log('trying to geocode address');
+	    var geo;
+	    $.ajax({
+	        url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCwbk5pU1WPZPc24uCD6XZJ3OUBV127_bQ',
+	        data: {
+	            sensor: false,
+	            address: address
+	        },
+	        async: false,
+	        dataType:'json',
+	        success: function (data) {
+	            geo = data.results;
+	        }
+	    });
+	    if(geo[0] == null)
+	      return null;
+	    return geo[0].geometry.location;
 	  },
 	  handleChange: function(event) 
 	  {
@@ -504,15 +548,24 @@
 	  },
 	  handleClick: function(event)
 	  {
+	    var fullAddress = this.state.address + ' ' + this.state.city + ', ' + this.state.state + this.state.zip;
+	    var location = this.geocodeAddress(fullAddress);
+	    if(location == null)
+	    {
+	      alert("That is not a correct address. Ensure that you have input a correct address.");
+	      return;
+	    }
 	    if(this.state.state == '')
+	    {
 	      alert('You must pick a state');
-
+	      return;
+	    }
 	    if(this.state.editing)
 	      drivewayDAO.update(this.state.id, this.state.address, this.state.numCars, this.state.city, 
-	                         this.state.zip, this.state.state, this.state.times, this.state.fee);
+	                         this.state.zip, this.state.state, this.state.times, this.state.fee, location);
 	    else
 	      drivewayDAO.add(localStorage.username, this.state.address, this.state.numCars, this.state.city, 
-	                      this.state.zip, this.state.state, this.state.times, this.state.fee);
+	                      this.state.zip, this.state.state, this.state.times, this.state.fee, location);
 	    this.history.pushState(null, '/profile');  
 	  },
 	  deleteTime: function(event)
@@ -548,7 +601,7 @@
 	      
 	      var id = stateDay+ ' ' + startTime + ' ' + endTime;
 	      displayTimes.push(value);
-	      displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id}, 'Delete'));
+	      displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id, className: 'btn btn-primary', type: 'button'}, 'Delete'));
 	    }
 	    this.setState({displayTimes: displayTimes});
 	    this.forceUpdate();
@@ -620,7 +673,7 @@
 	        var end = times[i].endTime;
 	        var id = stateDay+ ' ' + start + ' ' + end;
 	        displayTimes.push(value);
-	        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id}, 'Delete'));
+	        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id, className: 'btn', type: 'button'}, 'Delete'));
 	      }
 
 	      this.state.displayTimes = displayTimes;
@@ -931,10 +984,10 @@
 	                            React.createElement("option", {value: "11:30 PM"}, "11:30 PM"), 
 	                            React.createElement("option", {value: "11:45 PM"}, "11:45 PM")
 	                          ), React.createElement("space", null, " "), 
-	              React.createElement("button", {onClick: this.addNewTime}, " Add time"), React.createElement("br", null), React.createElement("br", null)
+	              React.createElement("button", {onClick: this.addNewTime, className: "btn btn-primary", type: "button"}, " Add time"), React.createElement("br", null), React.createElement("br", null)
 	              ), 
 	              React.createElement("div", null, 
-	                React.createElement("button", {id: "submit", onClick: this.handleClick}, " Submit ")
+	                React.createElement("button", {id: "submit", onClick: this.handleClick, type: "button", className: "btn btn-primary"}, " Submit ")
 	              )
 	          )
 	        )
@@ -1221,12 +1274,12 @@
 	                            React.createElement("option", {value: "11:30 PM"}, "11:30 PM"), 
 	                            React.createElement("option", {value: "11:45 PM"}, "11:45 PM")
 	                          ), React.createElement("space", null, " "), 
-	              React.createElement("button", {onClick: this.addNewTime}, " Add time"), React.createElement("br", null), React.createElement("br", null)
+	              React.createElement("button", {onClick: this.addNewTime, type: "button", className: "btn btn-primary"}, " Add time"), React.createElement("br", null), React.createElement("br", null)
 	              ), 
 	              React.createElement("div", null, 
-	                React.createElement("button", {id: "submit", onClick: this.handleClick}, " Submit "), 
+	                React.createElement("button", {id: "submit", onClick: this.handleClick, type: "button", className: "btn btn-primary"}, " Submit "), 
 	                React.createElement("text", null, "     "), 
-	                React.createElement("button", {onClick: this.remove}, "Delete")
+	                React.createElement("button", {onClick: this.remove, type: "button", className: "btn btn-primary"}, "Delete")
 	              )
 	        )
 	      )
@@ -1241,7 +1294,7 @@
 	{
 	  
 	  mixins: [History, Lifecycle],
-	  update: function(id, address, numCars, city, zip, state, times, fee)
+	  update: function(id, address, numCars, city, zip, state, times, fee, location)
 	  {
 	    var url = "/api/users/updateDriveway";
 	    $.ajax
@@ -1258,7 +1311,8 @@
 	        zip: zip,
 	        state: state,
 	        times: times,
-	        fee: fee
+	        fee: fee,
+	        location: location
 	      },
 	      async: false,
 	      success: function(res)
@@ -1317,7 +1371,7 @@
 
 	      });
 	  },
-	  add: function(username, address, numCars, city, zip, state, times, fee)
+	  add: function(username, address, numCars, city, zip, state, times, fee, location)
 	  {
 
 	    var url = "/api/users/addDriveway";
@@ -1334,7 +1388,8 @@
 	            city: city,
 	            state: state,
 	            times: times,
-	            fee: fee
+	            fee: fee,
+	            location:location
 	        },
 	        async:false,
 	        success: function(res) 
@@ -1523,7 +1578,7 @@
 	            "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, placeholder: "Username", onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
 	            "Password: ", React.createElement("br", null), React.createElement("input", {type: "password", name: "password", value: password, placeholder: "Password", onChange: this.handleChange}), React.createElement("br", null), 
 	            React.createElement("br", null), React.createElement(Link, {to: "/forgottenPassword"}, "Forgot your password?"), React.createElement("br", null), 
-	            React.createElement("br", null), React.createElement("button", {onClick: this.handleClick}, 
+	            React.createElement("br", null), React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.handleClick}, 
 	              "SIGN IN"
 	              )
 	          )
@@ -1962,15 +2017,9 @@
 	        ), 
 	        React.createElement("div", {className: "row"}, 
 	          React.createElement("div", {className: "col-md-12"}, 
-	            React.createElement("div", {className: "panel panel-primary"}, 
-	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "How do I rent my Driveway?"), 
-	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do ")
-	              )
+	            React.createElement("div", {className: "form-group"}, 
+	              React.createElement("label", {for: "comment"}, "Comment:"), 
+	              React.createElement("textarea", {className: "form-control", rows: "5", id: "comment"})
 	            )
 	          )
 	        )
@@ -2031,20 +2080,19 @@
 	  render: function() {
 
 	    var email = this.state.email;
-	    var email2 = "Email: " + temp2.email;
-	    var name = "Name: " + temp2.name1;
-	    var cardType = "Card Type: " + temp2.cardType;
-	    var Last4 = "Last 4 Digits: " + temp2.last4;
-	    var ReservedAddress = "Reserved Address: " + temp2.address;
-	    var State = "State: " + temp2.state;
-	    var City = "City: " + temp2.city;
-	    var DOR = "Date of Reservation: " + temp2.reservationDate;
-	    var ResTime = "Email: " + temp2.reservationTime;
-	    var resDur = "Reservation Duration: " + temp2.reservationDuration+ " hours";
+	    var email2 = temp2.email;
+	    var name =  temp2.name1;
+	    var cardType =  temp2.cardType;
+	    var Last4 =  temp2.last4;
+	    var ReservedAddress =  temp2.address;
+	    var State =  temp2.state;
+	    var City =  temp2.city;
+	    var DOR = temp2.reservationDate;
+	    var ResTime = temp2.reservationTime;
+	    var resDur = temp2.reservationDuration+ " hours";
 	    var price2 = temp2.price/100;
-	    console.log(price2);
-	    var price = "Total Price: $" + price2;
-	    var ZIP = "Zip Code: " + temp2.zip;
+	    var price = price2;
+	    var ZIP =  temp2.zip;
 
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
@@ -2064,12 +2112,12 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Order Information"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, ReservedAddress), 
-	                React.createElement("p", null, State), 
-	                React.createElement("p", null, ZIP), 
-	                React.createElement("p", null, DOR), 
-	                React.createElement("p", null, ResTime), 
-	                React.createElement("p", null, resDur)
+	                React.createElement("p", null, React.createElement("b", null, "Reserved Address: "), ReservedAddress), 
+	                React.createElement("p", null, React.createElement("b", null, "State: "), State), 
+	                React.createElement("p", null, React.createElement("b", null, "Zip Code: "), ZIP), 
+	                React.createElement("p", null, React.createElement("b", null, "Date of Reservation: "), DOR), 
+	                React.createElement("p", null, React.createElement("b", null, "Reservation Time: "), ResTime), 
+	                React.createElement("p", null, React.createElement("b", null, "Reservation Duration: "), resDur)
 	              )
 	            )
 	          ), 
@@ -2077,12 +2125,12 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Personal Information"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, name), 
-	                React.createElement("p", null, email2), 
-	                React.createElement("p", null, cardType), 
-	                React.createElement("p", null, Last4), 
-	                React.createElement("p", null, price), 
-	                React.createElement("p", null, "Total Amount due: $0.00")
+	                React.createElement("p", null, React.createElement("b", null, "Name: "), name), 
+	                React.createElement("p", null, React.createElement("b", null, "Email: "), email2), 
+	                React.createElement("p", null, React.createElement("b", null, "Card Type: "), cardType), 
+	                React.createElement("p", null, React.createElement("b", null, "Last 4 Digits: "), Last4), 
+	                React.createElement("p", null, React.createElement("b", null, "Price: "), price), 
+	                React.createElement("p", null, React.createElement("b", null, "Total Amount due: "), "$0.00")
 	              )
 	            )
 	          )
@@ -2092,7 +2140,7 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", {style: jumboStyle}, "If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. "), 
+	                React.createElement("p", {style: jumboStyle}, React.createElement("b", null, "If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. ")), 
 	                React.createElement("div", {style: jumboStyle}, 
 	                  "Email: ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
 	                   React.createElement("button", {type: "button", className: "btn btn-primary btn-md", onClick: this.sendEm}, "SEND!")
@@ -2207,26 +2255,30 @@
 
 	    recieptEmail.sendEmails(this.state.email);
 	    localStorage.email3 = this.state.email;
-	    this.history.pushState(null, '/modalPage');
+	    var div1 = document.getElementById('bottomPanel');
+	    var div2 = document.getElementById('bottomPanel2');
+	    div1.style.display = 'none';
+	    div2.style.display = 'block';
+	    //this.history.pushState(null, '/modalPage');
 
 	  },
 
 	  render: function() {
 
 	    var email = this.state.email;
-	    var email2 = "Email: " + localStorage.email;
-	    var name = "Name: " + localStorage.Name;
-	    var cardType = "Card Type: " + localStorage.cardType;
-	    var Last4 = "Last 4 Digits: " + localStorage.Last4;
-	    var ReservedAddress = "Reserved Address: " + localStorage.ResAddress;
-	    var State = "State: " + localStorage.State;
-	    var City = "City: " + localStorage.City;
-	    var DOR = "Date of Reservation: " + localStorage.ResDate;
-	    var ResTime = "Reservation Time: " + localStorage.ResTime;
-	    var resDur = "Reservation Duration: " + localStorage.ResDuration + " hours";
+	    var email2 =  localStorage.email;
+	    var name = localStorage.Name;
+	    var cardType = localStorage.cardType;
+	    var Last4 =  localStorage.Last4;
+	    var ReservedAddress = localStorage.ResAddress;
+	    var State = localStorage.State;
+	    var City = localStorage.City;
+	    var DOR = localStorage.ResDate;
+	    var ResTime =  localStorage.ResTime;
+	    var resDur = localStorage.ResDuration + " hours";
 	    var price2 = localStorage.price/100;
-	    var price = "Total Price: $" + price2;
-	    var ZIP = "Zip Code: " + localStorage.Zip;
+	    var price =  price2;
+	    var ZIP = localStorage.Zip;
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
 	    //this.forceUpdate();
@@ -2245,12 +2297,12 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Order Information"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, ReservedAddress), 
-	                React.createElement("p", null, State), 
-	                React.createElement("p", null, ZIP), 
-	                React.createElement("p", null, DOR), 
-	                React.createElement("p", null, ResTime), 
-	                React.createElement("p", null, resDur)
+	                React.createElement("p", null, React.createElement("b", null, "Reserved Address: "), ReservedAddress), 
+	                React.createElement("p", null, React.createElement("b", null, "State: "), State), 
+	                React.createElement("p", null, React.createElement("b", null, "Zip Code: "), ZIP), 
+	                React.createElement("p", null, React.createElement("b", null, "Date of Reservation: "), DOR), 
+	                React.createElement("p", null, React.createElement("b", null, "Reservation Time: "), ResTime), 
+	                React.createElement("p", null, React.createElement("b", null, "Reservation Duration: "), resDur)
 	              )
 	            )
 	          ), 
@@ -2258,26 +2310,36 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Personal Information"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, name), 
-	                React.createElement("p", null, email2), 
-	                React.createElement("p", null, cardType), 
-	                React.createElement("p", null, Last4), 
-	                React.createElement("p", null, price), 
-	                React.createElement("p", null, "Total Amount due: $0.00")
+	                React.createElement("p", null, React.createElement("b", null, "Name: "), name), 
+	                React.createElement("p", null, React.createElement("b", null, "Email: "), email2), 
+	                React.createElement("p", null, React.createElement("b", null, "Card Type: "), cardType), 
+	                React.createElement("p", null, React.createElement("b", null, "Last 4 Digit: "), Last4), 
+	                React.createElement("p", null, React.createElement("b", null, "Total Price: "), "$", price), 
+	                React.createElement("p", null, React.createElement("b", null, "Total Amount due: "), "$0.00")
 	              )
 	            )
 	          )
 	        ), 
 	        React.createElement("div", {className: "row"}, 
+	          React.createElement("div", {id: "bottomPanel", className: "col-md-12"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", {style: jumboStyle}, React.createElement("b", null, "If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. ")), 
+	                React.createElement("div", {style: jumboStyle}, 
+	                  React.createElement("b", null, "Email: "), " ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
+	                  React.createElement("button", {type: "button", className: "btn btn-primary btn-md", onClick: this.sendEm}, "SEND!")
+	                )
+	              )
+	            )
+	          )
+	        ), 
+	        React.createElement("div", {id: "bottomPanel2", className: "row", style: thanksStyle}, 
 	          React.createElement("div", {className: "col-md-12"}, 
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", {style: jumboStyle}, "If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. "), 
-	                React.createElement("div", {style: jumboStyle}, 
-	                  "Email: ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
-	                  React.createElement("button", {type: "button", className: "btn btn-primary btn-md", onClick: this.sendEm}, "SEND!")
-	                )
+	                React.createElement("p", {style: textStyle}, "Thank you for your request. An email as been sent to ", email, " ")
 	              )
 	            )
 	          )
@@ -2433,7 +2495,7 @@
 	                React.createElement("input", {type: "radio", onClick: this.handleTerms, id: "terms"}, 
 	                  "I agree to the ", React.createElement("a", {href: "randomHTMLFiles/terms.html"}, "terms and conditions")
 	                ), React.createElement("br", null), React.createElement("br", null), 
-	                React.createElement("input", {type: "submit", value: "SIGN UP", onClick: this.register})
+	                React.createElement("input", {type: "button", className: "btn btn-primary", value: "SIGN UP", onClick: this.register})
 	            
 	           )
 	          ), 
@@ -2472,6 +2534,10 @@
 	{
 
 	  mixins: [History, Lifecycle],
+	  getUserReservations: function(username)
+	  {
+
+	  },
 	  findEmail: function(email)
 	  {
 	    var url ="/api/users/findEmail";
@@ -2744,7 +2810,7 @@
 	          React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
 	            "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange, placeholder: "Email"}), " ", React.createElement("br", null), React.createElement("br", null), 
 	            "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, onChange: this.handleChange, placeholder: "Username"}), React.createElement("br", null), React.createElement("br", null), 
-	            React.createElement("button", {onClick: this.sendEmail}, " Submit ")
+	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.sendEmail}, " Submit ")
 	          )
 	        ), 
 	        React.createElement("div", {id: "errorUsername", className: "alert alert-danger", role: "alert", style: usernameFailStyle}, 
@@ -2850,7 +2916,7 @@
 	        
 	            "Password: ", React.createElement("br", null), React.createElement("input", {id: "password", type: "password", value: password, name: "password", onChange: this.handleChange, placeholder: "Password"}), React.createElement("br", null), React.createElement("br", null), 
 	            "Confirm password: ", React.createElement("br", null), React.createElement("input", {id: "confirmPassword", type: "password", value: confirmPassword, name: "confirmPassword", onChange: this.handleChange, placeholder: "Confirm password"}), React.createElement("br", null), React.createElement("br", null), 
-	            React.createElement("button", {onClick: this.changePassword}, " Submit ")
+	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.changePassword}, " Submit ")
 	          )
 	        ), 
 	         React.createElement("div", {id: "differentPasswords", className: "alert alert-danger", role: "alert", style: passwordFailStyle}, 
@@ -27471,24 +27537,24 @@
 	      
 	      if(!reserved){
 	        //Check the day if the date isn't empty or undefined
-	        // if(this.state.date != ''){
-	        //   var date = new Date(this.state.date);
-	        //   var dayAsNum = date.getDay();
-	        //   var dayToCheck = this.getDayFromNum(dayAsNum);
-	        //   var isRightDay = false;
-	        //   for(var k = 0; k < driveways[i].times.length; k++){
-	        //     if(driveways[i].times[k].stateDay == dayToCheck){
-	        //       isRightDay = true;
-	        //       break;
-	        //     }
-	        //   }
+	        if(this.state.date != ''){
+	          var date = new Date(this.state.date);
+	          var dayAsNum = date.getDay();
+	          var dayToCheck = this.getDayFromNum(dayAsNum);
+	          var isRightDay = false;
+	          for(var k = 0; k < driveways[i].times.length; k++){
+	            if(driveways[i].times[k].stateDay == dayToCheck){
+	              isRightDay = true;
+	              break;
+	            }
+	          }
 
-	        //   if(isRightDay){
-	        //     filteredDriveways.push(driveways[i]);
-	        //   }  
-	        // }else{
+	          if(isRightDay){
+	            filteredDriveways.push(driveways[i]);
+	          }  
+	        }else{
 	          filteredDriveways.push(driveways[i]); 
-	        // }        
+	        }        
 	      }
 	    }
 	    return filteredDriveways;
@@ -27545,7 +27611,7 @@
 	        mapMarker.setPosition(location);
 	        var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow, mapMarker: mapMarker};
 	        mapMarker.addListener('click', this.markerClicked.bind(this, marker));
-	        //component.state.markers.push({marker: marker, mapMarker: mapMarker});
+	        this.state.markers.push({marker: marker});
 	      }
 	    }
 	  },
@@ -27572,12 +27638,12 @@
 	    this.state.eventMapMarker.length = 0;
 	    //this.setState({eventMapMarker: []});
 
-	    // for(var i = 0; i < this.state.markers.length; i++){
-	    //   this.state.markers[i].mapMarker.setMap(null);
-	    //   delete this.state.markers[i].marker;
-	    //   delete this.state.markers[i].mapMarker;
-	    // }
-	    // this.state.markers.length = 0;
+	    for(var i = 0; i < this.state.markers.length; i++){
+	      this.state.markers[i].marker.mapMarker.setMap(null);
+	      delete this.state.markers[i].marker.mapMarker;
+	      delete this.state.markers[i].marker;
+	    }
+	    this.state.markers.length = 0;
 	    //this.setState({markers: []});
 	  },
 
@@ -27679,6 +27745,7 @@
 	});
 
 	module.exports = ReservationForm;
+
 
 /***/ },
 /* 212 */
@@ -27817,6 +27884,7 @@
 	                        localStorage.cardType = CardType;
 	                        localStorage.Last4 = Last4;
 	                        var url2 = "/api/users/addReservation";
+	                        console.log('reservationTime: ' + reservationTime);
 	                        
 
 

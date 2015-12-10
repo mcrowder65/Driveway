@@ -7,7 +7,7 @@ var reservationSchema = new Schema({
 	buyer: String,
 	drivewayId: String,
 	date: String,
-	time: Number
+	time: String
 	
 });
 
