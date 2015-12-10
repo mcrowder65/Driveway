@@ -152,24 +152,24 @@ var ReservationForm = React.createClass({
       
       if(!reserved){
         //Check the day if the date isn't empty or undefined
-        // if(this.state.date != ''){
-        //   var date = new Date(this.state.date);
-        //   var dayAsNum = date.getDay();
-        //   var dayToCheck = this.getDayFromNum(dayAsNum);
-        //   var isRightDay = false;
-        //   for(var k = 0; k < driveways[i].times.length; k++){
-        //     if(driveways[i].times[k].stateDay == dayToCheck){
-        //       isRightDay = true;
-        //       break;
-        //     }
-        //   }
+        if(this.state.date != ''){
+          var date = new Date(this.state.date);
+          var dayAsNum = date.getDay();
+          var dayToCheck = this.getDayFromNum(dayAsNum);
+          var isRightDay = false;
+          for(var k = 0; k < driveways[i].times.length; k++){
+            if(driveways[i].times[k].stateDay == dayToCheck){
+              isRightDay = true;
+              break;
+            }
+          }
 
-        //   if(isRightDay){
-        //     filteredDriveways.push(driveways[i]);
-        //   }  
-        // }else{
+          if(isRightDay){
+            filteredDriveways.push(driveways[i]);
+          }  
+        }else{
           filteredDriveways.push(driveways[i]); 
-        // }        
+        }        
       }
     }
     return filteredDriveways;
@@ -226,7 +226,7 @@ var ReservationForm = React.createClass({
         mapMarker.setPosition(location);
         var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow, mapMarker: mapMarker};
         mapMarker.addListener('click', this.markerClicked.bind(this, marker));
-        //component.state.markers.push({marker: marker, mapMarker: mapMarker});
+        this.state.markers.push({marker: marker});
       }
     }
   },
@@ -253,12 +253,12 @@ var ReservationForm = React.createClass({
     this.state.eventMapMarker.length = 0;
     //this.setState({eventMapMarker: []});
 
-    // for(var i = 0; i < this.state.markers.length; i++){
-    //   this.state.markers[i].mapMarker.setMap(null);
-    //   delete this.state.markers[i].marker;
-    //   delete this.state.markers[i].mapMarker;
-    // }
-    // this.state.markers.length = 0;
+    for(var i = 0; i < this.state.markers.length; i++){
+      this.state.markers[i].marker.mapMarker.setMap(null);
+      delete this.state.markers[i].marker.mapMarker;
+      delete this.state.markers[i].marker;
+    }
+    this.state.markers.length = 0;
     //this.setState({markers: []});
   },
 
