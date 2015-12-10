@@ -352,7 +352,8 @@ var profile = React.createClass
       console.log(driveway);
       var drivewayString = driveway.address + ' ' + driveway.city + 
       ', ' +  driveway.state + ' ' + driveway.zip;
-      displayArray.push(React)
+      //displayArray.push(React)
+
     } 
   },
   reroute: function()
