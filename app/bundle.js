@@ -61,18 +61,18 @@
 	var ReservationForm = __webpack_require__(211);
 	var RouteHandler = Router.RouteHandler;
 	var Redirect = Router.Redirect;
-	var CheckoutStrip = __webpack_require__(212);
+	var CheckoutStrip = __webpack_require__(213);
 	var signedIn = true;
 	var transitionTo = Router.transitionTo;
 	var History = __webpack_require__(160).History;
-	var $__0=     __webpack_require__(213),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
-	var ReactScriptLoaderMixin = __webpack_require__(218).ReactScriptLoaderMixin;
+	var $__0=     __webpack_require__(214),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
+	var ReactScriptLoaderMixin = __webpack_require__(219).ReactScriptLoaderMixin;
 	var $__1=   __webpack_require__(160),Lifecycle=$__1.Lifecycle,RouteContext=$__1.RouteContext;
 	var history = useBasename(createHistory)({
 	    basename: '/transitions'
 	})
 
-	var Button = __webpack_require__(219);
+	var Button = __webpack_require__(220);
 	var profileDriveways = '';
 	var allDriveways = [];
 	var userDriveways = [];
@@ -360,11 +360,7 @@
 	});
 
 	var ReserveParking = React.createClass({displayName: "ReserveParking",
-
 	  render: function() {
-	    if(document.getElementById('navbar'))
-	      document.getElementById('navbar').style.marginBottom ='';
-	    //this.forceUpdate();
 	    return (
 	      React.createElement(ReservationForm, null)
 	    );
@@ -1982,6 +1978,18 @@
 	  }
 	});
 
+	var thanksStyle =
+	{
+	  display: 'none'
+	};
+
+	var textStyle=
+	{
+	  textAlign: 'center',
+	  fontWeight: '600'
+	  
+	};
+
 
 	var pastOrders = React.createClass
 	({displayName: "pastOrders",
@@ -2008,7 +2016,11 @@
 
 	    orderEmail.sendEmails(this.state.email);
 	    localStorage.email3 = this.state.email;
-	    this.history.pushState(null, '/modalPage');
+	    var div1 = document.getElementById('bottomPanel');
+	    var div2 = document.getElementById('bottomPanel2');
+	    div1.style.display = 'none';
+	    div2.style.display = 'block';
+	    //this.history.pushState(null, '/modalPage');
 
 	  },
 
@@ -2039,7 +2051,7 @@
 	    
 	    return (
 	      React.createElement("div", null, 
-	        React.createElement("div", {className: "well"}, 
+	        React.createElement("div", {id: "title", className: "well"}, 
 	          React.createElement("div", {style: formStyle}, 
 	           React.createElement("h1", null, "Thank you for your order!"), 
 	           React.createElement("p", null, "Plese save the following order confirmation and leave it in your windshield when you arrive at your destination")
@@ -2073,7 +2085,7 @@
 	            )
 	          )
 	        ), 
-	        React.createElement("div", {className: "row"}, 
+	        React.createElement("div", {id: "bottomPanel", className: "row"}, 
 	          React.createElement("div", {className: "col-md-12"}, 
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
@@ -2083,6 +2095,16 @@
 	                  "Email: ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
 	                   React.createElement("button", {type: "button", className: "btn btn-primary btn-md", onClick: this.sendEm}, "SEND!")
 	                )
+	              )
+	            )
+	          )
+	        ), 
+	        React.createElement("div", {id: "bottomPanel2", className: "row", style: thanksStyle}, 
+	          React.createElement("div", {className: "col-md-12"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", {style: textStyle}, "Thank you for your request. An email as been sent to ", email, " ")
 	              )
 	            )
 	          )
@@ -27293,21 +27315,13 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */var React = __webpack_require__(2);
-	ReactDOM = __webpack_require__(159);
-	//var History = require('react-router').History;
-	//var { createHistory, useBasename } = require('history');
-	//var {Lifecycle} = require('react-router');
-	var CheckoutStrip = __webpack_require__(212);
+	var ReactDOM = __webpack_require__(159);
+	var ReactDOMServer = __webpack_require__(212);
+	var CheckoutStrip = __webpack_require__(213);
 	var Marker = google.maps.Marker;
 	var geocoder = new google.maps.Geocoder();
 
-	// var history = useBasename(createHistory)({
-	//     basename: '/transitions'
-	// })
-
 	var ReservationForm = React.createClass({displayName: "ReservationForm",
-	  //mixins: [History, Lifecycle],
-
 	  contextTypes: {
 	    router: React.PropTypes.func
 	  },
@@ -27624,7 +27638,7 @@
 	      )
 	    );
 
-	    return React.renderToStaticMarkup(content);
+	    return ReactDOMServer.renderToStaticMarkup(content);
 	  },
 
 	  markerClicked: function(marker, mapMarker, map){
@@ -27671,12 +27685,21 @@
 /* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/** @jsx React.DOM */'use strict';
+
+	module.exports = __webpack_require__(149);
+
+
+/***/ },
+/* 213 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/** @jsx React.DOM *//** @jsx React.DOM */
 
 	var React = __webpack_require__(2);
 	var History = __webpack_require__(160).History;
-	var $__0=     __webpack_require__(213),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
-	var ReactScriptLoaderMixin = __webpack_require__(218).ReactScriptLoaderMixin;
+	var $__0=     __webpack_require__(214),createHistory=$__0.createHistory,useBasename=$__0.useBasename;
+	var ReactScriptLoaderMixin = __webpack_require__(219).ReactScriptLoaderMixin;
 	var $__1=  __webpack_require__(160),Lifecycle=$__1.Lifecycle;
 
 	var history = useBasename(createHistory)({
@@ -27891,7 +27914,7 @@
 
 
 /***/ },
-/* 213 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -27900,7 +27923,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _createBrowserHistory = __webpack_require__(214);
+	var _createBrowserHistory = __webpack_require__(215);
 
 	var _createBrowserHistory2 = _interopRequireDefault(_createBrowserHistory);
 
@@ -27930,7 +27953,7 @@
 
 	exports.useBasename = _useBasename3['default'];
 
-	var _useBeforeUnload2 = __webpack_require__(215);
+	var _useBeforeUnload2 = __webpack_require__(216);
 
 	var _useBeforeUnload3 = _interopRequireDefault(_useBeforeUnload2);
 
@@ -27950,20 +27973,20 @@
 
 	// deprecated
 
-	var _enableBeforeUnload2 = __webpack_require__(216);
+	var _enableBeforeUnload2 = __webpack_require__(217);
 
 	var _enableBeforeUnload3 = _interopRequireDefault(_enableBeforeUnload2);
 
 	exports.enableBeforeUnload = _enableBeforeUnload3['default'];
 
-	var _enableQueries2 = __webpack_require__(217);
+	var _enableQueries2 = __webpack_require__(218);
 
 	var _enableQueries3 = _interopRequireDefault(_enableQueries2);
 
 	exports.enableQueries = _enableQueries3['default'];
 
 /***/ },
-/* 214 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/** @jsx React.DOM */'use strict';
@@ -28141,7 +28164,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 215 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/** @jsx React.DOM */'use strict';
@@ -28258,7 +28281,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 216 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -28271,7 +28294,7 @@
 
 	var _deprecate2 = _interopRequireDefault(_deprecate);
 
-	var _useBeforeUnload = __webpack_require__(215);
+	var _useBeforeUnload = __webpack_require__(216);
 
 	var _useBeforeUnload2 = _interopRequireDefault(_useBeforeUnload);
 
@@ -28279,7 +28302,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 217 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -28300,7 +28323,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 218 */
+/* 219 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */
@@ -28424,14 +28447,14 @@
 
 
 /***/ },
-/* 219 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict'
 
 	var React     = __webpack_require__(2)
-	var assign    = __webpack_require__(220)
-	var normalize = __webpack_require__(221)
+	var assign    = __webpack_require__(221)
+	var normalize = __webpack_require__(222)
 
 	function emptyFn(){}
 
@@ -28965,7 +28988,7 @@
 	module.exports = ReactButton
 
 /***/ },
-/* 220 */
+/* 221 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -28997,16 +29020,16 @@
 
 
 /***/ },
-/* 221 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var hasOwn      = __webpack_require__(222)
-	var getPrefixed = __webpack_require__(223)
+	var hasOwn      = __webpack_require__(223)
+	var getPrefixed = __webpack_require__(224)
 
-	var map      = __webpack_require__(229)
-	var plugable = __webpack_require__(230)
+	var map      = __webpack_require__(230)
+	var plugable = __webpack_require__(231)
 
 	function plugins(key, value){
 
@@ -29067,7 +29090,7 @@
 	module.exports = plugable(RESULT)
 
 /***/ },
-/* 222 */
+/* 223 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -29078,13 +29101,13 @@
 
 
 /***/ },
-/* 223 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var getStylePrefixed = __webpack_require__(224)
-	var properties       = __webpack_require__(228)
+	var getStylePrefixed = __webpack_require__(225)
+	var properties       = __webpack_require__(229)
 
 	module.exports = function(key, value){
 
@@ -29096,14 +29119,14 @@
 	}
 
 /***/ },
-/* 224 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var toUpperFirst = __webpack_require__(225)
-	var getPrefix    = __webpack_require__(226)
-	var el           = __webpack_require__(227)
+	var toUpperFirst = __webpack_require__(226)
+	var getPrefix    = __webpack_require__(227)
+	var el           = __webpack_require__(228)
 
 	var MEMORY = {}
 	var STYLE
@@ -29152,7 +29175,7 @@
 	}
 
 /***/ },
-/* 225 */
+/* 226 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -29164,15 +29187,15 @@
 	}
 
 /***/ },
-/* 226 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var toUpperFirst = __webpack_require__(225)
+	var toUpperFirst = __webpack_require__(226)
 	var prefixes     = ["ms", "Moz", "Webkit", "O"]
 
-	var el = __webpack_require__(227)
+	var el = __webpack_require__(228)
 
 	var ELEMENT
 	var PREFIX
@@ -29203,7 +29226,7 @@
 	}
 
 /***/ },
-/* 227 */
+/* 228 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/** @jsx React.DOM */'use strict';
@@ -29225,7 +29248,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 228 */
+/* 229 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -29273,7 +29296,7 @@
 
 
 /***/ },
-/* 229 */
+/* 230 */
 /***/ function(module, exports) {
 
 	/** @jsx React.DOM */'use strict';
@@ -29294,12 +29317,12 @@
 	}
 
 /***/ },
-/* 230 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var getCssPrefixedValue = __webpack_require__(231)
+	var getCssPrefixedValue = __webpack_require__(232)
 
 	module.exports = function(target){
 		target.plugins = target.plugins || [
@@ -29330,14 +29353,14 @@
 	}
 
 /***/ },
-/* 231 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var getPrefix     = __webpack_require__(226)
-	var forcePrefixed = __webpack_require__(232)
-	var el            = __webpack_require__(227)
+	var getPrefix     = __webpack_require__(227)
+	var forcePrefixed = __webpack_require__(233)
+	var el            = __webpack_require__(228)
 
 	var MEMORY = {}
 	var STYLE
@@ -29384,14 +29407,14 @@
 	}
 
 /***/ },
-/* 232 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
 
-	var toUpperFirst = __webpack_require__(225)
-	var getPrefix    = __webpack_require__(226)
-	var properties   = __webpack_require__(228)
+	var toUpperFirst = __webpack_require__(226)
+	var getPrefix    = __webpack_require__(227)
+	var properties   = __webpack_require__(229)
 
 	/**
 	 * Returns the given key prefixed, if the property is found in the prefixProps map.
