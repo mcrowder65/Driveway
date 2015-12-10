@@ -308,6 +308,8 @@ var allDriveways = React.createClass
 
 var ReserveParking = React.createClass({
   render: function() {
+    if(document.getElementById('navbar'))
+      document.getElementById('navbar').style.marginBottom ='';
     return (
       <ReservationForm/>
     );
@@ -1925,6 +1927,18 @@ var learnMore = React.createClass
   }
 });
 
+var thanksStyle =
+{
+  display: 'none'
+};
+
+var textStyle=
+{
+  textAlign: 'center',
+  fontWeight: '600'
+  
+};
+
 
 var pastOrders = React.createClass
 ({
@@ -1951,7 +1965,11 @@ var pastOrders = React.createClass
 
     orderEmail.sendEmails(this.state.email);
     localStorage.email3 = this.state.email;
-    this.history.pushState(null, '/modalPage');
+    var div1 = document.getElementById('bottomPanel');
+    var div2 = document.getElementById('bottomPanel2');
+    div1.style.display = 'none';
+    div2.style.display = 'block';
+    //this.history.pushState(null, '/modalPage');
 
   },
 
@@ -1982,7 +2000,7 @@ var pastOrders = React.createClass
     
     return (
       <div>
-        <div className="well">
+        <div id= "title" className="well">
           <div style={formStyle}>
            <h1>Thank you for your order!</h1>
            <p>Plese save the following order confirmation and leave it in your windshield when you arrive at your destination</p>
@@ -2016,7 +2034,7 @@ var pastOrders = React.createClass
             </div>
           </div>
         </div>
-        <div className="row">
+        <div id ="bottomPanel" className="row">
           <div className="col-md-12">
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Email Me!</div>
@@ -2026,6 +2044,16 @@ var pastOrders = React.createClass
                   Email: <input type="text" name="email" value={email} onChange={this.handleChange}/>
                    <button type="button" className="btn btn-primary btn-md" onClick={this.sendEm}>SEND!</button> 
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="bottomPanel2" className="row" style={thanksStyle}>
+          <div className="col-md-12">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Email Me!</div>
+              <div className="panel-body">
+                <p style={textStyle}>Thank you for your request. An email as been sent to {email} </p>
               </div>
             </div>
           </div>

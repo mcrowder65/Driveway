@@ -32,7 +32,7 @@ var ReservationForm = React.createClass({
   getInitialState: function() {
     return {
       email: '',
-      address: this.getParam('address'),
+      address: this.getParam('address') != null? this.getParam('address') : 'Provo, UT',
       date: '',
       time: '',
       map: undefined,
@@ -41,37 +41,28 @@ var ReservationForm = React.createClass({
     }      
   },
 
-  routerWillLeave: function(nextLocation){
-
-  },
-
   componentDidMount: function () {
     this.initializeMap();
   },
 
   initializeMap: function() {
-    //Parking Map    
-    this.geocodeAddress(this.state.address, this, function(location, component){
-      var mapOptions = {
-        center: location,
-        draggableCursor: 'crosshair',
-        zoom:            14,
-        mapTypeId:       google.maps.MapTypeId.ROADMAP,
-        streetViewControl:  false,
-        panControl:         true,
-        zoomControl:        true,
-        mapTypeControl:     true,
-        scaleControl:       true,
-        overviewMapControl: true
-      }
-      var map = new google.maps.Map($('.map-canvas')[0], mapOptions);
-
-      component.setState({map: map});
-    });
-
-    if(this.state.address != ''){
-      this.handleSubmit();
+    var location = this.geocodeAddress(this.state.address);
+    var mapOptions = {
+      center: location,
+      draggableCursor: 'crosshair',
+      zoom:            14,
+      mapTypeId:       google.maps.MapTypeId.ROADMAP,
+      streetViewControl:  false,
+      panControl:         true,
+      zoomControl:        true,
+      mapTypeControl:     true,
+      scaleControl:       true,
+      overviewMapControl: true
     }
+
+    var map = new google.maps.Map($('.map-canvas')[0], mapOptions);
+    this.state.map = map;
+    this.handleSubmit();
   },
 
   getDayFromNum: function(numDay){
@@ -184,14 +175,22 @@ var ReservationForm = React.createClass({
     return filteredDriveways;
   },
 
-  geocodeAddress: function(address, component, cb, marker, markers) {
-    geocoder.geocode({'address': address}, function(results, status) {
-      if (status === google.maps.GeocoderStatus.OK) {
-        cb(results[0].geometry.location, component, marker, markers);
-      } else {
-        cb(null, component, marker, markers);
-      }
+  geocodeAddress: function(address){
+    var geo;
+    $.ajax({
+        url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCwbk5pU1WPZPc24uCD6XZJ3OUBV127_bQ',
+        data: {
+            sensor: false,
+            address: address
+        },
+        async: false,
+        dataType:'json',
+        success: function (data) {
+            geo = data.results;
+        }
     });
+    console.log(address);
+    return geo[0].geometry.location;
   },
 
   generateMarkers: function(){    
@@ -201,8 +200,14 @@ var ReservationForm = React.createClass({
     //Filter driveways
     filteredDriveways = this.filterDriveways(driveways, reservations);
 
+    markerOptions = {
+      map: this.state.map,
+      draggable: false,
+      title:     'Parking Location',
+      icon: '../images/marker-green.png'//marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
+    }
+
     //Build Markers
-    var markers = [];
     for(var i = 0; i < filteredDriveways.length; i++){
       var driveway = driveways[i];
       var address = driveway.address + ', ' + driveway.city + ', ' + driveway.state + ' ' + driveway.zip + ', USA';
@@ -210,62 +215,55 @@ var ReservationForm = React.createClass({
       var infoWindow = new google.maps.InfoWindow({
         content: this.renderInfoWindow(address, driveway)
       });
-      var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow};
+      if(!driveway.fee){
+        driveway.fee = 10;
+      }
 
-      this.geocodeAddress(address, this, function(location, component, marker, markers){
-          markerOptions = { //Optimize this later
-            map: component.state.map,
-            //animation: google.maps.Animation.DROP,
-            draggable: false,
-            position:  location,
-            title:     'Parking Location',
-            icon: '../images/marker-green.png'//marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
-          }
+      var location = this.geocodeAddress(address);
 
-          var mapMarker = new Marker(markerOptions);
-          mapMarker.addListener('click', function() {component.markerClicked(marker, mapMarker, component.state.map)});
-          markers.push({marker: marker, mapMarker: mapMarker});
-        }, marker, markers);
+      if(location != null){
+        var mapMarker = new Marker(markerOptions);
+        mapMarker.setPosition(location);
+        var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow, mapMarker: mapMarker};
+        mapMarker.addListener('click', this.markerClicked.bind(this, marker));
+        this.state.markers.push({marker: marker});
+      }
     }
-
-    console.log(markers);
-    return markers;
   },
 
   generateEventMarker: function(){
-    var marker = undefined;
-    var markers = [];
-    this.geocodeAddress(this.state.address, this, function(location, component, marker, markers){
-      markerOptions = {
-        map: component.state.map,
-        animation: google.maps.Animation.DROP,
-        draggable: false,
-        position:  location,
-        title:     'Event Location',
-        icon: '../images/marker-red.png'
-      }
-
-      var mapMarker = new Marker(markerOptions);
-      markers.push({eventMapMarker: mapMarker});
-    }, marker, markers);   
-
-    return markers;
+    var location = this.geocodeAddress(this.state.address);
+    markerOptions = {
+      map: this.state.map,
+      animation: google.maps.Animation.DROP,
+      draggable: false,
+      position:  location,
+      title:     'Event Location',
+      icon: '../images/marker-red.png'
+    }
+    var mapMarker = new Marker(markerOptions);
+    this.state.eventMapMarker.push({eventMapMarker: mapMarker});
   },
 
   deleteMarkers: function(){
-    for(var i = 0; i < this.state.markers.length; i++){
-      this.state.markers[i].mapMarker.setMap(null);
-    }
-
     for(var i = 0; i < this.state.eventMapMarker.length; i++){
       this.state.eventMapMarker[i].eventMapMarker.setMap(null);
+      delete this.state.eventMapMarker[i].eventMapMarker;
     }
+    this.state.eventMapMarker.length = 0;
+    //this.setState({eventMapMarker: []});
+
+    for(var i = 0; i < this.state.markers.length; i++){
+      this.state.markers[i].marker.mapMarker.setMap(null);
+      delete this.state.markers[i].marker.mapMarker;
+      delete this.state.markers[i].marker;
+    }
+    this.state.markers.length = 0;
+    //this.setState({markers: []});
   },
 
   handleChange: function(event) {
-    if(event.target.name == "email"){
-      this.setState({email: event.target.value});
-    }else if(event.target.name == "address"){
+    if(event.target.name == "address"){
       this.setState({address: event.target.value});
     }else if(event.target.name == "date"){      
       this.setState({date: event.target.value});
@@ -275,17 +273,16 @@ var ReservationForm = React.createClass({
   },
 
   recenterMap: function() {
-    this.geocodeAddress(this.state.address, this, function(location, component){
-      component.state.map.setCenter(location);
-    });
+    var location = this.geocodeAddress(this.state.address);
+    this.state.map.setCenter(location);
   },
 
   handleSubmit: function(){
     this.deleteMarkers();
-    var mapMarkers = this.generateMarkers();
-    var eventMarker = this.generateEventMarker();
     this.recenterMap();
-    this.setState({markers: mapMarkers, eventMapMarker: eventMarker});
+    this.generateEventMarker();
+    this.generateMarkers();
+    this.forceUpdate();
   },
 
   renderInfoWindow: function(address, driveway){
@@ -325,10 +322,10 @@ var ReservationForm = React.createClass({
     return ReactDOMServer.renderToStaticMarkup(content);
   },
 
-  markerClicked: function(marker, mapMarker, map){
-    marker.infoWindow.open(map, mapMarker);
-    
-    var payData = {event: {Email: this.state.email, Address: marker.address, Price: marker.driveway.cost, street: marker.driveway.address, zip1: marker.driveway.zip, state: marker.driveway.state, resDate: this.state.date, duration: "4", resTime: this.state.time, city: marker.driveway.city, drivewayId: marker.driveway._id, owner: marker.driveway.username}, parking: []};
+  markerClicked: function(marker){
+    marker.infoWindow.open(this.state.map, marker.mapMarker);
+
+    var payData = {event: {Email: this.state.email, Address: marker.address, Price: marker.driveway.fee * 1000, street: marker.driveway.address, zip1: marker.driveway.zip, state: marker.driveway.state, resDate: this.state.date, duration: "4", resTime: this.state.time, city: marker.driveway.city, drivewayId: marker.driveway._id, owner: marker.driveway.username}, parking: []};
     ReactDOM.render(<CheckoutStrip data={payData}/>, document.getElementById('pay'));
   },
 
@@ -343,11 +340,10 @@ var ReservationForm = React.createClass({
       <div className='panel panel-primary'>
         <div className='panel-heading'>
           <div className='form-group' style={{textAlign: 'center'}}>
-              <div className="row">
-                <div className='col-md-3'><label className='form-label'>Email:</label><input className='form-control' type="email" name="email" placeholder='Email' value={this.state.email} onChange={this.handleChange} /></div>
-                <div className='col-md-3'><label className='form-label'>Event Address:</label><input className='form-control' type="text" name="address" placeholder='156 East 200 North, Provo, UT 84606' value={this.state.address} onChange={this.handleChange} /></div>
-                <div className='col-md-2'><label className='form-label'>Event Date:</label><input className='form-control' type="text" name="date" placeholder='12/12/16' value={this.state.date} onChange={this.handleChange} /></div>
-                <div className='col-md-2'><label className='form-label'>Event Time:</label><input className='form-control' type="text" name="time" placeholder='6:00 PM' value={this.state.time} onChange={this.handleChange} /></div>
+              <div className="row">                
+                <div className='col-md-4'><label className='form-label'>Event Address:</label><input className='form-control' type="text" name="address" placeholder='156 East 200 North, Provo, UT 84606' value={this.state.address} onChange={this.handleChange} /></div>
+                <div className='col-md-3'><label className='form-label'>Event Date:</label><input className='form-control' type="text" name="date" placeholder='12/12/16' value={this.state.date} onChange={this.handleChange} /></div>
+                <div className='col-md-3'><label className='form-label'>Event Time:</label><input className='form-control' type="text" name="time" placeholder='6:00 PM' value={this.state.time} onChange={this.handleChange} /></div>
                 <div className='col-md-2' style={{marginTop: '24px'}}><input className='form-control' type="button" name="submit" value="Submit" onClick={this.handleSubmit} /></div>
               </div>
           </div>
