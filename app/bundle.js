@@ -2222,7 +2222,7 @@
 	    var State = "State: " + localStorage.State;
 	    var City = "City: " + localStorage.City;
 	    var DOR = "Date of Reservation: " + localStorage.ResDate;
-	    var ResTime = "Email: " + localStorage.ResTime;
+	    var ResTime = "Reservation Time: " + localStorage.ResTime;
 	    var resDur = "Reservation Duration: " + localStorage.ResDuration + " hours";
 	    var price2 = localStorage.price/100;
 	    var price = "Total Price: $" + price2;
@@ -2230,6 +2230,7 @@
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
 	    //this.forceUpdate();
+	    
 	    
 	    return (
 	      React.createElement("div", null, 
@@ -27643,7 +27644,7 @@
 	  markerClicked: function(marker){
 	    marker.infoWindow.open(this.state.map, marker.mapMarker);
 
-	    var payData = {event: {Email: this.state.email, Address: marker.address, Price: marker.driveway.fee * 1000, street: marker.driveway.address, zip1: marker.driveway.zip, state: marker.driveway.state, resDate: this.state.date, duration: "4", resTime: this.state.time, city: marker.driveway.city, drivewayId: marker.driveway._id, owner: marker.driveway.username}, parking: []};
+	    var payData = {event: {Email: this.state.email, Address: marker.address, Price: marker.driveway.fee * 100, street: marker.driveway.address, zip1: marker.driveway.zip, state: marker.driveway.state, resDate: this.state.date, duration: "4", resTime: this.state.time, city: marker.driveway.city, drivewayId: marker.driveway._id, owner: marker.driveway.username}, parking: []};
 	    ReactDOM.render(React.createElement(CheckoutStrip, {data: payData}), document.getElementById('pay'));
 	  },
 
