@@ -361,6 +361,8 @@
 
 	var ReserveParking = React.createClass({displayName: "ReserveParking",
 	  render: function() {
+	    if(document.getElementById('navbar'))
+	      document.getElementById('navbar').style.marginBottom ='';
 	    return (
 	      React.createElement(ReservationForm, null)
 	    );
@@ -27348,7 +27350,7 @@
 	  getInitialState: function() {
 	    return {
 	      email: '',
-	      address: this.getParam('address'),
+	      address: this.getParam('address') != null? this.getParam('address') : 'Provo, UT',
 	      date: '',
 	      time: '',
 	      map: undefined,
@@ -27357,9 +27359,9 @@
 	    }      
 	  },
 
-	  routerWillLeave: function(nextLocation){
+	  // routerWillLeave: function(nextLocation){
 
-	  },
+	  // },
 
 	  componentDidMount: function () {
 	    this.initializeMap();
@@ -27367,7 +27369,7 @@
 
 	  initializeMap: function() {
 	    //Parking Map    
-	    this.geocodeAddress(this.state.address, this, function(location, component){
+	    this.geocodeAddress(this.state.address, this, null, function(location, component, marker){
 	      var mapOptions = {
 	        center: location,
 	        draggableCursor: 'crosshair',
@@ -27385,9 +27387,9 @@
 	      component.setState({map: map});
 	    });
 
-	    if(this.state.address != ''){
-	      this.handleSubmit();
-	    }
+	    // if(this.state.address != ''){
+	    //   this.handleSubmit();
+	    // }
 	  },
 
 	  getDayFromNum: function(numDay){
@@ -27500,12 +27502,13 @@
 	    return filteredDriveways;
 	  },
 
-	  geocodeAddress: function(address, component, cb, marker, markers) {
+	  geocodeAddress: function(address, component, marker, cb) {
+	    console.log(component);
 	    geocoder.geocode({'address': address}, function(results, status) {
 	      if (status === google.maps.GeocoderStatus.OK) {
-	        cb(results[0].geometry.location, component, marker, markers);
+	        cb(results[0].geometry.location, component, marker);
 	      } else {
-	        cb(null, component, marker, markers);
+	        cb(null, component, marker);
 	      }
 	    });
 	  },
@@ -27513,6 +27516,9 @@
 	  generateMarkers: function(){    
 	    driveways = this.getDriveways();
 	    reservations = this.getReservations();
+
+	    console.log(driveways);
+	    console.log(reservations);  
 
 	    //Filter driveways
 	    filteredDriveways = this.filterDriveways(driveways, reservations);
@@ -27528,30 +27534,27 @@
 	      });
 	      var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow};
 
-	      this.geocodeAddress(address, this, function(location, component, marker, markers){
-	          markerOptions = { //Optimize this later
-	            map: component.state.map,
-	            //animation: google.maps.Animation.DROP,
-	            draggable: false,
-	            position:  location,
-	            title:     'Parking Location',
-	            icon: '../images/marker-green.png'//marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
+	      this.geocodeAddress(address, this, marker, function(location, component, marker){
+	          if(location != null){
+	            markerOptions = { //Optimize this later 
+	              map: component.state.map,
+	              //animation: google.maps.Animation.DROP,
+	              draggable: false,
+	              position:  location,
+	              title:     'Parking Location',
+	              icon: '../images/marker-green.png'//marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
+	            }
+
+	            var mapMarker = new Marker(markerOptions);
+	            mapMarker.addListener('click', function() {component.markerClicked(marker, mapMarker, component.state.map)});
+	            component.state.markers.push({marker: marker, mapMarker: mapMarker});
 	          }
-
-	          var mapMarker = new Marker(markerOptions);
-	          mapMarker.addListener('click', function() {component.markerClicked(marker, mapMarker, component.state.map)});
-	          markers.push({marker: marker, mapMarker: mapMarker});
-	        }, marker, markers);
+	        });
 	    }
-
-	    console.log(markers);
-	    return markers;
 	  },
 
 	  generateEventMarker: function(){
-	    var marker = undefined;
-	    var markers = [];
-	    this.geocodeAddress(this.state.address, this, function(location, component, marker, markers){
+	    this.geocodeAddress(this.state.address, this, null, function(location, component, marker){
 	      markerOptions = {
 	        map: component.state.map,
 	        animation: google.maps.Animation.DROP,
@@ -27562,20 +27565,20 @@
 	      }
 
 	      var mapMarker = new Marker(markerOptions);
-	      markers.push({eventMapMarker: mapMarker});
-	    }, marker, markers);   
-
-	    return markers;
+	      component.state.eventMapMarker.push({eventMapMarker: mapMarker});
+	    });   
 	  },
 
 	  deleteMarkers: function(){
-	    for(var i = 0; i < this.state.markers.length; i++){
-	      this.state.markers[i].mapMarker.setMap(null);
-	    }
+	    // for(var i = 0; i < this.state.markers.length; i++){
+	    //   this.state.markers[i].mapMarker.setMap(null);
+	    // }
+	    // this.setState({markers: []});
 
 	    for(var i = 0; i < this.state.eventMapMarker.length; i++){
 	      this.state.eventMapMarker[i].eventMapMarker.setMap(null);
 	    }
+	    this.setState({eventMapMarker: []});
 	  },
 
 	  handleChange: function(event) {
@@ -27591,17 +27594,19 @@
 	  },
 
 	  recenterMap: function() {
-	    this.geocodeAddress(this.state.address, this, function(location, component){
+	    this.geocodeAddress(this.state.address, this, null, function(location, component){
 	      component.state.map.setCenter(location);
 	    });
 	  },
 
 	  handleSubmit: function(){
 	    this.deleteMarkers();
-	    var mapMarkers = this.generateMarkers();
-	    var eventMarker = this.generateEventMarker();
+	    //this.generateMarkers();
 	    this.recenterMap();
-	    this.setState({markers: mapMarkers, eventMapMarker: eventMarker});
+	    this.generateEventMarker();
+
+	    console.log(this.state.eventMapMarker);
+	    // this.setState({markers: mapMarkers, eventMapMarker: eventMarker});
 	  },
 
 	  renderInfoWindow: function(address, driveway){
