@@ -2035,20 +2035,19 @@
 	  render: function() {
 
 	    var email = this.state.email;
-	    var email2 = "Email: " + temp2.email;
-	    var name = "Name: " + temp2.name1;
-	    var cardType = "Card Type: " + temp2.cardType;
-	    var Last4 = "Last 4 Digits: " + temp2.last4;
-	    var ReservedAddress = "Reserved Address: " + temp2.address;
-	    var State = "State: " + temp2.state;
-	    var City = "City: " + temp2.city;
-	    var DOR = "Date of Reservation: " + temp2.reservationDate;
-	    var ResTime = "Email: " + temp2.reservationTime;
-	    var resDur = "Reservation Duration: " + temp2.reservationDuration+ " hours";
+	    var email2 = temp2.email;
+	    var name =  temp2.name1;
+	    var cardType =  temp2.cardType;
+	    var Last4 =  temp2.last4;
+	    var ReservedAddress =  temp2.address;
+	    var State =  temp2.state;
+	    var City =  temp2.city;
+	    var DOR = temp2.reservationDate;
+	    var ResTime = temp2.reservationTime;
+	    var resDur = temp2.reservationDuration+ " hours";
 	    var price2 = temp2.price/100;
-	    console.log(price2);
-	    var price = "Total Price: $" + price2;
-	    var ZIP = "Zip Code: " + temp2.zip;
+	    var price = price2;
+	    var ZIP =  temp2.zip;
 
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
@@ -2068,12 +2067,12 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Order Information"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, ReservedAddress), 
-	                React.createElement("p", null, State), 
-	                React.createElement("p", null, ZIP), 
-	                React.createElement("p", null, DOR), 
-	                React.createElement("p", null, ResTime), 
-	                React.createElement("p", null, resDur)
+	                React.createElement("p", null, React.createElement("b", null, "Reserved Address: "), ReservedAddress), 
+	                React.createElement("p", null, React.createElement("b", null, "State: "), State), 
+	                React.createElement("p", null, React.createElement("b", null, "Zip Code: "), ZIP), 
+	                React.createElement("p", null, React.createElement("b", null, "Date of Reservation: "), DOR), 
+	                React.createElement("p", null, React.createElement("b", null, "Reservation Time: "), ResTime), 
+	                React.createElement("p", null, React.createElement("b", null, "Reservation Duration: "), resDur)
 	              )
 	            )
 	          ), 
@@ -2081,12 +2080,12 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Personal Information"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, name), 
-	                React.createElement("p", null, email2), 
-	                React.createElement("p", null, cardType), 
-	                React.createElement("p", null, Last4), 
-	                React.createElement("p", null, price), 
-	                React.createElement("p", null, "Total Amount due: $0.00")
+	                React.createElement("p", null, React.createElement("b", null, "Name: "), name), 
+	                React.createElement("p", null, React.createElement("b", null, "Email: "), email2), 
+	                React.createElement("p", null, React.createElement("b", null, "Card Type: "), cardType), 
+	                React.createElement("p", null, React.createElement("b", null, "Last 4 Digits: "), Last4), 
+	                React.createElement("p", null, React.createElement("b", null, "Price: "), price), 
+	                React.createElement("p", null, React.createElement("b", null, "Total Amount due: "), "$0.00")
 	              )
 	            )
 	          )
@@ -2096,7 +2095,7 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", {style: jumboStyle}, "If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. "), 
+	                React.createElement("p", {style: jumboStyle}, React.createElement("b", null, "If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. ")), 
 	                React.createElement("div", {style: jumboStyle}, 
 	                  "Email: ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
 	                   React.createElement("button", {type: "button", className: "btn btn-primary btn-md", onClick: this.sendEm}, "SEND!")
@@ -2211,7 +2210,11 @@
 
 	    recieptEmail.sendEmails(this.state.email);
 	    localStorage.email3 = this.state.email;
-	    this.history.pushState(null, '/modalPage');
+	    var div1 = document.getElementById('bottomPanel');
+	    var div2 = document.getElementById('bottomPanel2');
+	    div1.style.display = 'none';
+	    div2.style.display = 'block';
+	    //this.history.pushState(null, '/modalPage');
 
 	  },
 
@@ -2273,7 +2276,7 @@
 	          )
 	        ), 
 	        React.createElement("div", {className: "row"}, 
-	          React.createElement("div", {className: "col-md-12"}, 
+	          React.createElement("div", {id: "bottomPanel", className: "col-md-12"}, 
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
 	              React.createElement("div", {className: "panel-body"}, 
@@ -2282,6 +2285,16 @@
 	                  React.createElement("b", null, "Email: "), " ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
 	                  React.createElement("button", {type: "button", className: "btn btn-primary btn-md", onClick: this.sendEm}, "SEND!")
 	                )
+	              )
+	            )
+	          )
+	        ), 
+	        React.createElement("div", {id: "bottomPanel2", className: "row", style: thanksStyle}, 
+	          React.createElement("div", {className: "col-md-12"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", {style: textStyle}, "Thank you for your request. An email as been sent to ", email, " ")
 	              )
 	            )
 	          )

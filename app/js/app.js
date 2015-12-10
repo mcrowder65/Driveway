@@ -1982,20 +1982,19 @@ var pastOrders = React.createClass
   render: function() {
 
     var email = this.state.email;
-    var email2 = "Email: " + temp2.email;
-    var name = "Name: " + temp2.name1;
-    var cardType = "Card Type: " + temp2.cardType;
-    var Last4 = "Last 4 Digits: " + temp2.last4;
-    var ReservedAddress = "Reserved Address: " + temp2.address;
-    var State = "State: " + temp2.state;
-    var City = "City: " + temp2.city;
-    var DOR = "Date of Reservation: " + temp2.reservationDate;
-    var ResTime = "Email: " + temp2.reservationTime;
-    var resDur = "Reservation Duration: " + temp2.reservationDuration+ " hours";
+    var email2 = temp2.email;
+    var name =  temp2.name1;
+    var cardType =  temp2.cardType;
+    var Last4 =  temp2.last4;
+    var ReservedAddress =  temp2.address;
+    var State =  temp2.state;
+    var City =  temp2.city;
+    var DOR = temp2.reservationDate;
+    var ResTime = temp2.reservationTime;
+    var resDur = temp2.reservationDuration+ " hours";
     var price2 = temp2.price/100;
-    console.log(price2);
-    var price = "Total Price: $" + price2;
-    var ZIP = "Zip Code: " + temp2.zip;
+    var price = price2;
+    var ZIP =  temp2.zip;
 
     if(document.getElementById('navbar'))
       document.getElementById('navbar').style.marginBottom ='';
@@ -2015,12 +2014,12 @@ var pastOrders = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Order Information</div>
               <div className="panel-body">
-                <p>{ReservedAddress}</p>
-                <p>{State}</p>
-                <p>{ZIP}</p>
-                <p>{DOR}</p>
-                <p>{ResTime}</p>
-                <p>{resDur}</p>
+                <p><b>Reserved Address: </b>{ReservedAddress}</p>
+                <p><b>State: </b>{State}</p>
+                <p><b>Zip Code: </b>{ZIP}</p>
+                <p><b>Date of Reservation: </b>{DOR}</p>
+                <p><b>Reservation Time: </b>{ResTime}</p>
+                <p><b>Reservation Duration: </b>{resDur}</p>
               </div>
             </div>
           </div>
@@ -2028,12 +2027,12 @@ var pastOrders = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Personal Information</div>
               <div className="panel-body">
-                <p>{name}</p>
-                <p>{email2}</p>
-                <p>{cardType}</p>
-                <p>{Last4}</p>
-                <p>{price}</p>
-                <p>Total Amount due: $0.00</p>
+                <p><b>Name: </b>{name}</p>
+                <p><b>Email: </b>{email2}</p>
+                <p><b>Card Type: </b>{cardType}</p>
+                <p><b>Last 4 Digits: </b>{Last4}</p>
+                <p><b>Price: </b>{price}</p>
+                <p><b>Total Amount due: </b>$0.00</p>
               </div>
             </div>
           </div>
@@ -2043,7 +2042,7 @@ var pastOrders = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Email Me!</div>
               <div className="panel-body">
-                <p style={jumboStyle}>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </p>
+                <p style={jumboStyle}><b>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </b></p>
                 <div style={jumboStyle}>
                   Email: <input type="text" name="email" value={email} onChange={this.handleChange}/>
                    <button type="button" className="btn btn-primary btn-md" onClick={this.sendEm}>SEND!</button> 
@@ -2158,7 +2157,11 @@ var confirmPage = React.createClass
 
     recieptEmail.sendEmails(this.state.email);
     localStorage.email3 = this.state.email;
-    this.history.pushState(null, '/modalPage');
+    var div1 = document.getElementById('bottomPanel');
+    var div2 = document.getElementById('bottomPanel2');
+    div1.style.display = 'none';
+    div2.style.display = 'block';
+    //this.history.pushState(null, '/modalPage');
 
   },
 
@@ -2220,7 +2223,7 @@ var confirmPage = React.createClass
           </div>
         </div>
         <div className="row">
-          <div className="col-md-12">
+          <div id="bottomPanel" className="col-md-12">
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Email Me!</div>
               <div className="panel-body">
@@ -2229,6 +2232,16 @@ var confirmPage = React.createClass
                   <b>Email: </b> <input type="text" name="email" value={email} onChange={this.handleChange}/>
                   <button type="button" className="btn btn-primary btn-md" onClick={this.sendEm}>SEND!</button> 
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="bottomPanel2" className="row" style={thanksStyle}>
+          <div className="col-md-12">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Email Me!</div>
+              <div className="panel-body">
+                <p style={textStyle}>Thank you for your request. An email as been sent to {email} </p>
               </div>
             </div>
           </div>
