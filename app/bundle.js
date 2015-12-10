@@ -27850,7 +27850,7 @@
 	                        });
 
 
-	                        self.history.pushState(null,'/confirm');
+	                        location.href='/#/confirm';
 	                    }
 	                }
 	            });
