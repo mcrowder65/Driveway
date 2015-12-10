@@ -2222,7 +2222,7 @@
 	    var State = "State: " + localStorage.State;
 	    var City = "City: " + localStorage.City;
 	    var DOR = "Date of Reservation: " + localStorage.ResDate;
-	    var ResTime = "Email: " + localStorage.ResTime;
+	    var ResTime = "Reservation Time: " + localStorage.ResTime;
 	    var resDur = "Reservation Duration: " + localStorage.ResDuration + " hours";
 	    var price2 = localStorage.price/100;
 	    var price = "Total Price: $" + price2;
@@ -2230,6 +2230,7 @@
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
 	    //this.forceUpdate();
+	    
 	    
 	    return (
 	      React.createElement("div", null, 
