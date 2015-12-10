@@ -10,6 +10,8 @@ var ReservationForm = React.createClass({
     router: React.PropTypes.func
   },
 
+  //Multiply price by 1000 TODO
+
   getParam: function(parameter)
   {  
     var url = window.location.href;
@@ -41,35 +43,27 @@ var ReservationForm = React.createClass({
     }      
   },
 
-  // routerWillLeave: function(nextLocation){
-
-  // },
-
   componentDidMount: function () {
     this.initializeMap();
   },
 
   initializeMap: function() {
-    //Parking Map    
-    this.geocodeAddress(this.state.address, this, null, function(location, component, marker){
-      var mapOptions = {
-        center: location,
-        draggableCursor: 'crosshair',
-        zoom:            14,
-        mapTypeId:       google.maps.MapTypeId.ROADMAP,
-        streetViewControl:  false,
-        panControl:         true,
-        zoomControl:        true,
-        mapTypeControl:     true,
-        scaleControl:       true,
-        overviewMapControl: true
-      }
-      var map = new google.maps.Map($('.map-canvas')[0], mapOptions);
+    var location = this.geocodeAddress(this.state.address);
+    var mapOptions = {
+      center: location,
+      draggableCursor: 'crosshair',
+      zoom:            14,
+      mapTypeId:       google.maps.MapTypeId.ROADMAP,
+      streetViewControl:  false,
+      panControl:         true,
+      zoomControl:        true,
+      mapTypeControl:     true,
+      scaleControl:       true,
+      overviewMapControl: true
+    }
 
-      component.setState({map: map});
-    });
-
-    this.forceUpdate();
+    var map = new google.maps.Map($('.map-canvas')[0], mapOptions);
+    this.state.map = map;
     this.handleSubmit();
   },
 
@@ -183,27 +177,36 @@ var ReservationForm = React.createClass({
     return filteredDriveways;
   },
 
-  geocodeAddress: function(address, component, marker, cb) {
-    console.log(component);
-    geocoder.geocode({'address': address}, function(results, status) {
-      if (status === google.maps.GeocoderStatus.OK) {
-        cb(results[0].geometry.location, component, marker);
-      } else {
-        cb(null, component, marker);
-      }
+  geocodeAddress: function(address){
+    var geo;
+    $.ajax({
+        url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyAf8jLP-ytDdra3sQD5M53l9Eh4zzgn_B4',
+        data: {
+            sensor: false,
+            address: address
+        },
+        async: false,
+        dataType:'json',
+        success: function (data) {
+            geo = data.results;
+        }
     });
-    this.forceUpdate();
+    return geo[0].geometry.location;
   },
 
   generateMarkers: function(){    
     driveways = this.getDriveways();
     reservations = this.getReservations();
 
-    console.log(driveways);
-    console.log(reservations);  
-
     //Filter driveways
     filteredDriveways = this.filterDriveways(driveways, reservations);
+
+    markerOptions = {
+      map: this.state.map,
+      draggable: false,
+      title:     'Parking Location',
+      icon: '../images/marker-green.png'//marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
+    }
 
     //Build Markers
     for(var i = 0; i < filteredDriveways.length; i++){
@@ -213,44 +216,31 @@ var ReservationForm = React.createClass({
       var infoWindow = new google.maps.InfoWindow({
         content: this.renderInfoWindow(address, driveway)
       });
-      var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow};
+      
+      var location = this.geocodeAddress(address);
 
-      this.geocodeAddress(address, this, marker, function(location, component, marker){
-          if(location != null){
-            markerOptions = {
-              map: component.state.map,
-              draggable: false,
-              position:  location,
-              title:     'Parking Location',
-              icon: '../images/marker-green.png'//marker.partiallyFull ? '../images/marker-green.png' : '../images/marker-yellow.png'
-            }
-
-            var mapMarker = new Marker(markerOptions);
-            mapMarker.addListener('click', function() {component.markerClicked(marker, mapMarker, component.state.map)});
-            //component.state.markers.push({marker: marker, mapMarker: mapMarker});
-            component.forceUpdate();
-          }
-        });
+      if(location != null){
+        var mapMarker = new Marker(markerOptions);
+        mapMarker.setPosition(location);
+        var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow, mapMarker: mapMarker};
+        mapMarker.addListener('click', this.markerClicked.bind(this, marker));
+        //component.state.markers.push({marker: marker, mapMarker: mapMarker});
+      }
     }
-    this.forceUpdate();
   },
 
   generateEventMarker: function(){
-    this.geocodeAddress(this.state.address, this, null, function(location, component, marker){
-      markerOptions = {
-        map: component.state.map,
-        animation: google.maps.Animation.DROP,
-        draggable: false,
-        position:  location,
-        title:     'Event Location',
-        icon: '../images/marker-red.png'
-      }
-
-      var mapMarker = new Marker(markerOptions);
-      component.state.eventMapMarker.push({eventMapMarker: mapMarker});
-      component.forceUpdate();
-    });   
-    this.forceUpdate();
+    var location = this.geocodeAddress(this.state.address);
+    markerOptions = {
+      map: this.state.map,
+      animation: google.maps.Animation.DROP,
+      draggable: false,
+      position:  location,
+      title:     'Event Location',
+      icon: '../images/marker-red.png'
+    }
+    var mapMarker = new Marker(markerOptions);
+    this.state.eventMapMarker.push({eventMapMarker: mapMarker});
   },
 
   deleteMarkers: function(){
@@ -283,20 +273,14 @@ var ReservationForm = React.createClass({
   },
 
   recenterMap: function() {
-    this.geocodeAddress(this.state.address, this, null, function(location, component){
-      component.state.map.setCenter(location);
-      component.forceUpdate();
-    });
-    this.forceUpdate();
+    var location = this.geocodeAddress(this.state.address);
+    this.state.map.setCenter(location);
   },
 
   handleSubmit: function(){
     this.deleteMarkers();
-    this.forceUpdate();
     this.recenterMap();
-    this.forceUpdate();
     this.generateEventMarker();
-    this.forceUpdate();
     this.generateMarkers();
     this.forceUpdate();
   },
@@ -338,8 +322,8 @@ var ReservationForm = React.createClass({
     return ReactDOMServer.renderToStaticMarkup(content);
   },
 
-  markerClicked: function(marker, mapMarker, map){
-    marker.infoWindow.open(map, mapMarker);
+  markerClicked: function(marker){
+    marker.infoWindow.open(this.state.map, marker.mapMarker);
     
     var payData = {event: {Email: this.state.email, Address: marker.address, Price: marker.driveway.fee, street: marker.driveway.address, zip1: marker.driveway.zip, state: marker.driveway.state, resDate: this.state.date, duration: "4", resTime: this.state.time, city: marker.driveway.city, drivewayId: marker.driveway._id, owner: marker.driveway.username}, parking: []};
     ReactDOM.render(<CheckoutStrip data={payData}/>, document.getElementById('pay'));
