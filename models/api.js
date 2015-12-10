@@ -338,13 +338,20 @@ app.post
 		});
 	}
 );
-// app.post
-// ('/api/users/getUserReservations',
-// 	function(req, res)
-// 	{
-// 		reservation.findOne({})
-// 	}
-// );
+app.post
+('/api/users/getUserReservations',
+	function(req, res)
+	{
+		reservation.find({owner: req.body.username},
+			function(err, reservations)
+			{
+				if(reservation)
+				{
+					res.json({reservations: reservations})
+				}
+			});
+	}
+);
 app.post
 ('/api/users/getAllReservations',
 	function (req, res)

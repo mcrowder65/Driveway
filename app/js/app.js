@@ -339,6 +339,22 @@ var leftPanel =
 };
 var profile = React.createClass
 ({
+  renderReservations: function()
+  {
+    var reservations = userDAO.getUserReservations(localStorage.username);
+    var displayArray = [];
+    console.log(reservations.length);
+    for(var i = 0; i < reservations.length; i++)
+    {
+      var reservation = reservations[i];
+      var drivewayId = reservation.drivewayId;
+      var driveway = drivewayDAO.queryID(drivewayId);
+      console.log(driveway);
+      var drivewayString = driveway.address + ' ' + driveway.city + 
+      ', ' +  driveway.state + ' ' + driveway.zip;
+      displayArray.push(React)
+    } 
+  },
   reroute: function()
   {
     location.href ='/#/driveway';
@@ -353,6 +369,8 @@ var profile = React.createClass
       paddingRight: '10px'
     };
     //this.forceUpdate();
+    this.renderReservations();
+
       return (
        <div style={center}>
         <h2> {localStorage.username.toUpperCase()}</h2>
@@ -374,7 +392,7 @@ var profile = React.createClass
         <div className="panel panel-primary" style={rightPanel}>
           
           <div className="panel-heading" style={bluePanelHeaderStyle}>
-            Driveways
+            Reservations
           </div>
           <div className="panel-body" style={bluePanelBodyStyle}>
             {userDriveways}<br/>
@@ -386,6 +404,231 @@ var profile = React.createClass
       );
   }
 });
+
+var userDAO = 
+{
+
+  mixins: [History, Lifecycle],
+  getUserReservations: function(username)
+  {
+    var url = '/api/users/getUserReservations';
+    var returnValue = {};
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        username: username
+      },
+      async: false,
+      success: function(res)
+      {
+        returnValue = res.reservations;
+      }.bind(this),
+      error: function(res)
+      {
+
+      }.bind(this)
+
+    });
+    return returnValue;
+  },
+  findEmail: function(email)
+  {
+    var url ="/api/users/findEmail";
+    var returnValue = '';
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data: 
+      {
+        email: email
+      },
+      async: false,
+      success: function(res)
+      {
+        returnValue = res.email;
+        //email found!
+      }.bind(this),
+      error:function(res)
+      {
+        console.log(res.email);
+      }.bind(this)
+
+    });
+    return returnValue;
+  },
+  register: function(email, username, password)
+  {
+    var returnError = '';
+    var url = "/api/users/register";
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+            email: email,
+            username: username,
+            password: password
+        },
+        async: false,
+        success: function(res) 
+        {
+          userDAO.login(username, password);
+          localStorage.username = username;
+          location.href ='/#/profile';
+          returnError = 'chicken poop';
+        }.bind(this),
+        error: function()
+        {
+          returnError = 'FAILED';
+        }.bind(this)
+    });
+    
+    return returnError;
+  },
+  login: function(username, password)
+  {
+    var url = "/api/users/login";
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: 
+        {
+            username: username,
+            password: password
+        },
+        async: false,
+        headers: {'Authorization': localStorage},
+        success: function(res) 
+        {
+          localStorage.email = res.email;
+          console.log("signed in");
+          signedIn = true;
+        }.bind(this),
+        error: function()
+        {
+          signedIn = false;
+          
+        }.bind(this)
+
+    });
+  },
+  getID: function(username)
+  {
+    var url = "/api/users/getID";
+    var id = '';
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        username: username
+      },
+      async: false,
+      success: function(res)
+      {
+        id = res.id;
+      }.bind(this),
+      error: function()
+      {
+        id = 'nope';
+      }.bind(this)
+
+    });
+    return id;
+  },
+  get: function(id)
+  {
+    var url = '/api/users/get';
+    var json = {};
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        _id: id
+      },
+      async: false,
+      success: function(res)
+      {
+        json.username = res.username;
+        json.email = res.email;
+      }.bind(this),
+      failure: function()
+      {
+        console.log('failure');
+      }.bind(this)
+    });
+    return json;
+  },
+  sendEmail: function(email, id)
+  {
+    var url = "/api/users/sendEmail";
+
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          email: email,
+          id: id
+        },
+        async: false,
+        success: function(res) 
+        {
+         console.log('sent email');
+        }.bind(this),
+        error: function()
+        {
+          console.log('failed email');
+        }.bind(this)
+    });
+  },
+  updatePassword: function(id, username, email, password)
+  {
+    var url = '/api/users/updatePassword';
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        _id: id,
+        password: password
+      },
+      async: false,
+      success: function(res)
+      {
+        console.log('changed password');
+        userDAO.login(username, res.password);
+        localStorage.username = username;
+        console.log('username: ' + username);
+        location.href ='/#/profile';
+      }
+    });
+  },
+  logOut: function()
+  {
+    delete localStorage.username;
+    delete localStorage.email;
+    //this.history.pushState(null,'/Home');
+    location.href="/#/home";
+  }
+};
 var driveway = React.createClass
 ({
   mixins: [History, Lifecycle],
@@ -2477,208 +2720,7 @@ var signUp = React.createClass
       );
   }
 });
-var userDAO = 
-{
 
-  mixins: [History, Lifecycle],
-  getUserReservations: function(username)
-  {
-
-  },
-  findEmail: function(email)
-  {
-    var url ="/api/users/findEmail";
-    var returnValue = '';
-    $.ajax
-    ({
-      url: url,
-      dataType: 'json',
-      type: 'POST',
-      data: 
-      {
-        email: email
-      },
-      async: false,
-      success: function(res)
-      {
-        returnValue = res.email;
-        //email found!
-      }.bind(this),
-      error:function(res)
-      {
-        console.log(res.email);
-      }.bind(this)
-
-    });
-    return returnValue;
-  },
-  register: function(email, username, password)
-  {
-    var returnError = '';
-    var url = "/api/users/register";
-    $.ajax
-    ({
-        url: url,
-        dataType: 'json',
-        type: 'POST',
-        data: {
-            email: email,
-            username: username,
-            password: password
-        },
-        async: false,
-        success: function(res) 
-        {
-          userDAO.login(username, password);
-          localStorage.username = username;
-          location.href ='/#/profile';
-          returnError = 'chicken poop';
-        }.bind(this),
-        error: function()
-        {
-          returnError = 'FAILED';
-        }.bind(this)
-    });
-    
-    return returnError;
-  },
-  login: function(username, password)
-  {
-    var url = "/api/users/login";
-    $.ajax
-    ({
-        url: url,
-        dataType: 'json',
-        type: 'POST',
-        data: 
-        {
-            username: username,
-            password: password
-        },
-        async: false,
-        headers: {'Authorization': localStorage},
-        success: function(res) 
-        {
-          localStorage.email = res.email;
-          console.log("signed in");
-          signedIn = true;
-        }.bind(this),
-        error: function()
-        {
-          signedIn = false;
-          
-        }.bind(this)
-
-    });
-  },
-  getID: function(username)
-  {
-    var url = "/api/users/getID";
-    var id = '';
-    $.ajax
-    ({
-      url: url,
-      dataType: 'json',
-      type: 'POST',
-      data:
-      {
-        username: username
-      },
-      async: false,
-      success: function(res)
-      {
-        id = res.id;
-      }.bind(this),
-      error: function()
-      {
-        id = 'nope';
-      }.bind(this)
-
-    });
-    return id;
-  },
-  get: function(id)
-  {
-    var url = '/api/users/get';
-    var json = {};
-    $.ajax
-    ({
-      url: url,
-      dataType: 'json',
-      type: 'POST',
-      data:
-      {
-        _id: id
-      },
-      async: false,
-      success: function(res)
-      {
-        json.username = res.username;
-        json.email = res.email;
-      }.bind(this),
-      failure: function()
-      {
-        console.log('failure');
-      }.bind(this)
-    });
-    return json;
-  },
-  sendEmail: function(email, id)
-  {
-    var url = "/api/users/sendEmail";
-
-    $.ajax
-    ({
-        url: url,
-        dataType: 'json',
-        type: 'POST',
-        data: {
-          email: email,
-          id: id
-        },
-        async: false,
-        success: function(res) 
-        {
-         console.log('sent email');
-        }.bind(this),
-        error: function()
-        {
-          console.log('failed email');
-        }.bind(this)
-    });
-  },
-  updatePassword: function(id, username, email, password)
-  {
-    var url = '/api/users/updatePassword';
-    $.ajax
-    ({
-      url: url,
-      dataType: 'json',
-      type: 'POST',
-      data:
-      {
-        _id: id,
-        password: password
-      },
-      async: false,
-      success: function(res)
-      {
-        console.log('changed password');
-        userDAO.login(username, res.password);
-        localStorage.username = username;
-        console.log('username: ' + username);
-        location.href ='/#/profile';
-      }
-    });
-  },
-  logOut: function()
-  {
-    delete localStorage.username;
-    delete localStorage.email;
-    //this.history.pushState(null,'/Home');
-    location.href="/#/home";
-  }
-};
 
 
 var centerPasswordForm =
