@@ -178,7 +178,7 @@ var ReservationForm = React.createClass({
   geocodeAddress: function(address){
     var geo;
     $.ajax({
-        url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyAf8jLP-ytDdra3sQD5M53l9Eh4zzgn_B4',
+        url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCwbk5pU1WPZPc24uCD6XZJ3OUBV127_bQ',
         data: {
             sensor: false,
             address: address
@@ -189,6 +189,7 @@ var ReservationForm = React.createClass({
             geo = data.results;
         }
     });
+    console.log(address);
     return geo[0].geometry.location;
   },
 
@@ -262,9 +263,7 @@ var ReservationForm = React.createClass({
   },
 
   handleChange: function(event) {
-    if(event.target.name == "email"){
-      this.setState({email: event.target.value});
-    }else if(event.target.name == "address"){
+    if(event.target.name == "address"){
       this.setState({address: event.target.value});
     }else if(event.target.name == "date"){      
       this.setState({date: event.target.value});
@@ -341,11 +340,10 @@ var ReservationForm = React.createClass({
       <div className='panel panel-primary'>
         <div className='panel-heading'>
           <div className='form-group' style={{textAlign: 'center'}}>
-              <div className="row">
-                <div className='col-md-3'><label className='form-label'>Email:</label><input className='form-control' type="email" name="email" placeholder='Email' value={this.state.email} onChange={this.handleChange} /></div>
-                <div className='col-md-3'><label className='form-label'>Event Address:</label><input className='form-control' type="text" name="address" placeholder='156 East 200 North, Provo, UT 84606' value={this.state.address} onChange={this.handleChange} /></div>
-                <div className='col-md-2'><label className='form-label'>Event Date:</label><input className='form-control' type="text" name="date" placeholder='12/12/16' value={this.state.date} onChange={this.handleChange} /></div>
-                <div className='col-md-2'><label className='form-label'>Event Time:</label><input className='form-control' type="text" name="time" placeholder='6:00 PM' value={this.state.time} onChange={this.handleChange} /></div>
+              <div className="row">                
+                <div className='col-md-4'><label className='form-label'>Event Address:</label><input className='form-control' type="text" name="address" placeholder='156 East 200 North, Provo, UT 84606' value={this.state.address} onChange={this.handleChange} /></div>
+                <div className='col-md-3'><label className='form-label'>Event Date:</label><input className='form-control' type="text" name="date" placeholder='12/12/16' value={this.state.date} onChange={this.handleChange} /></div>
+                <div className='col-md-3'><label className='form-label'>Event Time:</label><input className='form-control' type="text" name="time" placeholder='6:00 PM' value={this.state.time} onChange={this.handleChange} /></div>
                 <div className='col-md-2' style={{marginTop: '24px'}}><input className='form-control' type="button" name="submit" value="Submit" onClick={this.handleSubmit} /></div>
               </div>
           </div>

@@ -27496,7 +27496,7 @@
 	  geocodeAddress: function(address){
 	    var geo;
 	    $.ajax({
-	        url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyAf8jLP-ytDdra3sQD5M53l9Eh4zzgn_B4',
+	        url: 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCwbk5pU1WPZPc24uCD6XZJ3OUBV127_bQ',
 	        data: {
 	            sensor: false,
 	            address: address
@@ -27507,6 +27507,7 @@
 	            geo = data.results;
 	        }
 	    });
+	    console.log(address);
 	    return geo[0].geometry.location;
 	  },
 
@@ -27580,9 +27581,7 @@
 	  },
 
 	  handleChange: function(event) {
-	    if(event.target.name == "email"){
-	      this.setState({email: event.target.value});
-	    }else if(event.target.name == "address"){
+	    if(event.target.name == "address"){
 	      this.setState({address: event.target.value});
 	    }else if(event.target.name == "date"){      
 	      this.setState({date: event.target.value});
@@ -27660,10 +27659,9 @@
 	        React.createElement("div", {className: "panel-heading"}, 
 	          React.createElement("div", {className: "form-group", style: {textAlign: 'center'}}, 
 	              React.createElement("div", {className: "row"}, 
-	                React.createElement("div", {className: "col-md-3"}, React.createElement("label", {className: "form-label"}, "Email:"), React.createElement("input", {className: "form-control", type: "email", name: "email", placeholder: "Email", value: this.state.email, onChange: this.handleChange})), 
-	                React.createElement("div", {className: "col-md-3"}, React.createElement("label", {className: "form-label"}, "Event Address:"), React.createElement("input", {className: "form-control", type: "text", name: "address", placeholder: "156 East 200 North, Provo, UT 84606", value: this.state.address, onChange: this.handleChange})), 
-	                React.createElement("div", {className: "col-md-2"}, React.createElement("label", {className: "form-label"}, "Event Date:"), React.createElement("input", {className: "form-control", type: "text", name: "date", placeholder: "12/12/16", value: this.state.date, onChange: this.handleChange})), 
-	                React.createElement("div", {className: "col-md-2"}, React.createElement("label", {className: "form-label"}, "Event Time:"), React.createElement("input", {className: "form-control", type: "text", name: "time", placeholder: "6:00 PM", value: this.state.time, onChange: this.handleChange})), 
+	                React.createElement("div", {className: "col-md-4"}, React.createElement("label", {className: "form-label"}, "Event Address:"), React.createElement("input", {className: "form-control", type: "text", name: "address", placeholder: "156 East 200 North, Provo, UT 84606", value: this.state.address, onChange: this.handleChange})), 
+	                React.createElement("div", {className: "col-md-3"}, React.createElement("label", {className: "form-label"}, "Event Date:"), React.createElement("input", {className: "form-control", type: "text", name: "date", placeholder: "12/12/16", value: this.state.date, onChange: this.handleChange})), 
+	                React.createElement("div", {className: "col-md-3"}, React.createElement("label", {className: "form-label"}, "Event Time:"), React.createElement("input", {className: "form-control", type: "text", name: "time", placeholder: "6:00 PM", value: this.state.time, onChange: this.handleChange})), 
 	                React.createElement("div", {className: "col-md-2", style: {marginTop: '24px'}}, React.createElement("input", {className: "form-control", type: "button", name: "submit", value: "Submit", onClick: this.handleSubmit}))
 	              )
 	          )
