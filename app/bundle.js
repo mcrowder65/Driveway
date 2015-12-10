@@ -27387,6 +27387,7 @@
 	      component.setState({map: map});
 	    });
 
+	    this.forceUpdate();
 	    this.handleSubmit();
 	  },
 
@@ -27477,24 +27478,24 @@
 	      
 	      if(!reserved){
 	        //Check the day if the date isn't empty or undefined
-	        if(this.state.date != ''){
-	          var date = new Date(this.state.date);
-	          var dayAsNum = date.getDay();
-	          var dayToCheck = this.getDayFromNum(dayAsNum);
-	          var isRightDay = false;
-	          for(var k = 0; k < driveways[i].times.length; k++){
-	            if(driveways[i].times[k].stateDay == dayToCheck){
-	              isRightDay = true;
-	              break;
-	            }
-	          }
+	        // if(this.state.date != ''){
+	        //   var date = new Date(this.state.date);
+	        //   var dayAsNum = date.getDay();
+	        //   var dayToCheck = this.getDayFromNum(dayAsNum);
+	        //   var isRightDay = false;
+	        //   for(var k = 0; k < driveways[i].times.length; k++){
+	        //     if(driveways[i].times[k].stateDay == dayToCheck){
+	        //       isRightDay = true;
+	        //       break;
+	        //     }
+	        //   }
 
-	          if(isRightDay){
-	            filteredDriveways.push(driveways[i]);
-	          }  
-	        }else{
+	        //   if(isRightDay){
+	        //     filteredDriveways.push(driveways[i]);
+	        //   }  
+	        // }else{
 	          filteredDriveways.push(driveways[i]); 
-	        }        
+	        // }        
 	      }
 	    }
 	    return filteredDriveways;
@@ -27509,6 +27510,7 @@
 	        cb(null, component, marker);
 	      }
 	    });
+	    this.forceUpdate();
 	  },
 
 	  generateMarkers: function(){    
@@ -27543,10 +27545,12 @@
 
 	            var mapMarker = new Marker(markerOptions);
 	            mapMarker.addListener('click', function() {component.markerClicked(marker, mapMarker, component.state.map)});
-	            component.state.markers.push({marker: marker, mapMarker: mapMarker});
+	            //component.state.markers.push({marker: marker, mapMarker: mapMarker});
+	            component.forceUpdate();
 	          }
 	        });
 	    }
+	    this.forceUpdate();
 	  },
 
 	  generateEventMarker: function(){
@@ -27562,7 +27566,9 @@
 
 	      var mapMarker = new Marker(markerOptions);
 	      component.state.eventMapMarker.push({eventMapMarker: mapMarker});
+	      component.forceUpdate();
 	    });   
+	    this.forceUpdate();
 	  },
 
 	  deleteMarkers: function(){
@@ -27573,12 +27579,12 @@
 	    this.state.eventMapMarker.length = 0;
 	    //this.setState({eventMapMarker: []});
 
-	    for(var i = 0; i < this.state.markers.length; i++){
-	      this.state.markers[i].mapMarker.setMap(null);
-	      delete this.state.markers[i].marker;
-	      delete this.state.markers[i].mapMarker;
-	    }
-	    this.state.markers.length = 0;
+	    // for(var i = 0; i < this.state.markers.length; i++){
+	    //   this.state.markers[i].mapMarker.setMap(null);
+	    //   delete this.state.markers[i].marker;
+	    //   delete this.state.markers[i].mapMarker;
+	    // }
+	    // this.state.markers.length = 0;
 	    //this.setState({markers: []});
 	  },
 
@@ -27597,14 +27603,20 @@
 	  recenterMap: function() {
 	    this.geocodeAddress(this.state.address, this, null, function(location, component){
 	      component.state.map.setCenter(location);
+	      component.forceUpdate();
 	    });
+	    this.forceUpdate();
 	  },
 
 	  handleSubmit: function(){
 	    this.deleteMarkers();
+	    this.forceUpdate();
 	    this.recenterMap();
+	    this.forceUpdate();
 	    this.generateEventMarker();
+	    this.forceUpdate();
 	    this.generateMarkers();
+	    this.forceUpdate();
 	  },
 
 	  renderInfoWindow: function(address, driveway){
