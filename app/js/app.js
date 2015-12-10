@@ -2169,7 +2169,7 @@ var confirmPage = React.createClass
     var State = "State: " + localStorage.State;
     var City = "City: " + localStorage.City;
     var DOR = "Date of Reservation: " + localStorage.ResDate;
-    var ResTime = "Email: " + localStorage.ResTime;
+    var ResTime = "Reservation Time: " + localStorage.ResTime;
     var resDur = "Reservation Duration: " + localStorage.ResDuration + " hours";
     var price2 = localStorage.price/100;
     var price = "Total Price: $" + price2;
@@ -2177,6 +2177,7 @@ var confirmPage = React.createClass
     if(document.getElementById('navbar'))
       document.getElementById('navbar').style.marginBottom ='';
     //this.forceUpdate();
+    
     
     return (
       <div>
