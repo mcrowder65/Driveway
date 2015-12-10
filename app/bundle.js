@@ -301,7 +301,7 @@
 	        React.createElement("div", {className: "panel-body"}, 
 	          React.createElement("h2", null, "Rent out your driveway"), 
 	          React.createElement("h4", null, "Easy as 1...2...3..."), 
-	          React.createElement("button", {className: "btn btn-default btn-lg dropdown-toggle", type: "button", onClick: this.goToLearn}, 
+	          React.createElement("button", {className: "btn btn-primary", type: "button", onClick: this.goToLearn}, 
 	          "Learn more"
 	          )
 	        )
@@ -382,6 +382,10 @@
 
 	var profile = React.createClass
 	({displayName: "profile",
+	  reroute: function()
+	  {
+	    location.href ='/#/driveway';
+	  },
 	  render: function() 
 	  {
 	    if(document.getElementById('navbar'))
@@ -406,7 +410,7 @@
 	          ), 
 	          React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
 	            userDriveways, React.createElement("br", null), 
-	            React.createElement("button", null, " ", React.createElement(Link, {to: "/driveway"}, "Add driveway"))
+	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.reroute}, "Add driveway")
 	          )
 	        )
 	        
@@ -548,7 +552,7 @@
 	      
 	      var id = stateDay+ ' ' + startTime + ' ' + endTime;
 	      displayTimes.push(value);
-	      displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id}, 'Delete'));
+	      displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id, className: 'btn btn-primary', type: 'button'}, 'Delete'));
 	    }
 	    this.setState({displayTimes: displayTimes});
 	    this.forceUpdate();
@@ -620,7 +624,7 @@
 	        var end = times[i].endTime;
 	        var id = stateDay+ ' ' + start + ' ' + end;
 	        displayTimes.push(value);
-	        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id}, 'Delete'));
+	        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id, className: 'btn', type: 'button'}, 'Delete'));
 	      }
 
 	      this.state.displayTimes = displayTimes;
@@ -931,10 +935,10 @@
 	                            React.createElement("option", {value: "11:30 PM"}, "11:30 PM"), 
 	                            React.createElement("option", {value: "11:45 PM"}, "11:45 PM")
 	                          ), React.createElement("space", null, " "), 
-	              React.createElement("button", {onClick: this.addNewTime}, " Add time"), React.createElement("br", null), React.createElement("br", null)
+	              React.createElement("button", {onClick: this.addNewTime, className: "btn btn-primary", type: "button"}, " Add time"), React.createElement("br", null), React.createElement("br", null)
 	              ), 
 	              React.createElement("div", null, 
-	                React.createElement("button", {id: "submit", onClick: this.handleClick}, " Submit ")
+	                React.createElement("button", {id: "submit", onClick: this.handleClick, type: "button", className: "btn btn-primary"}, " Submit ")
 	              )
 	          )
 	        )
@@ -1221,12 +1225,12 @@
 	                            React.createElement("option", {value: "11:30 PM"}, "11:30 PM"), 
 	                            React.createElement("option", {value: "11:45 PM"}, "11:45 PM")
 	                          ), React.createElement("space", null, " "), 
-	              React.createElement("button", {onClick: this.addNewTime}, " Add time"), React.createElement("br", null), React.createElement("br", null)
+	              React.createElement("button", {onClick: this.addNewTime, type: "button", className: "btn btn-primary"}, " Add time"), React.createElement("br", null), React.createElement("br", null)
 	              ), 
 	              React.createElement("div", null, 
-	                React.createElement("button", {id: "submit", onClick: this.handleClick}, " Submit "), 
+	                React.createElement("button", {id: "submit", onClick: this.handleClick, type: "button", className: "btn btn-primary"}, " Submit "), 
 	                React.createElement("text", null, "     "), 
-	                React.createElement("button", {onClick: this.remove}, "Delete")
+	                React.createElement("button", {onClick: this.remove, type: "button", className: "btn btn-primary"}, "Delete")
 	              )
 	        )
 	      )
@@ -1523,7 +1527,7 @@
 	            "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, placeholder: "Username", onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null), 
 	            "Password: ", React.createElement("br", null), React.createElement("input", {type: "password", name: "password", value: password, placeholder: "Password", onChange: this.handleChange}), React.createElement("br", null), 
 	            React.createElement("br", null), React.createElement(Link, {to: "/forgottenPassword"}, "Forgot your password?"), React.createElement("br", null), 
-	            React.createElement("br", null), React.createElement("button", {onClick: this.handleClick}, 
+	            React.createElement("br", null), React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.handleClick}, 
 	              "SIGN IN"
 	              )
 	          )
@@ -2433,7 +2437,7 @@
 	                React.createElement("input", {type: "radio", onClick: this.handleTerms, id: "terms"}, 
 	                  "I agree to the ", React.createElement("a", {href: "randomHTMLFiles/terms.html"}, "terms and conditions")
 	                ), React.createElement("br", null), React.createElement("br", null), 
-	                React.createElement("input", {type: "submit", value: "SIGN UP", onClick: this.register})
+	                React.createElement("input", {type: "button", className: "btn btn-primary", value: "SIGN UP", onClick: this.register})
 	            
 	           )
 	          ), 
@@ -2744,7 +2748,7 @@
 	          React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
 	            "Email: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange, placeholder: "Email"}), " ", React.createElement("br", null), React.createElement("br", null), 
 	            "Username: ", React.createElement("br", null), React.createElement("input", {type: "text", name: "username", value: username, onChange: this.handleChange, placeholder: "Username"}), React.createElement("br", null), React.createElement("br", null), 
-	            React.createElement("button", {onClick: this.sendEmail}, " Submit ")
+	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.sendEmail}, " Submit ")
 	          )
 	        ), 
 	        React.createElement("div", {id: "errorUsername", className: "alert alert-danger", role: "alert", style: usernameFailStyle}, 
@@ -2850,7 +2854,7 @@
 	        
 	            "Password: ", React.createElement("br", null), React.createElement("input", {id: "password", type: "password", value: password, name: "password", onChange: this.handleChange, placeholder: "Password"}), React.createElement("br", null), React.createElement("br", null), 
 	            "Confirm password: ", React.createElement("br", null), React.createElement("input", {id: "confirmPassword", type: "password", value: confirmPassword, name: "confirmPassword", onChange: this.handleChange, placeholder: "Confirm password"}), React.createElement("br", null), React.createElement("br", null), 
-	            React.createElement("button", {onClick: this.changePassword}, " Submit ")
+	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.changePassword}, " Submit ")
 	          )
 	        ), 
 	         React.createElement("div", {id: "differentPasswords", className: "alert alert-danger", role: "alert", style: passwordFailStyle}, 

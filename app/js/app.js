@@ -248,7 +248,7 @@ var Home = React.createClass
         <div className="panel-body" > 
           <h2>Rent out your driveway</h2>
           <h4>Easy as 1...2...3...</h4>
-          <button className="btn btn-default btn-lg dropdown-toggle" type="button" onClick={this.goToLearn}>
+          <button className="btn btn-primary" type="button" onClick={this.goToLearn}>
           Learn more
           </button>
         </div>
@@ -329,6 +329,10 @@ var leftBluePanelStyle =
 
 var profile = React.createClass
 ({
+  reroute: function()
+  {
+    location.href ='/#/driveway';
+  },
   render: function() 
   {
     if(document.getElementById('navbar'))
@@ -353,7 +357,7 @@ var profile = React.createClass
           </div>
           <div className="panel-body" style={bluePanelBodyStyle}>
             {userDriveways}<br/>
-            <button> <Link to="/driveway">Add driveway</Link></button>
+            <button type="button" className="btn btn-primary" onClick={this.reroute}>Add driveway</button>
           </div>
         </div>
         
@@ -495,7 +499,7 @@ var driveway = React.createClass
       
       var id = stateDay+ ' ' + startTime + ' ' + endTime;
       displayTimes.push(value);
-      displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id}, 'Delete'));
+      displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id, className: 'btn btn-primary', type: 'button'}, 'Delete'));
     }
     this.setState({displayTimes: displayTimes});
     this.forceUpdate();
@@ -567,7 +571,7 @@ var driveway = React.createClass
         var end = times[i].endTime;
         var id = stateDay+ ' ' + start + ' ' + end;
         displayTimes.push(value);
-        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id}, 'Delete'));
+        displayTimes.push(React.createElement(Button, {onClick:this.deleteTime, id: id, className: 'btn', type: 'button'}, 'Delete'));
       }
 
       this.state.displayTimes = displayTimes;
@@ -878,10 +882,10 @@ var driveway = React.createClass
                             <option value="11:30 PM">11:30 PM</option>
                             <option value="11:45 PM">11:45 PM</option>
                           </select><space> </space>            
-              <button onClick={this.addNewTime}> Add time</button><br/><br/>
+              <button onClick={this.addNewTime} className="btn btn-primary" type="button"> Add time</button><br/><br/>
               </div>
               <div>
-                <button id="submit" onClick={this.handleClick}> Submit </button>  
+                <button id="submit" onClick={this.handleClick} type="button" className="btn btn-primary"> Submit </button>  
               </div>
           </div>
         </div>
@@ -1168,12 +1172,12 @@ var driveway = React.createClass
                             <option value="11:30 PM">11:30 PM</option>
                             <option value="11:45 PM">11:45 PM</option>
                           </select><space> </space>            
-              <button onClick={this.addNewTime}> Add time</button><br/><br/>
+              <button onClick={this.addNewTime} type="button" className="btn btn-primary"> Add time</button><br/><br/>
               </div>
               <div>
-                <button id="submit" onClick={this.handleClick}> Submit </button>  
+                <button id="submit" onClick={this.handleClick} type="button" className="btn btn-primary"> Submit </button>  
                 <text>     </text>
-                <button onClick={this.remove}>Delete</button>
+                <button onClick={this.remove} type="button" className="btn btn-primary">Delete</button>
               </div>
         </div>
       </div>
@@ -1470,7 +1474,7 @@ var signIn = React.createClass
             Username: <br/><input type="text" name="username" value ={username} placeholder="Username" onChange={this.handleChange}/><br/><br/>
             Password: <br/><input type="password" name="password" value ={password} placeholder="Password" onChange={this.handleChange}/><br/>
             <br/><Link to="/forgottenPassword">Forgot your password?</Link><br/>
-            <br/><button onClick={this.handleClick}>
+            <br/><button type="button" className="btn btn-primary" onClick={this.handleClick}>
               SIGN IN
               </button>
           </div>
@@ -2380,7 +2384,7 @@ var signUp = React.createClass
                 <input type="radio" onClick={this.handleTerms} id="terms"> 
                   I agree to the <a href="randomHTMLFiles/terms.html">terms and conditions</a>
                 </input><br/><br/>
-                <input type="submit" value="SIGN UP" onClick={this.register}/> 
+                <input type="button" className="btn btn-primary" value="SIGN UP" onClick={this.register}/> 
             
            </div>
           </div>
@@ -2691,7 +2695,7 @@ var forgottenPassword = React.createClass
           <div className="panel-body" style={bluePanelBodyStyle}>
             Email: <br/><input type="text" name="email" value={email} onChange={this.handleChange} placeholder="Email"/> <br/><br/>
             Username: <br/><input type="text" name="username" value={username} onChange={this.handleChange} placeholder="Username"/><br/><br/>
-            <button onClick={this.sendEmail}> Submit </button>
+            <button type="button" className="btn btn-primary" onClick={this.sendEmail}> Submit </button>
           </div>
         </div>
         <div id='errorUsername' className="alert alert-danger" role="alert" style={usernameFailStyle}>
@@ -2797,7 +2801,7 @@ var updatePassword = React.createClass
         
             Password: <br/><input id="password" type="password" value={password} name="password" onChange={this.handleChange} placeholder="Password"/><br/><br/>
             Confirm password: <br/><input id="confirmPassword" type="password" value={confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Confirm password" /><br/><br/>
-            <button onClick={this.changePassword}> Submit </button>
+            <button type="button" className="btn btn-primary" onClick={this.changePassword}> Submit </button>
           </div>
         </div>  
          <div id='differentPasswords' className="alert alert-danger" role="alert" style={passwordFailStyle}>
