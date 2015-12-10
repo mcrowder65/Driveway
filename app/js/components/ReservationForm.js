@@ -42,6 +42,7 @@ var ReservationForm = React.createClass({
   },
 
   componentDidMount: function () {
+    $('#submit').attr('disabled', 'disabled');
     this.initializeMap();
   },
 
@@ -219,15 +220,15 @@ var ReservationForm = React.createClass({
         driveway.fee = 10;
       }
 
-      var location = this.geocodeAddress(address);
+      //var location = this.geocodeAddress(address);
 
-      if(location != null){
+      //if(driveway.location != null){
         var mapMarker = new Marker(markerOptions);
-        mapMarker.setPosition(location);
+        mapMarker.setPosition(driveway.location);
         var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow, mapMarker: mapMarker};
         mapMarker.addListener('click', this.markerClicked.bind(this, marker));
         this.state.markers.push({marker: marker});
-      }
+      //}
     }
   },
 
@@ -264,17 +265,60 @@ var ReservationForm = React.createClass({
 
   handleChange: function(event) {
     if(event.target.name == "address"){
+      if(event.target.value == ''){
+        $('#addressgrp').addClass('has-error');
+        $('#submitgrp').removeClass('has-success');
+      }else{
+        $('#submitgrp').addClass('has-success');
+        $('#addressgrp').removeClass('has-error');
+      } 
       this.setState({address: event.target.value});
     }else if(event.target.name == "date"){      
+      if(event.target.value == ''){
+        $('#dategrp').addClass('has-error');
+        $('#submitgrp').removeClass('has-success');
+      }else{
+        $('#submitgrp').addClass('has-success');
+        $('#dategrp').removeClass('has-error');
+      }  
       this.setState({date: event.target.value});
     }else if(event.target.name == "time"){      
+      if(event.target.value == ''){
+        $('#timegrp').addClass('has-error');
+        $('#submitgrp').removeClass('has-success');
+      }else{
+        $('#submitgrp').addClass('has-success');
+        $('#timegrp').removeClass('has-error');
+      }  
       this.setState({time: event.target.value});
     }
+
+    this.validateForm();
   },
 
   recenterMap: function() {
     var location = this.geocodeAddress(this.state.address);
     this.state.map.setCenter(location);
+  },
+
+  validateForm: function(){
+    //Check Date
+    var dpattern = /\d\d\/\d\d\/(\d\d|\d\d\d\d)/i;
+    if(this.state.date.search(dpattern) === -1){
+      $('#dategrp').addClass('has-error');      
+    }
+
+    //Check Time
+    var tpattern = /([1-9]|[1-12]):[0-5][0-9]/i;
+    if(this.state.time.search(tpattern) === -1){
+      $('#timegrp').addClass('has-error');      
+    }    
+
+    if($('#addressgrp').hasClass('has-error') || $('#dategrp').hasClass('has-error') || $('#timegrp').hasClass('has-error')){
+      $('#submit').attr('disabled', 'disabled');
+    }else{
+      $('#submit').removeAttr('disabled');
+    }
   },
 
   handleSubmit: function(){
@@ -339,12 +383,12 @@ var ReservationForm = React.createClass({
     return(
       <div className='panel panel-primary'>
         <div className='panel-heading'>
-          <div className='form-group' style={{textAlign: 'center'}}>
+          <div style={{textAlign: 'center'}}>
               <div className="row">                
-                <div className='col-md-4'><label className='form-label'>Event Address:</label><input className='form-control' type="text" name="address" placeholder='156 East 200 North, Provo, UT 84606' value={this.state.address} onChange={this.handleChange} /></div>
-                <div className='col-md-3'><label className='form-label'>Event Date:</label><input className='form-control' type="text" name="date" placeholder='12/12/16' value={this.state.date} onChange={this.handleChange} /></div>
-                <div className='col-md-3'><label className='form-label'>Event Time:</label><input className='form-control' type="text" name="time" placeholder='6:00 PM' value={this.state.time} onChange={this.handleChange} /></div>
-                <div className='col-md-2' style={{marginTop: '24px'}}><input className='form-control' type="button" name="submit" value="Submit" onClick={this.handleSubmit} /></div>
+                <div className='col-md-4 form-group' id='addressgrp'><label className='form-label'>Event Address:</label><input className='form-control' type="text" name="address" id="address" placeholder='156 East 200 North, Provo, UT 84606' value={this.state.address} onChange={this.handleChange} /></div>
+                <div className='col-md-3 form-group has-error' id='dategrp'><label className='form-label'>Event Date:</label><input className='form-control' type="text" name="date" id="date" placeholder='12/12/16' value={this.state.date} onChange={this.handleChange} /></div>
+                <div className='col-md-3 form-group has-error' id='timegrp'><label className='form-label'>Event Time:</label><input className='form-control' type="text" name="time" id="time" placeholder='6:00 PM' value={this.state.time} onChange={this.handleChange} /></div>
+                <div className='col-md-2 form-group' id='submitgrp' style={{marginTop: '24px'}}><input className='form-control' type="button" name="submit" id="submit" value="Submit" onClick={this.handleSubmit} /></div>
               </div>
           </div>
         </div>

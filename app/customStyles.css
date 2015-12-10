@@ -1,0 +1,3 @@
+.has-error .form-control, .has-success .form-control, .has-warning .form-control {
+	border-width: 2px;
+}
