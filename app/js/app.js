@@ -2161,19 +2161,19 @@ var confirmPage = React.createClass
   render: function() {
 
     var email = this.state.email;
-    var email2 = "Email: " + localStorage.email;
-    var name = "Name: " + localStorage.Name;
-    var cardType = "Card Type: " + localStorage.cardType;
-    var Last4 = "Last 4 Digits: " + localStorage.Last4;
-    var ReservedAddress = "Reserved Address: " + localStorage.ResAddress;
-    var State = "State: " + localStorage.State;
-    var City = "City: " + localStorage.City;
-    var DOR = "Date of Reservation: " + localStorage.ResDate;
-    var ResTime = "Reservation Time: " + localStorage.ResTime;
-    var resDur = "Reservation Duration: " + localStorage.ResDuration + " hours";
+    var email2 =  localStorage.email;
+    var name = localStorage.Name;
+    var cardType = localStorage.cardType;
+    var Last4 =  localStorage.Last4;
+    var ReservedAddress = localStorage.ResAddress;
+    var State = localStorage.State;
+    var City = localStorage.City;
+    var DOR = localStorage.ResDate;
+    var ResTime =  localStorage.ResTime;
+    var resDur = localStorage.ResDuration + " hours";
     var price2 = localStorage.price/100;
-    var price = "Total Price: $" + price2;
-    var ZIP = "Zip Code: " + localStorage.Zip;
+    var price =  price2;
+    var ZIP = localStorage.Zip;
     if(document.getElementById('navbar'))
       document.getElementById('navbar').style.marginBottom ='';
     //this.forceUpdate();
@@ -2192,12 +2192,12 @@ var confirmPage = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Order Information</div>
               <div className="panel-body">
-                <p>{ReservedAddress}</p>
-                <p>{State}</p>
-                <p>{ZIP}</p>
-                <p>{DOR}</p>
-                <p>{ResTime}</p>
-                <p>{resDur}</p>
+                <p><b>Reserved Address: </b>{ReservedAddress}</p>
+                <p><b>State: </b>{State}</p>
+                <p><b>Zip Code: </b>{ZIP}</p>
+                <p><b>Date of Reservation: </b>{DOR}</p>
+                <p><b>Reservation Time: </b>{ResTime}</p>
+                <p><b>Reservation Duration: </b>{resDur}</p>
               </div>
             </div>
           </div>
@@ -2205,12 +2205,12 @@ var confirmPage = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Personal Information</div>
               <div className="panel-body">
-                <p>{name}</p>
-                <p>{email2}</p>
-                <p>{cardType}</p>
-                <p>{Last4}</p>
-                <p>{price}</p>
-                <p>Total Amount due: $0.00</p>
+                <p><b>Name: </b>{name}</p>
+                <p><b>Email: </b>{email2}</p>
+                <p><b>Card Type: </b>{cardType}</p>
+                <p><b>Last 4 Digit: </b>{Last4}</p>
+                <p><b>Total Price: </b>${price}</p>
+                <p><b>Total Amount due: </b>$0.00</p>
               </div>
             </div>
           </div>
@@ -2220,9 +2220,9 @@ var confirmPage = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Email Me!</div>
               <div className="panel-body">
-                <p style={jumboStyle}>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </p>
+                <p style={jumboStyle}><b>If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. </b></p>
                 <div style={jumboStyle}>
-                  Email: <input type="text" name="email" value={email} onChange={this.handleChange}/>
+                  <b>Email: </b> <input type="text" name="email" value={email} onChange={this.handleChange}/>
                   <button type="button" className="btn btn-primary btn-md" onClick={this.sendEm}>SEND!</button> 
                 </div>
               </div>
