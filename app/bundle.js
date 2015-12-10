@@ -27387,9 +27387,7 @@
 	      component.setState({map: map});
 	    });
 
-	    // if(this.state.address != ''){
-	    //   this.handleSubmit();
-	    // }
+	    this.handleSubmit();
 	  },
 
 	  getDayFromNum: function(numDay){
@@ -27568,15 +27566,20 @@
 	  },
 
 	  deleteMarkers: function(){
-	    // for(var i = 0; i < this.state.markers.length; i++){
-	    //   this.state.markers[i].mapMarker.setMap(null);
-	    // }
-	    // this.setState({markers: []});
-
 	    for(var i = 0; i < this.state.eventMapMarker.length; i++){
 	      this.state.eventMapMarker[i].eventMapMarker.setMap(null);
+	      delete this.state.eventMapMarker[i].eventMapMarker;
 	    }
-	    this.setState({eventMapMarker: []});
+	    this.state.eventMapMarker.length = 0;
+	    //this.setState({eventMapMarker: []});
+
+	    for(var i = 0; i < this.state.markers.length; i++){
+	      this.state.markers[i].mapMarker.setMap(null);
+	      delete this.state.markers[i].marker;
+	      delete this.state.markers[i].mapMarker;
+	    }
+	    this.state.markers.length = 0;
+	    //this.setState({markers: []});
 	  },
 
 	  handleChange: function(event) {
@@ -27602,7 +27605,6 @@
 	    this.recenterMap();
 	    this.generateEventMarker();
 	    this.generateMarkers();
-	    console.log(this.state.eventMapMarker);
 	  },
 
 	  renderInfoWindow: function(address, driveway){
