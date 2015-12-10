@@ -1966,15 +1966,9 @@
 	        ), 
 	        React.createElement("div", {className: "row"}, 
 	          React.createElement("div", {className: "col-md-12"}, 
-	            React.createElement("div", {className: "panel panel-primary"}, 
-	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "How do I rent my Driveway?"), 
-	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do "), 
-	                React.createElement("p", null, "This is where we talk about what we do ")
-	              )
+	            React.createElement("div", {className: "form-group"}, 
+	              React.createElement("label", {for: "comment"}, "Comment:"), 
+	              React.createElement("textarea", {className: "form-control", rows: "5", id: "comment"})
 	            )
 	          )
 	        )

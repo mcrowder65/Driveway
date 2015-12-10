@@ -1913,15 +1913,9 @@ var learnMore = React.createClass
         </div>
         <div className="row">
           <div className="col-md-12">
-            <div className="panel panel-primary">
-              <div className="panel-heading" style={fontStyle2}>How do I rent my Driveway?</div>
-              <div className="panel-body">
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-                <p>This is where we talk about what we do </p>
-              </div>
+            <div className="form-group">
+              <label for="comment">Comment:</label>
+              <textarea className="form-control" rows="5" id="comment"></textarea>
             </div>
           </div>
         </div>
