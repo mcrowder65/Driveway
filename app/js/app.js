@@ -2196,6 +2196,15 @@ var centerTexts =
   textAlign: "center"
 }
 
+var rightTexts =
+{
+  textAlign: "right"
+}
+
+var resize =
+{
+  resize: "none"
+}
 
 var learnMore = React.createClass
 ({
