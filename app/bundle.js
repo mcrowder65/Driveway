@@ -403,14 +403,14 @@
 
 	    var displayArray = [];
 	    this.state.displayArray =[];
-	    console.log(reservations.length);
 	    for(var i = 0; i < reservations.length; i++)
 	    {
 	      var reservation = reservations[i];
 	      var drivewayId = reservation.drivewayId;
 	      var driveway = drivewayDAO.queryID(drivewayId);
+	      console.log(driveway);
 	      var drivewayString = driveway.address + ' ' + driveway.city + 
-	      ', ' +  driveway.state + ' ' + driveway.zip + ' on driveway.date ' + ' at driveway.time';
+	      ', ' +  driveway.state + ' ' + driveway.zip + ' on ' + reservation.date + ' at ' + reservation.time;
 	      displayArray.push(React.createElement(Button, {id: reservation._id, 
 	        onClick: this.deleteReservation, className: 'btn ', 
 	        type: 'button'}, 'Delete'));
@@ -422,8 +422,7 @@
 	  },
 	  deleteReservation: function(event)
 	  {
-	    console.log('deleting reservations');
-	    console.log(event.currentTarget.id);
+
 	    userDAO.deleteReservation(event.currentTarget.id);
 	    this.renderReservations();
 	    this.forceUpdate();
@@ -444,7 +443,6 @@
 
 	    //this.forceUpdate();
 	    this.renderReservations();
-	    console.log(this.state.displayArray);
 	      return (
 	       React.createElement("div", {style: center}, 
 	        React.createElement("h2", null, " ", localStorage.username.toUpperCase()), 
@@ -2073,7 +2071,7 @@
 	    var rTime = "6:00 PM";
 	    var city = "orem"
 	    if(document.getElementById('navbar'))
-	      document.getElementById('navbar').style.marginBottom ='0';
+	      document.getElementById('navbar').style.marginBottom ='';
 	    return (
 	      React.createElement("div", null, 
 	        React.createElement("div", {className: "row"}), 
@@ -2309,9 +2307,9 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "About Us"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", {style: fontWeights}, React.createElement("b", null, "Parking Geek"), " is here to take care of all your event parking needs. Finding parking can be expensive and time consuming. With Parking Geek the hassles of finding a nice, close parking spot vanish. Simply locate your event on our map, find an open parking spot and reserve it. All thats left to do is enjoy your event!" + " " +    
+	                React.createElement("p", {style: fontWeights}, React.createElement("b", null, "Parking Geek"), " is here to take care of all your event parking needs. Finding parking can be expensive and time consuming. With Parking Geek, the hassles of finding a nice, close parking spot vanish. Simply locate your event on our map, find an open parking spot and reserve it. All thats left to do is enjoy your event!" + " " +    
 	                
-	                 "Parking Geek also provides everyone the opertunity to rent out their driveway to earn some extra cash. Simply follow the 4 steps provided in \"How do I rent my driveway?\" (located directly to your right) and you will be renting your driveway in just a few short minutes!")
+	                 "Parking Geek also provides everyone the opportunity to rent out their driveway to earn some extra cash. Simply follow the 4 steps provided in \"How do I rent my driveway?\" (located directly to your right) and you will be renting your driveway in just a few short minutes!")
 	              )
 	            )
 	          ), 
@@ -2321,9 +2319,9 @@
 	              React.createElement("div", {className: "panel-body"}, 
 	                React.createElement("p", {style: centerTexts}, React.createElement("b", null, "Renting your driveway can be done in 4 easy steps")), 
 	                React.createElement("p", null, React.createElement("b", null, "Step 1:"), " Click \"Sign Up\"  on the top right corner of the page"), 
-	                React.createElement("p", null, React.createElement("b", null, "Step 2:"), " Fill out the sign up form and click \"Sign UP\""), 
+	                React.createElement("p", null, React.createElement("b", null, "Step 2:"), " Fill out the sign up form and click \"Sign up\""), 
 	                React.createElement("p", null, React.createElement("b", null, "Step 3:"), " Click on \"Order Lookup\" in the navigation bar at the top of the page"), 
-	                React.createElement("p", null, React.createElement("b", null, "Step 4:"), " Lastly, click add a driveway on your profile page and provide the address and cost of the driveway you wish to rent")
+	                React.createElement("p", null, React.createElement("b", null, "Step 4:"), " Finally, click add a driveway on your profile page and provide the address and cost of the driveway you wish to rent")
 	              )
 	            )
 	          )
@@ -2497,7 +2495,7 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", {style: jumboStyle}, React.createElement("b", null, "If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. ")), 
+	                React.createElement("p", {style: jumboStyle}, React.createElement("b", null, "If you would like to recieve a copy of your receipt please provide the email at which you would like to recieve the confirmation below. ")), 
 	                React.createElement("div", {style: jumboStyle}, 
 	                  "Email: ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
 	                   React.createElement("button", {type: "button", className: "btn btn-primary btn-md", onClick: this.sendEm}, "SEND!")
@@ -2682,7 +2680,7 @@
 	            React.createElement("div", {className: "panel panel-primary"}, 
 	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
 	              React.createElement("div", {className: "panel-body"}, 
-	                React.createElement("p", {style: jumboStyle}, React.createElement("b", null, "If you would like to recieve a copy of your reciept please proivde the email at which you would like to recieve the confirmation below. ")), 
+	                React.createElement("p", {style: jumboStyle}, React.createElement("b", null, "If you would like to recieve a copy of your receipt please provide the email at which you would like to recieve the confirmation below. ")), 
 	                React.createElement("div", {style: jumboStyle}, 
 	                  React.createElement("b", null, "Email: "), " ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
 	                  React.createElement("button", {type: "button", className: "btn btn-primary btn-md", onClick: this.sendEm}, "SEND!")
@@ -2792,19 +2790,6 @@
 	      document.getElementById('duplicateEmail').style.visibility = 'hidden';
 	    }
 	  },
-	  handleTerms: function()
-	  {
-	    this.terms = !this.terms;
-	    if(this.terms)
-	    {
-	      document.getElementById('terms').checked = true;
-	      document.getElementById('termsError').style.visibility = 'hidden';
-	    }
-	    else
-	    {
-	      document.getElementById('terms').checked = false;
-	    }
-	  },
 	  render: function() {
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
@@ -2849,9 +2834,6 @@
 	                React.createElement("div", {className: "confirmPassword"}, 
 	                  "Confirm Password: ", React.createElement("br", null), React.createElement("input", {id: "confirmPassword", type: "password", name: "confirmPassword", value: confirmPassword, onChange: this.handleChange}), React.createElement("br", null), React.createElement("br", null)
 	                ), 
-	                React.createElement("input", {type: "radio", onClick: this.handleTerms, id: "terms"}, 
-	                  "I agree to the ", React.createElement("a", {href: "randomHTMLFiles/terms.html"}, "terms and conditions")
-	                ), React.createElement("br", null), React.createElement("br", null), 
 	                React.createElement("input", {type: "button", className: "btn btn-primary", value: "SIGN UP", onClick: this.register})
 	            
 	           )
@@ -2875,11 +2857,6 @@
 	          React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
 	          React.createElement("span", {className: "sr-only"}, "Error:"), 
 	          "Woops! Passwords must be greater than 7 characters!"
-	         ), 
-	         React.createElement("div", {id: "termsError", className: "alert alert-danger", role: "alert", style: passwordFailStyle}, 
-	          React.createElement("span", {className: "glyphicon glyphicon-exclamation-sign", ariaHidden: "true"}), 
-	          React.createElement("span", {className: "sr-only"}, "Error:"), 
-	          "Woops! It looks like you need to accept the terms and conditions!"
 	         )
 	        )
 

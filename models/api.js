@@ -365,7 +365,7 @@ app.post
 				reservation.buyer = req.body.buyer;
 				reservation.owner = req.body.owner;
 				reservation.drivewayId = req.body.drivewayId;
-				reservation.date = req.body.resDate;
+				reservation.date = req.body.date;
 				reservation.time = req.body.time;
 				reservation.save
 				(
