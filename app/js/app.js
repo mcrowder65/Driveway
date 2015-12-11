@@ -2384,6 +2384,11 @@ var pastOrders = React.createClass
   render: function() {
 
     var email = this.state.email;
+    if(typeof temp2 === "undefined")
+    {
+      //this.history.pushState(null, '/home');
+      return;
+    }
     var email2 = temp2.email;
     var name =  temp2.name1;
     var cardType =  temp2.cardType;
