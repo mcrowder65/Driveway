@@ -23,6 +23,7 @@ var Button = require('react-button');
 var profileDriveways = '';
 var allDriveways = [];
 var userDriveways = [];
+var check = 'false';
 
 function upperCaseFirstLetter(string)
 {
@@ -1912,6 +1913,7 @@ var orderDAO =
         success: function(res)
         {
           allOrders = [];
+          check = "true";
           temp2 = res.order[res.order.length-1];
   
         }.bind(this),
@@ -1979,6 +1981,7 @@ var findOrders = React.createClass
 
       }
       if(temp2){
+        console.log('112');
         this.history.pushState(null, '/pastOrders');
       }
       else{
@@ -2382,13 +2385,76 @@ var pastOrders = React.createClass
    
 
   render: function() {
+    console.log("here12");
 
     var email = this.state.email;
-    if(typeof temp2 === "undefined")
-    {
-      //this.history.pushState(null, '/home');
-      return;
+    if(typeof temp2 === 'undefined'){
+      console.log('here1111');
+      return(
+        <div>
+        <div id= "title" className="well">
+          <div style={formStyle}>
+           <h1>Thank you for your order!</h1>
+           <p>Plese save the following order confirmation and leave it in your windshield when you arrive at your destination</p>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Order Information</div>
+              <div className="panel-body">
+                <p><b>Reserved Address: </b>{localStorage.ReservedAddress34}</p>
+                <p><b>State: </b>{ localStorage.State4}</p>
+                <p><b>Zip Code: </b>{localStorage.ZIP4}</p>
+                <p><b>Date of Reservation: </b>{localStorage.DOR4}</p>
+                <p><b>Reservation Time: </b>{ localStorage.ResTime4}</p>
+                <p><b>Reservation Duration: </b>{ localStorage.resDur4}</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Personal Information</div>
+              <div className="panel-body">
+                <p><b>Name: </b>{localStorage.name4}</p>
+                <p><b>Email: </b>{localStorage.email4}</p>
+                <p><b>Card Type: </b>{localStorage.cardType4}</p>
+                <p><b>Last 4 Digits: </b>{localStorage.Last44}</p>
+                <p><b>Price: </b> ${localStorage.price4}</p>
+                <p><b>Total Amount due: </b>$0.00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id ="bottomPanel" className="row">
+          <div className="col-md-12">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Email Me!</div>
+              <div className="panel-body">
+                <p style={jumboStyle}><b>If you would like to recieve a copy of your receipt please provide the email at which you would like to recieve the confirmation below. </b></p>
+                <div style={jumboStyle}>
+                  Email: <input type="text" name="email" value={email} onChange={this.handleChange}/>
+                   <button type="button" className="btn btn-primary btn-md" onClick={this.sendEm}>SEND!</button> 
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="bottomPanel2" className="row" style={thanksStyle}>
+          <div className="col-md-12">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Email Me!</div>
+              <div className="panel-body">
+                <p style={textStyle}>Thank you for your request. An email as been sent to {email} </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      );
     }
+    else{
     var email2 = temp2.email;
     var name =  temp2.name1;
     var cardType =  temp2.cardType;
@@ -2402,6 +2468,22 @@ var pastOrders = React.createClass
     var price2 = temp2.price/100;
     var price = price2;
     var ZIP =  temp2.zip;
+
+    localStorage.email4 = temp2.email;
+    localStorage.name4 =  temp2.name1;
+    localStorage.cardType4 =  temp2.cardType;
+    localStorage.Last44 =  temp2.last4;
+    localStorage.ReservedAddress34 =  temp2.address;
+    localStorage.State4 =  temp2.state;
+    localStorage.City4 =  temp2.city;
+    localStorage.DOR4 = temp2.reservationDate;
+    localStorage.ResTime4 = temp2.reservationTime;
+    localStorage.resDur4 = temp2.reservationDuration+ " hours";
+    localStorage.price24 = temp2.price/100;
+    localStorage.price4 = price2;
+    localStorage.ZIP4 =  temp2.zip;
+
+    console.log(ResTime);
 
     if(document.getElementById('navbar'))
       document.getElementById('navbar').style.marginBottom ='';
@@ -2471,6 +2553,7 @@ var pastOrders = React.createClass
       </div>
 
       );
+    }
   }
 });
 

@@ -76,6 +76,7 @@
 	var profileDriveways = '';
 	var allDriveways = [];
 	var userDriveways = [];
+	var check = 'false';
 
 	function upperCaseFirstLetter(string)
 	{
@@ -1965,6 +1966,7 @@
 	        success: function(res)
 	        {
 	          allOrders = [];
+	          check = "true";
 	          temp2 = res.order[res.order.length-1];
 	  
 	        }.bind(this),
@@ -2032,6 +2034,7 @@
 
 	      }
 	      if(temp2){
+	        console.log('112');
 	        this.history.pushState(null, '/pastOrders');
 	      }
 	      else{
@@ -2435,8 +2438,76 @@
 	   
 
 	  render: function() {
+	    console.log("here12");
 
 	    var email = this.state.email;
+	    if(typeof temp2 === 'undefined'){
+	      console.log('here1111');
+	      return(
+	        React.createElement("div", null, 
+	        React.createElement("div", {id: "title", className: "well"}, 
+	          React.createElement("div", {style: formStyle}, 
+	           React.createElement("h1", null, "Thank you for your order!"), 
+	           React.createElement("p", null, "Plese save the following order confirmation and leave it in your windshield when you arrive at your destination")
+	          )
+	        ), 
+	        React.createElement("div", {className: "row"}, 
+	          React.createElement("div", {className: "col-md-6"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Order Information"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", null, React.createElement("b", null, "Reserved Address: "), localStorage.ReservedAddress34), 
+	                React.createElement("p", null, React.createElement("b", null, "State: "),  localStorage.State4), 
+	                React.createElement("p", null, React.createElement("b", null, "Zip Code: "), localStorage.ZIP4), 
+	                React.createElement("p", null, React.createElement("b", null, "Date of Reservation: "), localStorage.DOR4), 
+	                React.createElement("p", null, React.createElement("b", null, "Reservation Time: "),  localStorage.ResTime4), 
+	                React.createElement("p", null, React.createElement("b", null, "Reservation Duration: "),  localStorage.resDur4)
+	              )
+	            )
+	          ), 
+	          React.createElement("div", {className: "col-md-6"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Personal Information"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", null, React.createElement("b", null, "Name: "), localStorage.name4), 
+	                React.createElement("p", null, React.createElement("b", null, "Email: "), localStorage.email4), 
+	                React.createElement("p", null, React.createElement("b", null, "Card Type: "), localStorage.cardType4), 
+	                React.createElement("p", null, React.createElement("b", null, "Last 4 Digits: "), localStorage.Last44), 
+	                React.createElement("p", null, React.createElement("b", null, "Price: "), " $", localStorage.price4), 
+	                React.createElement("p", null, React.createElement("b", null, "Total Amount due: "), "$0.00")
+	              )
+	            )
+	          )
+	        ), 
+	        React.createElement("div", {id: "bottomPanel", className: "row"}, 
+	          React.createElement("div", {className: "col-md-12"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", {style: jumboStyle}, React.createElement("b", null, "If you would like to recieve a copy of your receipt please provide the email at which you would like to recieve the confirmation below. ")), 
+	                React.createElement("div", {style: jumboStyle}, 
+	                  "Email: ", React.createElement("input", {type: "text", name: "email", value: email, onChange: this.handleChange}), 
+	                   React.createElement("button", {type: "button", className: "btn btn-primary btn-md", onClick: this.sendEm}, "SEND!")
+	                )
+	              )
+	            )
+	          )
+	        ), 
+	        React.createElement("div", {id: "bottomPanel2", className: "row", style: thanksStyle}, 
+	          React.createElement("div", {className: "col-md-12"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Email Me!"), 
+	              React.createElement("div", {className: "panel-body"}, 
+	                React.createElement("p", {style: textStyle}, "Thank you for your request. An email as been sent to ", email, " ")
+	              )
+	            )
+	          )
+	        )
+	      )
+
+	      );
+	    }
+	    else{
 	    var email2 = temp2.email;
 	    var name =  temp2.name1;
 	    var cardType =  temp2.cardType;
@@ -2450,6 +2521,22 @@
 	    var price2 = temp2.price/100;
 	    var price = price2;
 	    var ZIP =  temp2.zip;
+
+	    localStorage.email4 = temp2.email;
+	    localStorage.name4 =  temp2.name1;
+	    localStorage.cardType4 =  temp2.cardType;
+	    localStorage.Last44 =  temp2.last4;
+	    localStorage.ReservedAddress34 =  temp2.address;
+	    localStorage.State4 =  temp2.state;
+	    localStorage.City4 =  temp2.city;
+	    localStorage.DOR4 = temp2.reservationDate;
+	    localStorage.ResTime4 = temp2.reservationTime;
+	    localStorage.resDur4 = temp2.reservationDuration+ " hours";
+	    localStorage.price24 = temp2.price/100;
+	    localStorage.price4 = price2;
+	    localStorage.ZIP4 =  temp2.zip;
+
+	    console.log(ResTime);
 
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
@@ -2519,6 +2606,7 @@
 	      )
 
 	      );
+	    }
 	  }
 	});
 
@@ -27873,10 +27961,15 @@
 	  },
 
 	  markerClicked: function(marker){
+	    if(this.state.date != ""){
 	    marker.infoWindow.open(this.state.map, marker.mapMarker);
-
+	  
 	    var payData = {event: {Email: this.state.email, Address: marker.address, Price: marker.driveway.fee * 100, street: marker.driveway.address, zip1: marker.driveway.zip, state: marker.driveway.state, resDate: this.state.date, duration: "4", resTime: this.state.time, city: marker.driveway.city, drivewayId: marker.driveway._id, owner: marker.driveway.username}, parking: []};
 	    ReactDOM.render(React.createElement(CheckoutStrip, {data: payData}), document.getElementById('pay'));
+	    }
+	    else{
+	      alert("You Must Pick a Date and Time to reserve a parking spot");
+	    }
 	  },
 
 	  render: function() {
