@@ -364,6 +364,8 @@ var profile = React.createClass
       displayArray.push(drivewayString);
     } 
     this.state.displayArray = displayArray;
+    if(this.state.displayArray.length == 0)
+      this.state.displayArray.push("Looks like you don't have any reservations!");
     //this.forceUpdate();
 
   },
@@ -2431,7 +2433,7 @@ var pastOrders = React.createClass
                 <p><b>Email: </b>{email2}</p>
                 <p><b>Card Type: </b>{cardType}</p>
                 <p><b>Last 4 Digits: </b>{Last4}</p>
-                <p><b>Price: </b>{price}</p>
+                <p><b>Price: </b> ${price}</p>
                 <p><b>Total Amount due: </b>$0.00</p>
               </div>
             </div>

@@ -417,6 +417,8 @@
 	      displayArray.push(drivewayString);
 	    } 
 	    this.state.displayArray = displayArray;
+	    if(this.state.displayArray.length == 0)
+	      this.state.displayArray.push("Looks like you don't have any reservations!");
 	    //this.forceUpdate();
 
 	  },
@@ -2484,7 +2486,7 @@
 	                React.createElement("p", null, React.createElement("b", null, "Email: "), email2), 
 	                React.createElement("p", null, React.createElement("b", null, "Card Type: "), cardType), 
 	                React.createElement("p", null, React.createElement("b", null, "Last 4 Digits: "), Last4), 
-	                React.createElement("p", null, React.createElement("b", null, "Price: "), price), 
+	                React.createElement("p", null, React.createElement("b", null, "Price: "), " $", price), 
 	                React.createElement("p", null, React.createElement("b", null, "Total Amount due: "), "$0.00")
 	              )
 	            )
