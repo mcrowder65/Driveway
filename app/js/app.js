@@ -2105,6 +2105,38 @@ var orderEmail =
   },
 };
 
+var questionsEmail =
+{
+ 
+  sendEmails: function(emailBody)
+  {
+    var url = "/api/emailUs";
+    var emailbod = emailBody;
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          emailBody: emailbod
+
+        },
+        
+        success: function(res)
+        {
+          console.log("success sendEmails");
+  
+        }.bind(this),
+        error: function()
+        {
+          console.log("failure in orderDAQ");
+        }.bind(this)
+
+    });
+   
+  },
+};
+
 var recieptEmail =
 {
  
