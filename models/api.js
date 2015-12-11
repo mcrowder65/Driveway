@@ -23,6 +23,13 @@ var transporter = nodemailer.createTransport({
 		pass: 'mattcrowder123'
 	}
 });
+var transporter2 = nodemailer.createTransport({
+	service: 'Gmail',
+	auth: {
+		user: 'questions.drivewayteam@gmail.com',
+		pass: 'drivewayTeam12'
+	}
+});
 
 app.post('/api/users/findEmail',
 	function(req, res)
@@ -96,6 +103,35 @@ app.post
 			html: '<a href='+href+'>Click this link to reset your password</a>'
 		};
 		transporter.sendMail(mailOptions, 
+		function(error, info)
+		{
+		    if(error)
+		    {
+		        return console.log(error);
+		    }
+		    console.log('Message sent: ' + info.response);
+		    res.json({info: info});
+		});		
+
+	}
+	
+);
+
+app.post
+('/api/emailUs',
+	function(req, res)
+	{
+		var emailBody = '<p>' + req.body.emailBody + '</p>';
+		var email = 'driveway.matt.c@gmail.com'
+		var href = 'http://ec2-52-10-45-219.us-west-2.compute.amazonaws.com:3000/#/updatePassword?id=' + req.body.id;
+		var mailOptions =
+		{
+			from: 'Driveway Team Questions<questions.drivewayteam@gmail.com>',
+			to: email,
+			subject: 'Questions from users',
+			html: emailBody
+		};
+		transporter2.sendMail(mailOptions, 
 		function(error, info)
 		{
 		    if(error)
