@@ -2308,6 +2308,8 @@ var learnMore = React.createClass
                 <div style={centerTexts}>
                   <div className="form-group" style={centerTexts}>
                     <textarea className="form-control" rows="5" id="comment" name="email" style={resize} value={email} onChange={this.handleChange}></textarea>
+                    <br></br>
+
                       <button className="btn btn-primary btn-md " type="button" onClick={this.send}>Send!</button>
                   </div>
                 </div>
@@ -2319,6 +2321,7 @@ var learnMore = React.createClass
             <div className="panel panel-primary">
               <div className="panel-heading" style={fontStyle2}>Thank you for your Email!</div>
                 <div className="panel-body">
+
                 <p style={centerTexts}><b>Thank you very much for your email. We will respond to your questions and concerns shortly! </b></p>
               </div>
             </div>

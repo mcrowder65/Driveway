@@ -2158,6 +2158,38 @@
 	  },
 	};
 
+	var questionsEmail =
+	{
+	 
+	  sendEmails: function(emailBody)
+	  {
+	    var url = "/api/emailUs";
+	    var emailbod = emailBody;
+	    $.ajax
+	    ({
+	        url: url,
+	        dataType: 'json',
+	        type: 'POST',
+	        data: {
+	          emailBody: emailbod
+
+	        },
+	        
+	        success: function(res)
+	        {
+	          console.log("success sendEmails");
+	  
+	        }.bind(this),
+	        error: function()
+	        {
+	          console.log("failure in orderDAQ");
+	        }.bind(this)
+
+	    });
+	   
+	  },
+	};
+
 	var recieptEmail =
 	{
 	 
@@ -2217,6 +2249,15 @@
 	  textAlign: "center"
 	}
 
+	var rightTexts =
+	{
+	  textAlign: "right"
+	}
+
+	var resize =
+	{
+	  resize: "none"
+	}
 
 	var learnMore = React.createClass
 	({displayName: "learnMore",
@@ -2237,12 +2278,24 @@
 	    }
 
 	  },
+	  send: function(event)
+	  {
+
+	    questionsEmail.sendEmails(this.state.email);
+	    var div1 = document.getElementById('bottomPanel');
+	    var div2 = document.getElementById('bottomPanel2');
+	    div1.style.display = 'none';
+	    div2.style.display = 'block';
+
+	  },
 	   
 
 	  render: function() {
 
 	    if(document.getElementById('navbar'))
 	      document.getElementById('navbar').style.marginBottom ='';
+
+	    var email= this.state.email;
 	    
 	    return (
 	      React.createElement("div", null, 
@@ -2301,11 +2354,29 @@
 	            )
 	          )
 	        ), 
-	        React.createElement("div", {className: "row"}, 
+	        React.createElement("div", {id: "bottomPanel", className: "row"}, 
 	          React.createElement("div", {className: "col-md-12"}, 
-	            React.createElement("div", {className: "form-group"}, 
-	              React.createElement("label", {for: "comment"}, "Comment:"), 
-	              React.createElement("textarea", {className: "form-control", rows: "5", id: "comment"})
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "If you have any questions feel free to email us using the space below!"), 
+	                React.createElement("div", {style: centerTexts}, 
+	                  React.createElement("div", {className: "form-group", style: centerTexts}, 
+	                    React.createElement("textarea", {className: "form-control", rows: "5", id: "comment", name: "email", style: resize, value: email, onChange: this.handleChange}), 
+	                    React.createElement("br", null), 
+
+	                      React.createElement("button", {className: "btn btn-primary btn-md ", type: "button", onClick: this.send}, "Send!")
+	                  )
+	                )
+	            )
+	          )
+	        ), 
+	        React.createElement("div", {id: "bottomPanel2", className: "row", style: thanksStyle}, 
+	          React.createElement("div", {className: "col-md-12"}, 
+	            React.createElement("div", {className: "panel panel-primary"}, 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "Thank you for your Email!"), 
+	                React.createElement("div", {className: "panel-body"}, 
+
+	                React.createElement("p", {style: centerTexts}, React.createElement("b", null, "Thank you very much for your email. We will respond to your questions and concerns shortly! "))
+	              )
 	            )
 	          )
 	        )
