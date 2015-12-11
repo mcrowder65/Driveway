@@ -392,22 +392,41 @@
 	};
 	var profile = React.createClass
 	({displayName: "profile",
+	  getInitialState: function()
+	  {
+	    return {reservations: [], displayArray: []};
+	  },
 	  renderReservations: function()
 	  {
 	    var reservations = userDAO.getUserReservations(localStorage.username);
+	    this.state.reservations = reservations;
+
 	    var displayArray = [];
+	    this.state.displayArray =[];
 	    console.log(reservations.length);
 	    for(var i = 0; i < reservations.length; i++)
 	    {
 	      var reservation = reservations[i];
 	      var drivewayId = reservation.drivewayId;
 	      var driveway = drivewayDAO.queryID(drivewayId);
-	      console.log(driveway);
 	      var drivewayString = driveway.address + ' ' + driveway.city + 
-	      ', ' +  driveway.state + ' ' + driveway.zip;
-	      //displayArray.push(React)
-
+	      ', ' +  driveway.state + ' ' + driveway.zip + ' on driveway.date ' + ' at driveway.time';
+	      displayArray.push(React.createElement(Button, {id: reservation._id, 
+	        onClick: this.deleteReservation, className: 'btn ', 
+	        type: 'button'}, 'Delete'));
+	      displayArray.push(drivewayString);
 	    } 
+	    this.state.displayArray = displayArray;
+	    //this.forceUpdate();
+
+	  },
+	  deleteReservation: function(event)
+	  {
+	    console.log('deleting reservations');
+	    console.log(event.currentTarget.id);
+	    userDAO.deleteReservation(event.currentTarget.id);
+	    this.renderReservations();
+	    this.forceUpdate();
 	  },
 	  reroute: function()
 	  {
@@ -422,9 +441,10 @@
 	      marginBottom: '',
 	      paddingRight: '10px'
 	    };
+
 	    //this.forceUpdate();
 	    this.renderReservations();
-
+	    console.log(this.state.displayArray);
 	      return (
 	       React.createElement("div", {style: center}, 
 	        React.createElement("h2", null, " ", localStorage.username.toUpperCase()), 
@@ -449,8 +469,7 @@
 	            "Reservations"
 	          ), 
 	          React.createElement("div", {className: "panel-body", style: bluePanelBodyStyle}, 
-	            userDriveways, React.createElement("br", null), 
-	            React.createElement("button", {type: "button", className: "btn btn-primary", onClick: this.reroute}, "Add driveway")
+	            this.state.displayArray, React.createElement("br", null)
 	          )
 
 	        )
@@ -463,6 +482,29 @@
 	{
 
 	  mixins: [History, Lifecycle],
+	  deleteReservation: function(_id)
+	  {
+	    var url = '/api/users/deleteReservation';
+	    $.ajax
+	    ({
+	      url: url,
+	      dataType: 'json',
+	      type: 'POST',
+	      data:
+	      {
+	        _id: _id
+	      },
+	      async:false,
+	      success: function(res)
+	      {
+
+	      }.bind(this),
+	      error: function()
+	      {
+
+	      }.bind(this)
+	    }); 
+	  },
 	  getUserReservations: function(username)
 	  {
 	    var url = '/api/users/getUserReservations';

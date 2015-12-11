@@ -152,7 +152,18 @@ app.post
 	}
 	
 );
-
+app.post
+('/api/users/deleteReservation',
+	function(req, res)
+	{
+		reservation.remove({_id: req.body._id},
+			function(err, reservation)
+			{
+				if(reservation)
+					res.sendStatus('200');
+			});
+	}
+);
 app.post
 ('/api/users/updateDriveway',
 	function(req, res)
