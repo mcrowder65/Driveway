@@ -172,7 +172,7 @@ app.post
 		{
 			from: 'Driveway Team <driveway.matt.c@gmail.com>',
 			to: email,
-			subject: 'Requested password change',
+			subject: 'Order Confirmation',
 			html: emailBod
 		};
 		transporter.sendMail(mailOptions, 
