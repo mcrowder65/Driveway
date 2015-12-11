@@ -2304,7 +2304,7 @@ var learnMore = React.createClass
         <div id = "bottomPanel" className="row">
           <div className="col-md-12">
             <div className="panel panel-primary">
-              <div className="panel-heading" style={fontStyle2}>If you have any questions feel free to email us using the space below!</div>
+              <div className="panel-heading" style={fontStyle2}>If you have any questions feel free to email us using the space below! <br></br> Remember to add your email adress so we can respond.</div>
                 <div style={centerTexts}>
                   <div className="form-group" style={centerTexts}>
                     <textarea className="form-control" rows="5" id="comment" name="email" style={resize} value={email} onChange={this.handleChange}></textarea>

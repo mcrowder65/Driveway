@@ -2357,7 +2357,7 @@
 	        React.createElement("div", {id: "bottomPanel", className: "row"}, 
 	          React.createElement("div", {className: "col-md-12"}, 
 	            React.createElement("div", {className: "panel panel-primary"}, 
-	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "If you have any questions feel free to email us using the space below!"), 
+	              React.createElement("div", {className: "panel-heading", style: fontStyle2}, "If you have any questions feel free to email us using the space below! ", React.createElement("br", null), " Remember to add your email adress so we can respond."), 
 	                React.createElement("div", {style: centerTexts}, 
 	                  React.createElement("div", {className: "form-group", style: centerTexts}, 
 	                    React.createElement("textarea", {className: "form-control", rows: "5", id: "comment", name: "email", style: resize, value: email, onChange: this.handleChange}), 
