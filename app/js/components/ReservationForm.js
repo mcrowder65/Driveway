@@ -63,7 +63,7 @@ var ReservationForm = React.createClass({
 
     var map = new google.maps.Map($('.map-canvas')[0], mapOptions);
     this.state.map = map;
-    this.handleSubmit();
+    this.reDraw();
   },
 
   getDayFromNum: function(numDay){
@@ -210,7 +210,7 @@ var ReservationForm = React.createClass({
 
     //Build Markers
     for(var i = 0; i < filteredDriveways.length; i++){
-      var driveway = driveways[i];
+      var driveway = filteredDriveways[i];
       var address = driveway.address + ', ' + driveway.city + ', ' + driveway.state + ' ' + driveway.zip + ', USA';
       var isPartiallyFull = false; //Change this when matt gets done
       var infoWindow = new google.maps.InfoWindow({
@@ -220,15 +220,11 @@ var ReservationForm = React.createClass({
         driveway.fee = 10;
       }
 
-      //var location = this.geocodeAddress(address);
-
-      //if(driveway.location != null){
-        var mapMarker = new Marker(markerOptions);
-        mapMarker.setPosition(driveway.location);
-        var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow, mapMarker: mapMarker};
-        mapMarker.addListener('click', this.markerClicked.bind(this, marker));
-        this.state.markers.push({marker: marker});
-      //}
+      var mapMarker = new Marker(markerOptions);
+      mapMarker.setPosition(driveway.location);
+      var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow, mapMarker: mapMarker};
+      mapMarker.addListener('click', this.markerClicked.bind(this, marker));
+      this.state.markers.push({marker: marker});
     }
   },
 
@@ -252,7 +248,6 @@ var ReservationForm = React.createClass({
       delete this.state.eventMapMarker[i].eventMapMarker;
     }
     this.state.eventMapMarker.length = 0;
-    //this.setState({eventMapMarker: []});
 
     for(var i = 0; i < this.state.markers.length; i++){
       this.state.markers[i].marker.mapMarker.setMap(null);
@@ -260,36 +255,40 @@ var ReservationForm = React.createClass({
       delete this.state.markers[i].marker;
     }
     this.state.markers.length = 0;
-    //this.setState({markers: []});
+  },
+
+  reDraw: function(){
+    this.deleteMarkers();
+    this.recenterMap();
+    this.generateEventMarker();
+    this.generateMarkers();
   },
 
   handleChange: function(event) {
     if(event.target.name == "address"){
       if(event.target.value == ''){
         $('#addressgrp').addClass('has-error');
-        $('#submitgrp').removeClass('has-success');
       }else{
-        $('#submitgrp').addClass('has-success');
         $('#addressgrp').removeClass('has-error');
       } 
       this.setState({address: event.target.value});
     }else if(event.target.name == "date"){      
-      if(event.target.value == ''){
-        $('#dategrp').addClass('has-error');
-        $('#submitgrp').removeClass('has-success');
+      //Check Date
+      var dpattern = /^([0-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])\/([1-9][0-9]|2\d\d\d)$/i;
+      if(event.target.value.search(dpattern) === -1){
+        $('#dategrp').addClass('has-error');      
       }else{
-        $('#submitgrp').addClass('has-success');
-        $('#dategrp').removeClass('has-error');
-      }  
+        $('#dategrp').removeClass('has-error');      
+      }
       this.setState({date: event.target.value});
     }else if(event.target.name == "time"){      
-      if(event.target.value == ''){
-        $('#timegrp').addClass('has-error');
-        $('#submitgrp').removeClass('has-success');
+      //Check Time
+      var tpattern = /^([1-9]|[1][0-2]):([0-5]\d)\s*(AM|PM)$/i;
+      if(event.target.value.search(tpattern) == -1){
+        $('#timegrp').addClass('has-error');      
       }else{
-        $('#submitgrp').addClass('has-success');
-        $('#timegrp').removeClass('has-error');
-      }  
+        $('#timegrp').removeClass('has-error');      
+      }
       this.setState({time: event.target.value});
     }
 
@@ -302,31 +301,18 @@ var ReservationForm = React.createClass({
   },
 
   validateForm: function(){
-    //Check Date
-    var dpattern = /\d\d\/\d\d\/(\d\d|\d\d\d\d)/i;
-    if(this.state.date.search(dpattern) === -1){
-      $('#dategrp').addClass('has-error');      
-    }
-
-    //Check Time
-    var tpattern = /([1-9]|[1-12]):[0-5][0-9]/i;
-    if(this.state.time.search(tpattern) === -1){
-      $('#timegrp').addClass('has-error');      
-    }    
-
+    // Update the button
     if($('#addressgrp').hasClass('has-error') || $('#dategrp').hasClass('has-error') || $('#timegrp').hasClass('has-error')){
+      $('#submitgrp').removeClass('has-success');
       $('#submit').attr('disabled', 'disabled');
     }else{
+      $('#submitgrp').addClass('has-success');
       $('#submit').removeAttr('disabled');
     }
   },
 
   handleSubmit: function(){
-    this.deleteMarkers();
-    this.recenterMap();
-    this.generateEventMarker();
-    this.generateMarkers();
-    this.forceUpdate();
+    this.reDraw();
   },
 
   renderInfoWindow: function(address, driveway){

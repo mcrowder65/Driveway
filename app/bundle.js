@@ -27427,6 +27427,7 @@
 	  },
 
 	  componentDidMount: function () {
+	    $('#submit').attr('disabled', 'disabled');
 	    this.initializeMap();
 	  },
 
@@ -27447,7 +27448,7 @@
 
 	    var map = new google.maps.Map($('.map-canvas')[0], mapOptions);
 	    this.state.map = map;
-	    this.handleSubmit();
+	    this.reDraw();
 	  },
 
 	  getDayFromNum: function(numDay){
@@ -27594,7 +27595,7 @@
 
 	    //Build Markers
 	    for(var i = 0; i < filteredDriveways.length; i++){
-	      var driveway = driveways[i];
+	      var driveway = filteredDriveways[i];
 	      var address = driveway.address + ', ' + driveway.city + ', ' + driveway.state + ' ' + driveway.zip + ', USA';
 	      var isPartiallyFull = false; //Change this when matt gets done
 	      var infoWindow = new google.maps.InfoWindow({
@@ -27604,15 +27605,11 @@
 	        driveway.fee = 10;
 	      }
 
-	      var location = this.geocodeAddress(address);
-
-	      if(location != null){
-	        var mapMarker = new Marker(markerOptions);
-	        mapMarker.setPosition(location);
-	        var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow, mapMarker: mapMarker};
-	        mapMarker.addListener('click', this.markerClicked.bind(this, marker));
-	        this.state.markers.push({marker: marker});
-	      }
+	      var mapMarker = new Marker(markerOptions);
+	      mapMarker.setPosition(driveway.location);
+	      var marker = {address: address, partiallyFull: isPartiallyFull, driveway: driveway, infoWindow: infoWindow, mapMarker: mapMarker};
+	      mapMarker.addListener('click', this.markerClicked.bind(this, marker));
+	      this.state.markers.push({marker: marker});
 	    }
 	  },
 
@@ -27636,7 +27633,6 @@
 	      delete this.state.eventMapMarker[i].eventMapMarker;
 	    }
 	    this.state.eventMapMarker.length = 0;
-	    //this.setState({eventMapMarker: []});
 
 	    for(var i = 0; i < this.state.markers.length; i++){
 	      this.state.markers[i].marker.mapMarker.setMap(null);
@@ -27644,17 +27640,44 @@
 	      delete this.state.markers[i].marker;
 	    }
 	    this.state.markers.length = 0;
-	    //this.setState({markers: []});
+	  },
+
+	  reDraw: function(){
+	    this.deleteMarkers();
+	    this.recenterMap();
+	    this.generateEventMarker();
+	    this.generateMarkers();
 	  },
 
 	  handleChange: function(event) {
 	    if(event.target.name == "address"){
+	      if(event.target.value == ''){
+	        $('#addressgrp').addClass('has-error');
+	      }else{
+	        $('#addressgrp').removeClass('has-error');
+	      } 
 	      this.setState({address: event.target.value});
 	    }else if(event.target.name == "date"){      
+	      //Check Date
+	      var dpattern = /^([0-9]|0[1-9]|1[0-2])\/([1-9]|0[1-9]|[1-2][0-9]|3[0-1])\/([1-9][0-9]|2\d\d\d)$/i;
+	      if(event.target.value.search(dpattern) === -1){
+	        $('#dategrp').addClass('has-error');      
+	      }else{
+	        $('#dategrp').removeClass('has-error');      
+	      }
 	      this.setState({date: event.target.value});
 	    }else if(event.target.name == "time"){      
+	      //Check Time
+	      var tpattern = /^([1-9]|[1][0-2]):([0-5]\d)\s*(AM|PM)$/i;
+	      if(event.target.value.search(tpattern) == -1){
+	        $('#timegrp').addClass('has-error');      
+	      }else{
+	        $('#timegrp').removeClass('has-error');      
+	      }
 	      this.setState({time: event.target.value});
 	    }
+
+	    this.validateForm();
 	  },
 
 	  recenterMap: function() {
@@ -27662,12 +27685,19 @@
 	    this.state.map.setCenter(location);
 	  },
 
+	  validateForm: function(){
+	    // Update the button
+	    if($('#addressgrp').hasClass('has-error') || $('#dategrp').hasClass('has-error') || $('#timegrp').hasClass('has-error')){
+	      $('#submitgrp').removeClass('has-success');
+	      $('#submit').attr('disabled', 'disabled');
+	    }else{
+	      $('#submitgrp').addClass('has-success');
+	      $('#submit').removeAttr('disabled');
+	    }
+	  },
+
 	  handleSubmit: function(){
-	    this.deleteMarkers();
-	    this.recenterMap();
-	    this.generateEventMarker();
-	    this.generateMarkers();
-	    this.forceUpdate();
+	    this.reDraw();
 	  },
 
 	  renderInfoWindow: function(address, driveway){
@@ -27724,12 +27754,12 @@
 	    return(
 	      React.createElement("div", {className: "panel panel-primary"}, 
 	        React.createElement("div", {className: "panel-heading"}, 
-	          React.createElement("div", {className: "form-group", style: {textAlign: 'center'}}, 
+	          React.createElement("div", {style: {textAlign: 'center'}}, 
 	              React.createElement("div", {className: "row"}, 
-	                React.createElement("div", {className: "col-md-4"}, React.createElement("label", {className: "form-label"}, "Event Address:"), React.createElement("input", {className: "form-control", type: "text", name: "address", placeholder: "156 East 200 North, Provo, UT 84606", value: this.state.address, onChange: this.handleChange})), 
-	                React.createElement("div", {className: "col-md-3"}, React.createElement("label", {className: "form-label"}, "Event Date:"), React.createElement("input", {className: "form-control", type: "text", name: "date", placeholder: "12/12/16", value: this.state.date, onChange: this.handleChange})), 
-	                React.createElement("div", {className: "col-md-3"}, React.createElement("label", {className: "form-label"}, "Event Time:"), React.createElement("input", {className: "form-control", type: "text", name: "time", placeholder: "6:00 PM", value: this.state.time, onChange: this.handleChange})), 
-	                React.createElement("div", {className: "col-md-2", style: {marginTop: '24px'}}, React.createElement("input", {className: "form-control", type: "button", name: "submit", value: "Submit", onClick: this.handleSubmit}))
+	                React.createElement("div", {className: "col-md-4 form-group", id: "addressgrp"}, React.createElement("label", {className: "form-label"}, "Event Address:"), React.createElement("input", {className: "form-control", type: "text", name: "address", id: "address", placeholder: "156 East 200 North, Provo, UT 84606", value: this.state.address, onChange: this.handleChange})), 
+	                React.createElement("div", {className: "col-md-3 form-group has-error", id: "dategrp"}, React.createElement("label", {className: "form-label"}, "Event Date:"), React.createElement("input", {className: "form-control", type: "text", name: "date", id: "date", placeholder: "12/12/16", value: this.state.date, onChange: this.handleChange})), 
+	                React.createElement("div", {className: "col-md-3 form-group has-error", id: "timegrp"}, React.createElement("label", {className: "form-label"}, "Event Time:"), React.createElement("input", {className: "form-control", type: "text", name: "time", id: "time", placeholder: "6:00 PM", value: this.state.time, onChange: this.handleChange})), 
+	                React.createElement("div", {className: "col-md-2 form-group", id: "submitgrp", style: {marginTop: '24px'}}, React.createElement("input", {className: "form-control", type: "button", name: "submit", id: "submit", value: "Submit", onClick: this.handleSubmit}))
 	              )
 	          )
 	        ), 
