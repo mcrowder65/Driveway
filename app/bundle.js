@@ -2458,7 +2458,7 @@
 	              React.createElement("div", {className: "panel-body"}, 
 	                React.createElement("p", null, React.createElement("b", null, "Reserved Address: "), localStorage.ReservedAddress34), 
 	                React.createElement("p", null, React.createElement("b", null, "State: "),  localStorage.State4), 
-	                React.createElement("p", null, React.createElement("b", null, "Zip Code: "), localStorage.ZIP4), 
+	                React.createElement("p", null, React.createElement("b", null, "City: "), localStorage.City4), 
 	                React.createElement("p", null, React.createElement("b", null, "Date of Reservation: "), localStorage.DOR4), 
 	                React.createElement("p", null, React.createElement("b", null, "Reservation Time: "),  localStorage.ResTime4), 
 	                React.createElement("p", null, React.createElement("b", null, "Reservation Duration: "),  localStorage.resDur4)
@@ -2558,7 +2558,7 @@
 	              React.createElement("div", {className: "panel-body"}, 
 	                React.createElement("p", null, React.createElement("b", null, "Reserved Address: "), ReservedAddress), 
 	                React.createElement("p", null, React.createElement("b", null, "State: "), State), 
-	                React.createElement("p", null, React.createElement("b", null, "Zip Code: "), ZIP), 
+	                React.createElement("p", null, React.createElement("b", null, "City: "), City), 
 	                React.createElement("p", null, React.createElement("b", null, "Date of Reservation: "), DOR), 
 	                React.createElement("p", null, React.createElement("b", null, "Reservation Time: "), ResTime), 
 	                React.createElement("p", null, React.createElement("b", null, "Reservation Duration: "), resDur)
@@ -2744,7 +2744,7 @@
 	              React.createElement("div", {className: "panel-body"}, 
 	                React.createElement("p", null, React.createElement("b", null, "Reserved Address: "), ReservedAddress), 
 	                React.createElement("p", null, React.createElement("b", null, "State: "), State), 
-	                React.createElement("p", null, React.createElement("b", null, "Zip Code: "), ZIP), 
+	                React.createElement("p", null, React.createElement("b", null, "City: "), City), 
 	                React.createElement("p", null, React.createElement("b", null, "Date of Reservation: "), DOR), 
 	                React.createElement("p", null, React.createElement("b", null, "Reservation Time: "), ResTime), 
 	                React.createElement("p", null, React.createElement("b", null, "Reservation Duration: "), resDur)

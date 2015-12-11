@@ -2405,7 +2405,7 @@ var pastOrders = React.createClass
               <div className="panel-body">
                 <p><b>Reserved Address: </b>{localStorage.ReservedAddress34}</p>
                 <p><b>State: </b>{ localStorage.State4}</p>
-                <p><b>Zip Code: </b>{localStorage.ZIP4}</p>
+                <p><b>City: </b>{localStorage.City4}</p>
                 <p><b>Date of Reservation: </b>{localStorage.DOR4}</p>
                 <p><b>Reservation Time: </b>{ localStorage.ResTime4}</p>
                 <p><b>Reservation Duration: </b>{ localStorage.resDur4}</p>
@@ -2505,7 +2505,7 @@ var pastOrders = React.createClass
               <div className="panel-body">
                 <p><b>Reserved Address: </b>{ReservedAddress}</p>
                 <p><b>State: </b>{State}</p>
-                <p><b>Zip Code: </b>{ZIP}</p>
+                <p><b>City: </b>{City}</p>
                 <p><b>Date of Reservation: </b>{DOR}</p>
                 <p><b>Reservation Time: </b>{ResTime}</p>
                 <p><b>Reservation Duration: </b>{resDur}</p>
@@ -2691,7 +2691,7 @@ var confirmPage = React.createClass
               <div className="panel-body">
                 <p><b>Reserved Address: </b>{ReservedAddress}</p>
                 <p><b>State: </b>{State}</p>
-                <p><b>Zip Code: </b>{ZIP}</p>
+                <p><b>City: </b>{City}</p>
                 <p><b>Date of Reservation: </b>{DOR}</p>
                 <p><b>Reservation Time: </b>{ResTime}</p>
                 <p><b>Reservation Duration: </b>{resDur}</p>
