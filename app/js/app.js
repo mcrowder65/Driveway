@@ -2184,12 +2184,24 @@ var learnMore = React.createClass
     }
 
   },
+  send: function(event)
+  {
+
+    questionsEmail.sendEmails(this.state.email);
+    var div1 = document.getElementById('bottomPanel');
+    var div2 = document.getElementById('bottomPanel2');
+    div1.style.display = 'none';
+    div2.style.display = 'block';
+
+  },
    
 
   render: function() {
 
     if(document.getElementById('navbar'))
       document.getElementById('navbar').style.marginBottom ='';
+
+    var email= this.state.email;
     
     return (
       <div>
@@ -2248,11 +2260,26 @@ var learnMore = React.createClass
             </div>
           </div>
         </div>
-        <div className="row">
+        <div id = "bottomPanel" className="row">
           <div className="col-md-12">
-            <div className="form-group">
-              <label for="comment">Comment:</label>
-              <textarea className="form-control" rows="5" id="comment"></textarea>
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>If you have any questions feel free to email us using the space below!</div>
+                <div style={centerTexts}>
+                  <div className="form-group" style={centerTexts}>
+                    <textarea className="form-control" rows="5" id="comment" name="email" style={resize} value={email} onChange={this.handleChange}></textarea>
+                      <button className="btn btn-primary btn-md " type="button" onClick={this.send}>Send!</button>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div id = "bottomPanel2" className="row" style={thanksStyle}>
+          <div className="col-md-12">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Thank you for your Email!</div>
+                <div className="panel-body">
+                <p style={centerTexts}><b>Thank you very much for your email. We will respond to your questions and concerns shortly! </b></p>
+              </div>
             </div>
           </div>
         </div>
