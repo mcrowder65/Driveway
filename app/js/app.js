@@ -339,6 +339,42 @@ var leftPanel =
 };
 var profile = React.createClass
 ({
+  getInitialState: function()
+  {
+    return {reservations: [], displayArray: []};
+  },
+  renderReservations: function()
+  {
+    var reservations = userDAO.getUserReservations(localStorage.username);
+    this.state.reservations = reservations;
+
+    var displayArray = [];
+    this.state.displayArray =[];
+    console.log(reservations.length);
+    for(var i = 0; i < reservations.length; i++)
+    {
+      var reservation = reservations[i];
+      var drivewayId = reservation.drivewayId;
+      var driveway = drivewayDAO.queryID(drivewayId);
+      var drivewayString = driveway.address + ' ' + driveway.city + 
+      ', ' +  driveway.state + ' ' + driveway.zip + ' on driveway.date ' + ' at driveway.time';
+      displayArray.push(React.createElement(Button, {id: reservation._id, 
+        onClick: this.deleteReservation, className: 'btn ', 
+        type: 'button'}, 'Delete'));
+      displayArray.push(drivewayString);
+    } 
+    this.state.displayArray = displayArray;
+    //this.forceUpdate();
+
+  },
+  deleteReservation: function(event)
+  {
+    console.log('deleting reservations');
+    console.log(event.currentTarget.id);
+    userDAO.deleteReservation(event.currentTarget.id);
+    this.renderReservations();
+    this.forceUpdate();
+  },
   reroute: function()
   {
     location.href ='/#/driveway';
@@ -352,7 +388,10 @@ var profile = React.createClass
       marginBottom: '',
       paddingRight: '10px'
     };
+
     //this.forceUpdate();
+    this.renderReservations();
+    console.log(this.state.displayArray);
       return (
        <div style={center}>
         <h2> {localStorage.username.toUpperCase()}</h2>
@@ -374,11 +413,10 @@ var profile = React.createClass
         <div className="panel panel-primary" style={rightPanel}>
           
           <div className="panel-heading" style={bluePanelHeaderStyle}>
-            Driveways
+            Reservations
           </div>
           <div className="panel-body" style={bluePanelBodyStyle}>
-            {userDriveways}<br/>
-            <button type="button" className="btn btn-primary" onClick={this.reroute}>Add driveway</button>
+            {this.state.displayArray}<br/>
           </div>
 
         </div>
@@ -386,6 +424,254 @@ var profile = React.createClass
       );
   }
 });
+
+var userDAO = 
+{
+
+  mixins: [History, Lifecycle],
+  deleteReservation: function(_id)
+  {
+    var url = '/api/users/deleteReservation';
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        _id: _id
+      },
+      async:false,
+      success: function(res)
+      {
+
+      }.bind(this),
+      error: function()
+      {
+
+      }.bind(this)
+    }); 
+  },
+  getUserReservations: function(username)
+  {
+    var url = '/api/users/getUserReservations';
+    var returnValue = {};
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        username: username
+      },
+      async: false,
+      success: function(res)
+      {
+        returnValue = res.reservations;
+      }.bind(this),
+      error: function(res)
+      {
+
+      }.bind(this)
+
+    });
+    return returnValue;
+  },
+  findEmail: function(email)
+  {
+    var url ="/api/users/findEmail";
+    var returnValue = '';
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data: 
+      {
+        email: email
+      },
+      async: false,
+      success: function(res)
+      {
+        returnValue = res.email;
+        //email found!
+      }.bind(this),
+      error:function(res)
+      {
+        console.log(res.email);
+      }.bind(this)
+
+    });
+    return returnValue;
+  },
+  register: function(email, username, password)
+  {
+    var returnError = '';
+    var url = "/api/users/register";
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+            email: email,
+            username: username,
+            password: password
+        },
+        async: false,
+        success: function(res) 
+        {
+          userDAO.login(username, password);
+          localStorage.username = username;
+          location.href ='/#/profile';
+          returnError = 'chicken poop';
+        }.bind(this),
+        error: function()
+        {
+          returnError = 'FAILED';
+        }.bind(this)
+    });
+    
+    return returnError;
+  },
+  login: function(username, password)
+  {
+    var url = "/api/users/login";
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: 
+        {
+            username: username,
+            password: password
+        },
+        async: false,
+        headers: {'Authorization': localStorage},
+        success: function(res) 
+        {
+          localStorage.email = res.email;
+          console.log("signed in");
+          signedIn = true;
+        }.bind(this),
+        error: function()
+        {
+          signedIn = false;
+          
+        }.bind(this)
+
+    });
+  },
+  getID: function(username)
+  {
+    var url = "/api/users/getID";
+    var id = '';
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        username: username
+      },
+      async: false,
+      success: function(res)
+      {
+        id = res.id;
+      }.bind(this),
+      error: function()
+      {
+        id = 'nope';
+      }.bind(this)
+
+    });
+    return id;
+  },
+  get: function(id)
+  {
+    var url = '/api/users/get';
+    var json = {};
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        _id: id
+      },
+      async: false,
+      success: function(res)
+      {
+        json.username = res.username;
+        json.email = res.email;
+      }.bind(this),
+      failure: function()
+      {
+        console.log('failure');
+      }.bind(this)
+    });
+    return json;
+  },
+  sendEmail: function(email, id)
+  {
+    var url = "/api/users/sendEmail";
+
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          email: email,
+          id: id
+        },
+        async: false,
+        success: function(res) 
+        {
+         console.log('sent email');
+        }.bind(this),
+        error: function()
+        {
+          console.log('failed email');
+        }.bind(this)
+    });
+  },
+  updatePassword: function(id, username, email, password)
+  {
+    var url = '/api/users/updatePassword';
+    $.ajax
+    ({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data:
+      {
+        _id: id,
+        password: password
+      },
+      async: false,
+      success: function(res)
+      {
+        console.log('changed password');
+        userDAO.login(username, res.password);
+        localStorage.username = username;
+        console.log('username: ' + username);
+        location.href ='/#/profile';
+      }
+    });
+  },
+  logOut: function()
+  {
+    delete localStorage.username;
+    delete localStorage.email;
+    //this.history.pushState(null,'/Home');
+    location.href="/#/home";
+  }
+};
 var driveway = React.createClass
 ({
   mixins: [History, Lifecycle],
@@ -1819,6 +2105,38 @@ var orderEmail =
   },
 };
 
+var questionsEmail =
+{
+ 
+  sendEmails: function(emailBody)
+  {
+    var url = "/api/emailUs";
+    var emailbod = emailBody;
+    $.ajax
+    ({
+        url: url,
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          emailBody: emailbod
+
+        },
+        
+        success: function(res)
+        {
+          console.log("success sendEmails");
+  
+        }.bind(this),
+        error: function()
+        {
+          console.log("failure in orderDAQ");
+        }.bind(this)
+
+    });
+   
+  },
+};
+
 var recieptEmail =
 {
  
@@ -1878,6 +2196,15 @@ var centerTexts =
   textAlign: "center"
 }
 
+var rightTexts =
+{
+  textAlign: "right"
+}
+
+var resize =
+{
+  resize: "none"
+}
 
 var learnMore = React.createClass
 ({
@@ -1898,12 +2225,24 @@ var learnMore = React.createClass
     }
 
   },
+  send: function(event)
+  {
+
+    questionsEmail.sendEmails(this.state.email);
+    var div1 = document.getElementById('bottomPanel');
+    var div2 = document.getElementById('bottomPanel2');
+    div1.style.display = 'none';
+    div2.style.display = 'block';
+
+  },
    
 
   render: function() {
 
     if(document.getElementById('navbar'))
       document.getElementById('navbar').style.marginBottom ='';
+
+    var email= this.state.email;
     
     return (
       <div>
@@ -1962,11 +2301,29 @@ var learnMore = React.createClass
             </div>
           </div>
         </div>
-        <div className="row">
+        <div id = "bottomPanel" className="row">
           <div className="col-md-12">
-            <div className="form-group">
-              <label for="comment">Comment:</label>
-              <textarea className="form-control" rows="5" id="comment"></textarea>
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>If you have any questions feel free to email us using the space below! <br></br> Remember to add your email adress so we can respond.</div>
+                <div style={centerTexts}>
+                  <div className="form-group" style={centerTexts}>
+                    <textarea className="form-control" rows="5" id="comment" name="email" style={resize} value={email} onChange={this.handleChange}></textarea>
+                    <br></br>
+
+                      <button className="btn btn-primary btn-md " type="button" onClick={this.send}>Send!</button>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div id = "bottomPanel2" className="row" style={thanksStyle}>
+          <div className="col-md-12">
+            <div className="panel panel-primary">
+              <div className="panel-heading" style={fontStyle2}>Thank you for your Email!</div>
+                <div className="panel-body">
+
+                <p style={centerTexts}><b>Thank you very much for your email. We will respond to your questions and concerns shortly! </b></p>
+              </div>
             </div>
           </div>
         </div>
@@ -2477,208 +2834,7 @@ var signUp = React.createClass
       );
   }
 });
-var userDAO = 
-{
 
-  mixins: [History, Lifecycle],
-  getUserReservations: function(username)
-  {
-
-  },
-  findEmail: function(email)
-  {
-    var url ="/api/users/findEmail";
-    var returnValue = '';
-    $.ajax
-    ({
-      url: url,
-      dataType: 'json',
-      type: 'POST',
-      data: 
-      {
-        email: email
-      },
-      async: false,
-      success: function(res)
-      {
-        returnValue = res.email;
-        //email found!
-      }.bind(this),
-      error:function(res)
-      {
-        console.log(res.email);
-      }.bind(this)
-
-    });
-    return returnValue;
-  },
-  register: function(email, username, password)
-  {
-    var returnError = '';
-    var url = "/api/users/register";
-    $.ajax
-    ({
-        url: url,
-        dataType: 'json',
-        type: 'POST',
-        data: {
-            email: email,
-            username: username,
-            password: password
-        },
-        async: false,
-        success: function(res) 
-        {
-          userDAO.login(username, password);
-          localStorage.username = username;
-          location.href ='/#/profile';
-          returnError = 'chicken poop';
-        }.bind(this),
-        error: function()
-        {
-          returnError = 'FAILED';
-        }.bind(this)
-    });
-    
-    return returnError;
-  },
-  login: function(username, password)
-  {
-    var url = "/api/users/login";
-    $.ajax
-    ({
-        url: url,
-        dataType: 'json',
-        type: 'POST',
-        data: 
-        {
-            username: username,
-            password: password
-        },
-        async: false,
-        headers: {'Authorization': localStorage},
-        success: function(res) 
-        {
-          localStorage.email = res.email;
-          console.log("signed in");
-          signedIn = true;
-        }.bind(this),
-        error: function()
-        {
-          signedIn = false;
-          
-        }.bind(this)
-
-    });
-  },
-  getID: function(username)
-  {
-    var url = "/api/users/getID";
-    var id = '';
-    $.ajax
-    ({
-      url: url,
-      dataType: 'json',
-      type: 'POST',
-      data:
-      {
-        username: username
-      },
-      async: false,
-      success: function(res)
-      {
-        id = res.id;
-      }.bind(this),
-      error: function()
-      {
-        id = 'nope';
-      }.bind(this)
-
-    });
-    return id;
-  },
-  get: function(id)
-  {
-    var url = '/api/users/get';
-    var json = {};
-    $.ajax
-    ({
-      url: url,
-      dataType: 'json',
-      type: 'POST',
-      data:
-      {
-        _id: id
-      },
-      async: false,
-      success: function(res)
-      {
-        json.username = res.username;
-        json.email = res.email;
-      }.bind(this),
-      failure: function()
-      {
-        console.log('failure');
-      }.bind(this)
-    });
-    return json;
-  },
-  sendEmail: function(email, id)
-  {
-    var url = "/api/users/sendEmail";
-
-    $.ajax
-    ({
-        url: url,
-        dataType: 'json',
-        type: 'POST',
-        data: {
-          email: email,
-          id: id
-        },
-        async: false,
-        success: function(res) 
-        {
-         console.log('sent email');
-        }.bind(this),
-        error: function()
-        {
-          console.log('failed email');
-        }.bind(this)
-    });
-  },
-  updatePassword: function(id, username, email, password)
-  {
-    var url = '/api/users/updatePassword';
-    $.ajax
-    ({
-      url: url,
-      dataType: 'json',
-      type: 'POST',
-      data:
-      {
-        _id: id,
-        password: password
-      },
-      async: false,
-      success: function(res)
-      {
-        console.log('changed password');
-        userDAO.login(username, res.password);
-        localStorage.username = username;
-        console.log('username: ' + username);
-        location.href ='/#/profile';
-      }
-    });
-  },
-  logOut: function()
-  {
-    delete localStorage.username;
-    delete localStorage.email;
-    //this.history.pushState(null,'/Home');
-    location.href="/#/home";
-  }
-};
 
 
 var centerPasswordForm =
