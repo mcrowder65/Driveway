@@ -2836,7 +2836,6 @@
 
 	      document.getElementById('differentPasswords').style.visibility = 'visible';
 	      document.getElementById('shortPasswords').style.visibility = 'hidden';
-	      document.getElementById('termsError').style.visibility = 'hidden';
 	      document.getElementById('duplicateUsername').style.visibility = 'hidden';
 	      document.getElementById('duplicateEmail').style.visibility = 'hidden';
 	    }
@@ -2844,7 +2843,6 @@
 	    {
 	      document.getElementById('differentPasswords').style.visibility = 'hidden';
 	      document.getElementById('shortPasswords').style.visibility = 'visible';
-	      document.getElementById('termsError').style.visibility = 'hidden';
 	      document.getElementById('duplicateUsername').style.visibility = 'hidden';
 	      document.getElementById('duplicateEmail').style.visibility = 'hidden';
 	    }
@@ -2852,7 +2850,6 @@
 	    {
 	      document.getElementById('differentPasswords').style.visibility = 'hidden';
 	      document.getElementById('shortPasswords').style.visibility = 'hidden';
-	      document.getElementById('termsError').style.visibility = 'visible';
 	      document.getElementById('duplicateUsername').style.visibility = 'hidden';
 	      document.getElementById('duplicateEmail').style.visibility = 'hidden';
 	    }
@@ -2864,7 +2861,6 @@
 	      {
 	        document.getElementById('differentPasswords').style.visibility = 'hidden';
 	        document.getElementById('shortPasswords').style.visibility = 'hidden';
-	        document.getElementById('termsError').style.visibility = 'hidden';
 	        document.getElementById('duplicateUsername').style.visibility = 'hidden';
 	        document.getElementById('duplicateEmail').style.visibility = 'visible';
 	        return;
@@ -2875,7 +2871,6 @@
 	    {
 	      document.getElementById('differentPasswords').style.visibility = 'hidden';
 	      document.getElementById('shortPasswords').style.visibility = 'hidden';
-	      document.getElementById('termsError').style.visibility = 'hidden';
 	      document.getElementById('duplicateUsername').style.visibility = 'visible';
 	      document.getElementById('duplicateEmail').style.visibility = 'hidden';
 	    }
